@@ -12,9 +12,16 @@
   },
   "license": "ISC",
   "author": "JerryBeGood",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.9",
+    "ai": "^5.0.9",
+    "dotenv": "^17.2.1",
+    "exa-js": "^1.8.27",
+    "zod": "^3.25.76"
   }
 }

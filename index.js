@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { generateText, tool } from 'ai';
+import { generateText, stepCountIs, tool } from 'ai';
 import { z } from 'zod';
 
 import 'dotenv/config';
@@ -43,30 +43,34 @@ const webSearch = tool({
     return results.map(result => ({
       title: result.title,
       url: result.url,
-      content: result.text.slice(0, 1000), // take just the first 1000 characters
+      content: result.text,
       publishedDate: result.publishedDate,
     }));
   },
 });
 
 async function researchSubject(subject) {
-  return await generateText({
+  const result = await generateText({
     model: mainModel,
-    prompt: `Search the web for the latest developments on the ${subject}`,
+    prompt: `Search the web for the latest developments in the ${subject} and return a raport from the gathered data`,
     system:
       'You are an expert researcher. ' +
       `You look for the data not older then a week from ${new Date().toISOString()}`,
     tools: {
       webSearch,
-    }
+    },
+    stopWhen: stepCountIs(3),
   });
+
+  return result;
 }
 
 async function main() {
   const subject = 'ai engineering';
   const research = await researchSubject(subject);
 
-  console.log(JSON.stringify(research));
+  console.log(research.text);
 }
 
 main();
+

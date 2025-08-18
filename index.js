@@ -2,6 +2,8 @@ import { openai } from '@ai-sdk/openai';
 import { generateText, stepCountIs, tool } from 'ai';
 import { z } from 'zod';
 
+import { prompts } from './prompts.js';
+
 import 'dotenv/config';
 import Exa from 'exa-js';
 
@@ -53,16 +55,12 @@ async function researchSubject(subject) {
   const result = await generateText({
     model: mainModel,
     prompt: `Search the web for the latest developments in the ${subject} and return a raport from the gathered data`,
-    system:
-      'You are an expert researcher. ' +
-      `You look for the data not older then a week from ${new Date().toISOString()}`,
+    system: prompts.researcherSystemPrompt,
     tools: {
       webSearch,
     },
     stopWhen: stepCountIs(3),
   });
-
-  return result;
 }
 
 async function main() {

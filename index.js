@@ -96,8 +96,14 @@ function validateSecrets() {
 async function main() {
 validateSecrets();
   
-  // TODO: Subject should be passed via CLI and default to AI engineering
-  const subject = 'ai engineering';
+  // Read subject from CLI; default to DEFFAULT_SUBJECT if not provided
+  const args = process.argv.slice(2);
+  let subject = args.join(' ').trim();
+  if (!subject) {
+    console.log(`No subject provided via CLI. Defaulting to '${process.env.DEFAULT_SUBJECT}'.`);
+    subject = process.env.DEFAULT_SUBJECT;``
+  }
+  
 const queries = await generateSearchQueries(subject);
 
   console.log(JSON.stringify(queries));

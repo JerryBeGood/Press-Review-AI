@@ -1,6 +1,8 @@
 import { openai } from '@ai-sdk/openai';
 import { generateText, generateObject, stepCountIs, tool } from 'ai';
 import { z } from 'zod';
+import fs from 'fs';
+import path from 'path';
 
 import { prompts } from './prompts.js';
 
@@ -16,10 +18,10 @@ async function generateSearchQueries(subject, n = 4) {
     object: { queries },
   } = await generateObject({
     model: mainModel,
-    system: prompts.manager.systemPrompt,
     prompt: `
-      Generate ${n} concise search queries about the subject: ${subject}. The queries should enable a comprehensive press review by covering: breaking news, emerging trends, market dynamics, and influential opinions.
+      Design ${n} precise and effective research queries that will guide the research agent in producing a comprehensive press review on the following subject: ${subject}.
     `,
+    system: prompts.manager.systemPrompt,
     schema: z.object({
       queries: z.array(z.string()).min(1).max(5),
     }),
@@ -50,16 +52,24 @@ const webSearch = tool({
   },
 });
 
-async function researchSubject(subject) {
-  const result = await generateText({
+async function researchSubject(query) {
+  const result = await generateObject({
     model: mainModel,
-    prompt: `Search the web for the latest developments in the ${subject} and return a raport from the gathered data`,
-    system: prompts.researcherSystemPrompt,
-    tools: {
-      webSearch,
-    },
-    stopWhen: stepCountIs(3),
+    output: 'array',
+    schema: z.object({
+      title: z.string(),
+      url: z.string().url(),
+      publicationDate: z.string(),
+      source: z.string(),
+      summary: z.string(),
+    }),
+    prompt: `Identify and summarise relevant information based on the provided query: ${query}. Return only the structured array.`,
+    system: prompts.researcher.systemPrompt,
+    tools: { webSearch },
+    stopWhen: stepCountIs(10),
   });
+
+  return result.object;
 }
 
 function validateSecrets() {
@@ -74,25 +84,69 @@ function validateSecrets() {
   }
 }
 
+function prepareReport(subject, aggregated) {
+  // Deduplicate by URL
+  const seen = new Set();
+  const unique = aggregated.filter(item => {
+    if (seen.has(item.url)) return false;
+    seen.add(item.url);
+    return true;
+  });
+
+  // Compose Markdown content
+  const today = new Date().toISOString().slice(0, 10);
+  const subjectSlug = subject.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const lines = [];
+  lines.push(`# Press Review: ${subject} (${today})`);
+  lines.push('');
+  lines.push('## Articles');
+  lines.push('');
+  for (const a of unique) {
+    const host = a.source || (() => { try { return new URL(a.url).host; } catch { return ''; } })();
+    lines.push(`- [${a.title}](${a.url})`);
+    lines.push(`  - Date: ${a.publicationDate || 'N/A'} | Source: ${host}`);
+    lines.push(`  - Summary: ${a.summary}`);
+    lines.push('');
+  }
+
+  const report = lines.join('\n');
+
+  // Write to reports directory
+  const reportsDir = path.resolve(process.cwd(), 'reports');
+  if (!fs.existsSync(reportsDir)) {
+    fs.mkdirSync(reportsDir, { recursive: true });
+  }
+  const reportPath = path.join(reportsDir, `${today}-${subjectSlug || 'report'}.md`);
+  fs.writeFileSync(reportPath, report, 'utf8');
+
+  console.log(`Report saved to: ${reportPath}`);
+}
+
 async function main() {
-validateSecrets();
-  
-  // Read subject from CLI; default to DEFFAULT_SUBJECT if not provided
+  // Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
   const args = process.argv.slice(2);
   let subject = args.join(' ').trim();
   if (!subject) {
-    console.log(`No subject provided via CLI. Defaulting to '${process.env.DEFAULT_SUBJECT}'.`);
-    subject = process.env.DEFAULT_SUBJECT;``
+    const fallback = process.env.DEFAULT_SUBJECT || 'ai engineering';
+    console.log(`No subject provided via CLI. Defaulting to '${fallback}'.`);
+    subject = fallback;
   }
-  
-const queries = await generateSearchQueries(subject);
 
-  console.log(JSON.stringify(queries));
+  validateSecrets();
 
-  //   const research = await researchSubject(subject);
+  const aggregated = [];
+  const queries = await generateSearchQueries(subject);
+  for (const query of queries) {
+    try {
+      const items = await researchSubject(query);
+      aggregated.push(...items);
+    } catch (err) {
+      console.error(`Research failed for query: "${query}"`, err);
+    }
+  }
 
-//   console.log(research.text);
+  prepareReport(subject, aggregated);
 }
 
 main();
-

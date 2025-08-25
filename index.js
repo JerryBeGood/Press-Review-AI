@@ -10,8 +10,6 @@ import 'dotenv/config';
 import Exa from 'exa-js';
 
 const mainModel = openai('gpt-4o-mini');
-const exa = new Exa(process.env.EXASEARCH_API_KEY);
-
 
 async function generateSearchQueries(subject, n = 4) {
   const {
@@ -36,7 +34,7 @@ const webSearch = tool({
     query: z.string(),
   }),
   execute: async ({ query }) => {
-    console.log(query);
+    const exa = new Exa(process.env.EXASEARCH_API_KEY);
 
     const { results } = await exa.searchAndContents(query, {
       livecrawl: 'always',
@@ -47,7 +45,7 @@ const webSearch = tool({
       title: result.title,
       url: result.url,
       content: result.text,
-      publishedDate: result.publishedDate,
+      publicationDate: result.publishedDate,
     }));
   },
 });

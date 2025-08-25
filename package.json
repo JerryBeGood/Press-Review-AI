@@ -1,0 +1,27 @@
+{
+  "name": "press_review_ai",
+  "version": "1.0.0",
+  "description": "Agentic web application based on Node.js, React and OpenAI SDK that solves the problem of being up to date with the world of information",
+  "homepage": "https://github.com/JerryBeGood/Press-Review-AI#readme",
+  "bugs": {
+    "url": "https://github.com/JerryBeGood/Press-Review-AI/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JerryBeGood/Press-Review-AI.git"
+  },
+  "license": "ISC",
+  "author": "JerryBeGood",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.9",
+    "ai": "^5.0.9",
+    "dotenv": "^17.2.1",
+    "exa-js": "^1.8.27",
+    "zod": "^3.25.76"
+  }
+}

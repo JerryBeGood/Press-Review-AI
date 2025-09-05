@@ -4,9 +4,10 @@ import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
 
-import { prompts } from './prompts.js';
+import { PressReviewLeadAgent } from './agents/press_review_lead.js';
 
 import 'dotenv/config';
+
 
 const mainModel = openai('gpt-4o-mini');
 
@@ -101,9 +102,15 @@ return subject;
 async function main() {
   validateSecrets();
 
-  const subject = readSubject();
-  const aggregated = [];
+  const leadAgent = new PressReviewLeadAgent();
 
+  const queries = await leadAgent.run('ai engineering');
+
+  console.log(queries);
+  
+
+  // const subject = readSubject();
+  // const aggregated = [];
   // const queries = await generateSearchQueries(subject);
   // for (const query of queries) {
   //   try {

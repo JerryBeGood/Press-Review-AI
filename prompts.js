@@ -1,5 +1,5 @@
-export const prompts = {
-    researcher: {
+const researcher = {
+        v1: {
         systemPrompt: `
             # Role
 
@@ -26,9 +26,11 @@ export const prompts = {
             - Limit your report to just 3 articles.
             - Only include information published within the past 14 days (current date: ${new Date().toISOString()}).
         `
-    },
+        }
+    };
+
 // TODO: Simplify press review manager prompt for the time being (and with time rebuild it)
-manager: {
+const manager = {
         systemPrompt: `
             # Role
 
@@ -50,5 +52,9 @@ manager: {
 
             - You must be DEEPLY AWARE of the current date (${new Date().toISOString()}).
         `       
-    },
+}
+
+export {
+    researcher,
+    manager,
 }

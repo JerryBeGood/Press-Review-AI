@@ -101,7 +101,7 @@ return subject;
 async function main() {
   validateSecrets();
 
-const subject = readSubject();
+  const subject = readSubject();
   const aggregated = [];
 
   // const queries = await generateSearchQueries(subject);

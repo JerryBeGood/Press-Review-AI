@@ -82,11 +82,8 @@ function prepareReport(subject, aggregated) {
   console.log(`Report saved to: ${reportPath}`);
 }
 
-// TODO: Introduce press review manager that will use generateSearchQueries as a tool and iterate with it to provide valuable queries
-// TODO: General renaming to adjust to the new code (so far a manager was the llm making the queries)
-// TODO: How to better manage agents code? Is it a good idea to use classes?
-async function main() {
   // Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
+function readSubject() {
   const args = process.argv.slice(2);
   let subject = args.join(' ').trim();
   if (!subject) {
@@ -95,9 +92,18 @@ async function main() {
     subject = fallback;
   }
 
+return subject;
+}
+
+// TODO: Introduce press review manager that will use generateSearchQueries as a tool and iterate with it to provide valuable queries
+// TODO: General renaming to adjust to the new code (so far a manager was the llm making the queries)
+// TODO: How to better manage agents code? Is it a good idea to use classes?
+async function main() {
   validateSecrets();
 
+const subject = readSubject();
   const aggregated = [];
+
   // const queries = await generateSearchQueries(subject);
   // for (const query of queries) {
   //   try {

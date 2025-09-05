@@ -12,7 +12,7 @@ import Exa from 'exa-js';
 const mainModel = openai('gpt-4o-mini');
 
 
-
+// TODO: Move tools to separate file with tools to be shared across code base
 const webSearch = tool({
   description: 'Search the web for up-to-date information',
   inputSchema: z.object({
@@ -106,6 +106,9 @@ function prepareReport(subject, aggregated) {
   console.log(`Report saved to: ${reportPath}`);
 }
 
+// TODO: Introduce press review manager that will use generateSearchQueries as a tool and iterate with it to provide valuable queries
+// TODO: General renaming to adjust to the new code (so far a manager was the llm making the queries)
+// TODO: How to better manage agents code? Is it a good idea to use classes?
 async function main() {
   // Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
   const args = process.argv.slice(2);
@@ -119,17 +122,17 @@ async function main() {
   validateSecrets();
 
   const aggregated = [];
-// const queries = await generateSearchQueries(subject);
-// for (const query of queries) {
-//   try {
-//     const items = await researchSubject(query);
-//     aggregated.push(...items);
-//   } catch (err) {
-//     console.error(`Research failed for query: "${query}"`, err);
-    //   }
+  // const queries = await generateSearchQueries(subject);
+  // for (const query of queries) {
+  //   try {
+  //     const items = await researchSubject(query);
+  //     aggregated.push(...items);
+  //   } catch (err) {
+  //     console.error(`Research failed for query: "${query}"`, err);
+  //   }
   // }
 
-// prepareReport(subject, aggregated);
+  // prepareReport(subject, aggregated);
 }
 
 main();

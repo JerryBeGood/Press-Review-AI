@@ -27,6 +27,7 @@ export const prompts = {
             - Only include information published within the past 14 days (current date: ${new Date().toISOString()}).
         `
     },
+// TODO: Simplify press review manager prompt for the time being (and with time rebuild it)
 manager: {
         systemPrompt: `
             # Role

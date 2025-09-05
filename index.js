@@ -7,33 +7,9 @@ import path from 'path';
 import { prompts } from './prompts.js';
 
 import 'dotenv/config';
-import Exa from 'exa-js';
 
 const mainModel = openai('gpt-4o-mini');
 
-
-// TODO: Move tools to separate file with tools to be shared across code base
-const webSearch = tool({
-  description: 'Search the web for up-to-date information',
-  inputSchema: z.object({
-    query: z.string(),
-  }),
-  execute: async ({ query }) => {
-    const exa = new Exa(process.env.EXASEARCH_API_KEY);
-
-    const { results } = await exa.searchAndContents(query, {
-      livecrawl: 'always',
-      numResults: 3,
-    });
-
-    return results.map(result => ({
-      title: result.title,
-      url: result.url,
-      content: result.text,
-      publicationDate: result.publishedDate,
-    }));
-  },
-});
 
 async function researchSubject(query) {
   const result = await generateObject({

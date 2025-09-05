@@ -3,9 +3,12 @@ import { z } from 'zod';
 
 import { prompts } from './prompts.js';
 
+import 'dotenv/config';
+import Exa from 'exa-js';
+
 const mainModel = openai('gpt-4o-mini');
 
-export const generateQueries = tool({
+const generateQueries = tool({
     description: 'Generates provided number of search queries based on the subject',
     inputSchema: z.object({
         number: z.number().min(1).maxValue(5),
@@ -28,3 +31,30 @@ export const generateQueries = tool({
           return queries
     }
 })
+
+const webSearch = tool({
+  description: 'Search the web for up-to-date information',
+  inputSchema: z.object({
+    query: z.string(),
+  }),
+  execute: async ({ query }) => {
+    const exa = new Exa(process.env.EXASEARCH_API_KEY);
+
+    const { results } = await exa.searchAndContents(query, {
+      livecrawl: 'always',
+      numResults: 3,
+    });
+
+    return results.map(result => ({
+      title: result.title,
+      url: result.url,
+      content: result.text,
+      publicationDate: result.publishedDate,
+    }));
+  },
+});
+
+export {
+  generateQueries,
+  webSearch
+}

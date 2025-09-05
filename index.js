@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { generateText, generateObject, stepCountIs, tool } from 'ai';
+import { generateObject, stepCountIs, tool } from 'ai';
 import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
@@ -11,22 +11,7 @@ import Exa from 'exa-js';
 
 const mainModel = openai('gpt-4o-mini');
 
-async function generateSearchQueries(subject, n = 4) {
-  const {
-    object: { queries },
-  } = await generateObject({
-    model: mainModel,
-    prompt: `
-      Design ${n} precise and effective research queries that will guide the research agent in producing a comprehensive press review on the following subject: ${subject}.
-    `,
-    system: prompts.manager.systemPrompt,
-    schema: z.object({
-      queries: z.array(z.string()).min(1).max(5),
-    }),
-  })
 
-  return queries
-}
 
 const webSearch = tool({
   description: 'Search the web for up-to-date information',
@@ -134,17 +119,17 @@ async function main() {
   validateSecrets();
 
   const aggregated = [];
-  const queries = await generateSearchQueries(subject);
-  for (const query of queries) {
-    try {
-      const items = await researchSubject(query);
-      aggregated.push(...items);
-    } catch (err) {
-      console.error(`Research failed for query: "${query}"`, err);
-    }
-  }
+// const queries = await generateSearchQueries(subject);
+// for (const query of queries) {
+//   try {
+//     const items = await researchSubject(query);
+//     aggregated.push(...items);
+//   } catch (err) {
+//     console.error(`Research failed for query: "${query}"`, err);
+    //   }
+  // }
 
-  prepareReport(subject, aggregated);
+// prepareReport(subject, aggregated);
 }
 
 main();

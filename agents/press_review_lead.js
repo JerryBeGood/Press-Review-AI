@@ -27,14 +27,9 @@ export class PressReviewLeadAgent {
       return false;
     }
 
-    const result = await generateObject({
+    const result = await generateText({
         model: this.model,
-        schema: z.object({
-          queries: z.array(
-            z.string(),
-          ),
-        }),
-        system: `
+                system: `
           You are a press review lead. You are focused on high-level press review strategy, planning and effective delegation to sub-agents.
 
           Your task is to lead the process of press review on the given subject.

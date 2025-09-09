@@ -28,7 +28,7 @@ const generateQueries = tool({
             }),
           })
         
-          return queries
+          return result.object.queries
     }
 })
 

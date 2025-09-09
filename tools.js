@@ -1,33 +1,36 @@
-import {tool } from 'ai';
 import { z } from 'zod';
+import { tool, generateObject } from 'ai';
 
-import { manager } from './prompts.js';
+import { queryGeneratorPrompts } from './prompts.js';
 import { models } from './models.js'
 
 import 'dotenv/config';
 import Exa from 'exa-js';
 
 
+/* 
+  TODO: Create a mechanism for returning labeled data e.g.:
+
+  SUCCESS: queries: [query1, query2, query3]
+  ERROR: error: "Error message"
+
+  How lead agent should handle this?
+*/
 const generateQueries = tool({
     description: 'Generates provided number of search queries based on the subject',
     inputSchema: z.object({
-        number: z.number().lte(5),
-        subject: z.string(),
+        prompt: z.string(),
     }),
-    execute: async (number, subject) => {
-        const {
-            object: { queries },
-          } = await generateObject({
+    execute: async ({ prompt }) => {
+        const result = await generateObject({
             model: models.main,
-            prompt: `
-              Design ${number} precise and effective research queries that will guide the research agent in producing a comprehensive press review on the following subject: ${subject}.
-            `,
-            system: manager.systemPrompt,
+            prompt: prompt,
+            system: queryGeneratorPrompts.system(),
             schema: z.object({
               queries: z.array(z.string()).min(1).max(5),
             }),
           })
-        
+
           return result.object.queries
     }
 })

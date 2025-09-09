@@ -1,10 +1,12 @@
 import { openai } from '@ai-sdk/openai';
-import { generateObject, stepCountIs, tool } from 'ai';
+import { generateObject, stepCountIs } from 'ai';
 import { z } from 'zod';
+
 import fs from 'fs';
 import path from 'path';
 
 import { PressReviewLeadAgent } from './agents/press_review_lead.js';
+import { researcherPrompts } from './prompts.js';
 
 import 'dotenv/config';
 
@@ -23,8 +25,8 @@ async function researchSubject(query) {
       source: z.string(),
       summary: z.string(),
     }),
-    prompt: `Identify and summarise relevant information based on the provided query: ${query}. Return only the structured array.`,
-    system: prompts.researcher.systemPrompt,
+    prompt: researcherPrompts.input(query),
+    system: researcherPrompts.system(),
     tools: { webSearch },
     stopWhen: stepCountIs(10),
   });
@@ -83,7 +85,7 @@ function prepareReport(subject, aggregated) {
   console.log(`Report saved to: ${reportPath}`);
 }
 
-  // Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
+// Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
 function readSubject() {
   const args = process.argv.slice(2);
   let subject = args.join(' ').trim();
@@ -96,20 +98,15 @@ function readSubject() {
 return subject;
 }
 
-// TODO: Introduce press review manager that will use generateSearchQueries as a tool and iterate with it to provide valuable queries
-// TODO: General renaming to adjust to the new code (so far a manager was the llm making the queries)
-// TODO: How to better manage agents code? Is it a good idea to use classes?
 async function main() {
   validateSecrets();
 
+  // const subject = readSubject();
   const leadAgent = new PressReviewLeadAgent();
-
   const queries = await leadAgent.run('ai engineering');
 
-  console.log(queries);
+  console.log(`QUERIES:\n${JSON.stringify(queries)}`);
   
-
-  // const subject = readSubject();
   // const aggregated = [];
   // const queries = await generateSearchQueries(subject);
   // for (const query of queries) {

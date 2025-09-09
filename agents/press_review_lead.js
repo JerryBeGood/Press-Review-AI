@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, stepCountIs } from "ai";
 import { z } from 'zod';
 
 import { models } from "../models.js";
@@ -13,7 +13,21 @@ export class PressReviewLeadAgent {
   }
 
   async run(subject) {
-    const { object } = await generateObject({
+    const generateQueriesFails = ({ steps }) => {     
+      const lastStep = steps[steps.length - 1];
+
+      if (lastStep.content.some((part) => part.type === 'tool-error' 
+&& part.toolName === 'generateQueries')) {
+        console.log('Tool error: generateQueries');
+        console.log(JSON.stringify(lastStep.content));
+
+        return true;
+      }
+
+      return false;
+    }
+
+    const result = await generateObject({
         model: this.model,
         schema: z.object({
           queries: z.array(
@@ -44,9 +58,13 @@ export class PressReviewLeadAgent {
           Conduct a press review on the ${subject} and return the search queries.
         `,
         tools: this.tools,
+stopWhen: [stepCountIs(3), generateQueriesFails],
+        temperature: 0.75,
     })
 
-    return object;
+// console.log(JSON.stringify(result));
+
+    return result.text;
   };
 }
 

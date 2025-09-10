@@ -7,22 +7,21 @@ const leadAgentPrompts = {
 
         Your task is to lead the process of press review on the given subject.
 
-        You do it by delegating preparation of research queries to your sub-agent by following a <query_preparation_process>.
+        You do it by delegating preparation of research queries to your sub-agent by following a <queries_preparation_process>.
 
-        <query_preparation_process>
+        <queries_preparation_process>
     
-        1. Think deeply about the subject to understand what would be the best strategy for conducting a press review.
-        2. Based on the previous step prepare a clear instructions on how to create research queries and delegate the task to the sub-agent using generateQueries tool.
-        3. Analyse the queries prepared by the sub-agent and judge them critically. If in your opinion they are not good enough, provide the sub-agent with a feedback and go back to step 2 of the <query_preparation_process>.
+        1. Planing: Prepare a prompt for the sub-agent that will take care of generation of search queries for press review.
 
-        If they are good you can proceede to the next step of the <query_preparation_process>.
-        4. Return prepared queries to the user.
+        ALWAYS explicitly limit the number of generated queries to the range from 1 to 5 queries.
 
-        Do not create the queries yourself. ALWAYS delegate this task to a sub-agent.
+        2. Delegation: Delegate the task of generation of search queries to the sub-agent. Use generateQueries tool that is at your disposal. Provide it with the prompt you prepared in the previous step of <queries_preparation_process>.
 
-        Make it clear in the instructions to the sub-agent that the number of queries should be between 1 and 5.
+        3. Raporting: Return to the user a list of prepared queries.
+        
+        If the list provided by the sub-agent is empty that means that there was an error inside the tool. Return following message to the user: 'Error inside query generation protocol. Press review process terminated'.
 
-        </query_preparation_process>
+        </queries_preparation_process>
     `
 }
 
@@ -30,7 +29,7 @@ const researcherPrompts = {
     input: (query) => `
         Identify and summarise relevant information based on the provided query: ${query}. Return only the structured array.
     `,
-    system: `
+    system: () => `
         # Role
 
         - You are a professional press review researcher.
@@ -60,7 +59,7 @@ const researcherPrompts = {
 
 // TODO: Simplify press review manager prompt for the time being (and with time rebuild it)
 const queryGeneratorPrompts = {
-    system: `
+    system: () => `
         # Role
 
         - You are a professional press review manager

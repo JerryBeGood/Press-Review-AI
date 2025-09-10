@@ -17,21 +17,33 @@ import Exa from 'exa-js';
   How lead agent should handle this?
 */
 const generateQueries = tool({
-    description: 'Generates provided number of search queries based on the subject',
+    description: 'Generates provided number of search queries based on the subject.',
     inputSchema: z.object({
         prompt: z.string(),
     }),
+    outputSchema: z.array(),
     execute: async ({ prompt }) => {
+      try {
         const result = await generateObject({
-            model: models.main,
-            prompt: prompt,
-            system: queryGeneratorPrompts.system(),
-            schema: z.object({
-              queries: z.array(z.string()).min(1).max(5),
-            }),
-          })
+          model: models.main,
+          prompt: prompt,
+          system: queryGeneratorPrompts.system(),
+          schema: z.object({
+            queries: z.array(z.string()).min(1).max(5),
+          }),
+        });
 
-          return result.object.queries
+        return result.object.queries;
+      } catch (error) {
+        console.error(`
+          Tool: generateQueries
+          Prompt: ${prompt}
+          ${error.name}: ${error.message}
+          ${error.cause}
+        `);
+
+        return [];
+      }
     }
 })
 

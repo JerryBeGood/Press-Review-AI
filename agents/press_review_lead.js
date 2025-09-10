@@ -12,7 +12,6 @@ export class PressReviewLeadAgent {
     this.tools = options.tools || { generateQueries };
   }
 
-  // TODO: Limit number of retries
   async run(subject) {
     const generateQueriesFails = ({ steps }) => {     
       const lastStep = steps[steps.length - 1];
@@ -31,7 +30,7 @@ export class PressReviewLeadAgent {
     const result = await generateText({
         model: this.model,
         tools: this.tools,
-        stopWhen: [stepCountIs(2), generateQueriesFails],
+        stopWhen: [stepCountIs(4), generateQueriesFails],
         temperature: 0.75,
         prompt: leadAgentPrompts.input(subject),
         system: leadAgentPrompts.system,

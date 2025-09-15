@@ -33,7 +33,7 @@ export class PressReviewLeadAgent {
         stopWhen: [stepCountIs(5), generateQueriesFails],
         temperature: 0.75,
         prompt: leadAgentPrompts.input(subject),
-        system: leadAgentPrompts.system,
+        system: leadAgentPrompts.system(subject),
 headers: {
           betas: ['interleaved-thinking-2025-05-14'],
         },

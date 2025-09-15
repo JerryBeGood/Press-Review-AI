@@ -36,8 +36,6 @@ export class PressReviewLeadAgent {
         system: leadAgentPrompts.system,
     });
 
-    // console.log(JSON.stringify(result));
-
     return result.text;
   };
 }

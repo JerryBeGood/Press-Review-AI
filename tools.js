@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { tool, generateObject } from 'ai';
+import { tool} from 'ai';
 
 import { queryGeneratorPrompts } from './prompts.js';
 import { models } from './models.js'
@@ -8,41 +8,54 @@ import 'dotenv/config';
 import Exa from 'exa-js';
 
 
-/* 
-  TODO: Create a mechanism for returning labeled data e.g.:
-
-  SUCCESS: queries: [query1, query2, query3]
-  ERROR: error: "Error message"
-
-  How lead agent should handle this?
-*/
 const generateQueries = tool({
     description: 'Generates provided number of search queries based on the subject.',
     inputSchema: z.object({
-        prompt: z.string(),
+        instructions: z.string(),
+        feedback: z.string(),
+        previous: z.object({
+          reasoning: z.string(),
+          results: z.string(),
+        }),
     }),
-    outputSchema: z.array(),
-    execute: async ({ prompt }) => {
+    outputSchema: z.object({
+      output: z.string().optional(),
+      reasoning: z.string().optional(),
+    }),
+    execute: async ({instructions, feedback, previous: { reasoning, results }}) => {
+      let prompt = instructions;
+    
+      if (previous.reasoning) {
+        prompt += `\n\n<previous_reasoning> ${reasoning} </previous_reasoning>`
+      }
+    
+      if (previous.results) {
+        prompt += `\n'\n<previous_results> ${results} </previous_results>`
+      }
+    
+      if (feedback) {
+        prompt += `\n\n<feedback> ${feedback} </feedback>`
+      }
+    
       try {
-        const result = await generateObject({
-          model: models.main,
-          prompt: prompt,
-          system: queryGeneratorPrompts.system(),
-          schema: z.object({
-            queries: z.array(z.string()).min(1).max(5),
-          }),
+        const response = await generateText({
+          model: models.secondary,
+          prompt,
+          providerOptions: {
+            anthropic: {
+              thinking: { type: 'enabled', budgetTokens: 1024 },
+            }
+          }
         });
-
-        return result.object.queries;
+    
+        return {
+          output: response.steps[0].content[1].text,
+          reasoning: response.steps[0].content[0].text,
+        }
       } catch (error) {
-        console.error(`
-          Tool: generateQueries
-          Prompt: ${prompt}
-          ${error.name}: ${error.message}
-          ${error.cause}
-        `);
-
-        return [];
+        console.error(`${JSON.stringify(error)}`);
+    
+        return {};
       }
     }
 })

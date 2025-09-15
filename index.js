@@ -1,4 +1,3 @@
-import { openai } from '@ai-sdk/openai';
 import { generateObject, stepCountIs } from 'ai';
 import { z } from 'zod';
 
@@ -9,9 +8,6 @@ import { PressReviewLeadAgent } from './agents/press_review_lead.js';
 import { researcherPrompts } from './prompts.js';
 
 import 'dotenv/config';
-
-
-const mainModel = openai('gpt-4o-mini');
 
 
 async function researchSubject(query) {
@@ -101,11 +97,11 @@ return subject;
 async function main() {
   validateSecrets();
 
-  // const subject = readSubject();
+  const subject = readSubject();
   const leadAgent = new PressReviewLeadAgent();
-  const queries = await leadAgent.run('ai engineering');
+  const result = await leadAgent.run('ai engineering');
 
-  console.log(`QUERIES:\n${JSON.stringify(queries)}`);
+  console.log(`${JSON.stringify(result)}`);
   
   // const aggregated = [];
   // const queries = await generateSearchQueries(subject);

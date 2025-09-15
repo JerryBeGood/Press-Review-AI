@@ -30,10 +30,18 @@ export class PressReviewLeadAgent {
     const result = await generateText({
         model: this.model,
         tools: this.tools,
-        stopWhen: [stepCountIs(4), generateQueriesFails],
+        stopWhen: [stepCountIs(5), generateQueriesFails],
         temperature: 0.75,
         prompt: leadAgentPrompts.input(subject),
         system: leadAgentPrompts.system,
+headers: {
+          betas: ['interleaved-thinking-2025-05-14'],
+        },
+        providerOptions: {
+          anthropic: {
+            thinking: { type: 'enabled', budgetTokens: 8192 },
+          }
+        }
     });
 
     return result.text;

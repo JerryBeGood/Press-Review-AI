@@ -40,6 +40,7 @@ const generateQueries = tool({
         const response = await generateText({
           model: models.secondary,
           prompt,
+          system: queryGeneratorPrompts.system,
           providerOptions: {
             anthropic: {
               thinking: { type: 'enabled', budgetTokens: 1024 },

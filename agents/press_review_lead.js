@@ -3,15 +3,18 @@ import { generateText, stepCountIs } from "ai";
 import { models } from "../models.js";
 import { generateQueries } from '../tools.js';
 import { leadAgentPrompts } from '../prompts.js';
+import { anthropic } from "@ai-sdk/anthropic";
 
 
 export class PressReviewLeadAgent {
   constructor(options = {}) {
-    this.model = options.model || models.main;
+    this.model = options.model || models.primary;
     this.systemPrompt = options.systemPrompt || leadAgentPrompts.system;
     this.tools = options.tools || { generateQueries };
   }
 
+
+  // TODO: I must make tool requirements explicit and make sure that interleaved thinking mode is enabled
   async run(subject) {
     const generateQueriesFails = ({ steps }) => {     
       const lastStep = steps[steps.length - 1];
@@ -27,24 +30,44 @@ export class PressReviewLeadAgent {
       return false;
     }
 
-    const result = await generateText({
+    const response = await generateText({
         model: this.model,
         tools: this.tools,
-        stopWhen: [stepCountIs(5), generateQueriesFails],
-        temperature: 0.75,
+        stopWhen: [stepCountIs(10), generateQueriesFails],
         prompt: leadAgentPrompts.input(subject),
         system: leadAgentPrompts.system(subject),
-headers: {
+        headers: {
           betas: ['interleaved-thinking-2025-05-14'],
         },
         providerOptions: {
           anthropic: {
-            thinking: { type: 'enabled', budgetTokens: 8192 },
+            thinking: { type: 'enabled', budgetTokens: 4086 },
           }
         }
     });
 
-    return result.text;
+    for (const step of response.steps) {
+      step.content.forEach((part) => {
+        console.log(`TYPE: ${part.type}`);
+
+        if (['reasoning', 'text'].includes(part.type))
+          console.log(`TEXT: ${part.text}`);
+
+        if(part.type === 'tool-call')
+          for (const instruction of Object.keys(part.input)) {
+            console.log(`${instruction.toUpperCase()}: ${part.input[instruction]}`);
+          }
+
+        if(part.type === 'tool-result') {
+          console.log(`REASONING: ${part.output.reasoning}`);
+          console.log(`OUTPUT: ${part.output.output}`);
+        }
+
+        console.log(`\n\n`);
+      })
+    }
+
+    return '';
   };
 }
 

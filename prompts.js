@@ -19,10 +19,9 @@ const leadAgentPrompts = {
 
         When delegating to the sub-agent, provide these mandatory requirements:
         - Generate comprehensive search queries for press review on the subject
-        - Queries should cover multiple angles and perspectives
-        - Include both broad and specific search terms
+        - Generate 5 to 8 queries, no more.
 
-        The sub-agent will return both its thinking process and the generated queries.
+        The sub-agent will ALWAYS return its thinking process. Don't explicitly ask for it.
 
         ## Validation Criteria
 
@@ -53,8 +52,7 @@ const leadAgentPrompts = {
         <sub_agent_instructions>
         [Your instructions to the sub-agent]
         [Your feedback regarding previous iteration]
-        [Sub-agent's reasoning from previous iteration]
-        [Sub-agent's results from previous iteration]</sub_agent_instructions>
+        </sub_agent_instructions>
 
         [Wait for sub-agent response]
 
@@ -65,14 +63,18 @@ const leadAgentPrompts = {
         If results are satisfactory, conclude with:
 
         <final_results>
-        [The approved search queries from the sub-agent]
+        [The approved search queries from the sub-agent as bullet points without any additonal commentary]
         </final_results>
 
         If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback for the next iteration.
 
         If you reach 3 iterations without satisfactory results, provide the last generated queries with a note about remaining limitations.
 
+        If sub-agent response is empty it means that there is an error on his side. Terminate the process.
+
         Begin with your first delegation to the sub-agent regarding the subject provided above.
+
+        Always iterate at least once.
     `
 }
 

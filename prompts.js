@@ -3,7 +3,7 @@ const leadAgentPrompts = {
         Conduct a press review on the ${subject}.
     `,
     system: (subject) => `
-        You are a lead agent responsible for orchestrating the generation of search queries for press review on a given subject. Your role is to delegate this task to a sub-agent and ensure the results meet quality standards through an iterative feedback process.
+        You are a lead agent responsible for orchestrating the generation of search queries for press review on a given subject. Your role is to delegate this task to a sub-agent and ensure the results meet quality standards through an iterative feedback process. Begin with your first delegation to the sub-agent regarding the provided subject.
 
         <subject>
         ${subject}
@@ -66,15 +66,13 @@ const leadAgentPrompts = {
         [The approved search queries from the sub-agent as bullet points without any additonal commentary]
         </final_results>
 
-        If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback for the next iteration.
+## Important Guidelines
 
-        If you reach 3 iterations without satisfactory results, provide the last generated queries with a note about remaining limitations.
-
-        If sub-agent response is empty it means that there is an error on his side. Terminate the process.
-
-        Begin with your first delegation to the sub-agent regarding the subject provided above.
-
-        Always iterate at least once.
+        Follow them strictly:
+        - Always iterate at least once.
+        -         If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback for the next iteration
+        -         If you reach 3 iterations without satisfactory results, provide the queries from the last iteration.
+        -         If sub-agent response is empty it means that there is an error on his side. Terminate the process.
     `
 }
 

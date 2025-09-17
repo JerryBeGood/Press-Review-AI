@@ -41,7 +41,7 @@ export class PressReviewLeadAgent {
         },
         providerOptions: {
           anthropic: {
-            thinking: { type: 'enabled', budgetTokens: 4086 },
+            thinking: { type: 'enabled', budgetTokens: 2048 },
           }
         }
     });

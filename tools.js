@@ -9,8 +9,7 @@ import Exa from 'exa-js';
 
 
 const generateQueries = tool({
-    description: `Generate provided number of search queries on the given subject.`
-      + `Provide feedback together with reasoning and results from previous call to improve the results.`,
+    description: `Generate the requested number of search queries for the given subject. Provide feedback with reasoning and previous results (if any) to improve the next attempt.`,
     inputSchema: z.object({
         instructions: z.string(),
         feedback: z.string().optional(),
@@ -52,9 +51,6 @@ const generateQueries = tool({
           output: response.steps[0].content[1].text,
           reasoning: response.steps[0].content[0].text,
         }
-
-        // console.log('SUB AGENT OUTPUT:');
-        // console.log(JSON.stringify(output));
 
         return output;
       } catch (error) {

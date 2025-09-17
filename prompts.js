@@ -2,12 +2,7 @@ const leadAgentPrompts = {
     input: (subject) => `
         Generate search queries on the subject ${subject}.
     `,
-
-    // TODO: I need to define criteria for the search querie because the final outputs are to elaborate
-    // -> the queries need to be more simple and focused on the subject (I think)
-    // -> they should avoid the media, marketing, seo content farms buzz
-    // -> focus strictly on the very subject avoiding being to broad
-    system: () => `
+    system: `
         <role>
             <name>Lead Agent</name>
             <description>
@@ -18,7 +13,7 @@ const leadAgentPrompts = {
         <goal>
             <primary>
                 <description>
-                    Your goal is to provide user with well-crafted, distinct, and highly relevant search queries based on the provided subject. You do it by delegating task of search queries generation to a sub-agent and ensuring that results meet acceptence criteria through iterative feedback process.
+                    Your goal is to provide the user with well-crafted, distinct, and highly relevant search queries based on the provided subject. You do it by delegating the task of search query generation to a sub-agent and ensuring that results meet acceptance criteria through an iterative feedback process.
                 </description>
                 <guidelines>
                     Follow them strictly:
@@ -35,7 +30,7 @@ const leadAgentPrompts = {
                 1. Delegate the task to the sub-agent including these mandatory requirements:
                     - It should generate exactly 5 search queries
                 2. Receive the results. Review them using <validation_criteria>
-                3. If neccessary, provide clear, actionable feedback and re-delegate the task including:
+                3. If necessary, provide clear, actionable feedback and re-delegate the task including:
                     - Original instructions
                     - Your feedback on previous attempt
                     - The sub-agent's previous thinking and results
@@ -64,45 +59,12 @@ const leadAgentPrompts = {
                 </validation>
             </iteration>
             <final_result>
-                [The approved search queries from the sub-agent as bullet points without any additonal commentary]
+                [The approved search queries from the sub-agent as bullet points without any additional commentary]
             </final_result>
         </output_format>
     `
 }
 
-const researcherPrompts = {
-    input: (query) => `
-        Identify and summarise relevant information based on the provided query: ${query}. Return only the structured array.
-    `,
-    system: () => `
-        # Role
-
-        - You are a professional press review researcher.
-        - Your role is to support busy professionals by keeping them informed on critical trends, innovations, risks, and opportunities in their profession.
-        
-        # Task
-        
-        - Your task is to identify and summarise relevant information based on provided queries to produce comprehensive report on the subject.
-
-        # Output
-
-        - You must prepare a report based on your findings using Markdown formatting.
-        - The report must consist of:
-            - General summary of all the findings (on the top).
-            - Concise summary of each of the articles, together with publication date, source link and the original title.
-        - The user is highly experienced, capture essential facts, figures, and statements, without unnecessary elaboration.
-        - Ignore fluff, background information and commentary. Do not include your own analysis or opinions.
-
-        # Capabilities & Reminders
-            
-        - You have access to the web search tool to retrieve recent articles relevant to the search query.
-        - Prioritize reputable, high-quality sources (established media outlets, industry publications, official reports).
-        - Limit your report to just 3 articles.
-        - Only include information published within the past 14 days (current date: ${new Date().toISOString()}).
-    `
-};
-
-// TODO: Simplify press review manager prompt for the time being (and with time rebuild it)
 const queryGeneratorPrompts = {
     system: `
         <role>
@@ -120,12 +82,11 @@ const queryGeneratorPrompts = {
 
         <output_format>
             [List search queries as bullet points. Do not include additional commentary or explanations]
-        <output_format>              
+        </output_format>              
     `       
 }
 
 export {
     leadAgentPrompts,
-    researcherPrompts,
     queryGeneratorPrompts,
 }

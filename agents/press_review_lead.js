@@ -3,7 +3,6 @@ import { generateText, stepCountIs } from "ai";
 import { models } from "../models.js";
 import { generateQueries } from '../tools.js';
 import { leadAgentPrompts } from '../prompts.js';
-import { anthropic } from "@ai-sdk/anthropic";
 
 
 export class PressReviewLeadAgent {
@@ -35,7 +34,7 @@ export class PressReviewLeadAgent {
         tools: this.tools,
         stopWhen: [stepCountIs(10), generateQueriesFails],
         prompt: leadAgentPrompts.input(subject),
-        system: leadAgentPrompts.system(subject),
+        system: this.systemPrompt,
         headers: {
           betas: ['interleaved-thinking-2025-05-14'],
         },

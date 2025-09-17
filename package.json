@@ -15,9 +15,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.17",
     "@ai-sdk/openai": "^2.0.9",
     "ai": "^5.0.9",
     "dotenv": "^17.2.1",

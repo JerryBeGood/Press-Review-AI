@@ -44,7 +44,7 @@ export class PressReviewLeadAgent {
       }
     }
 
-    const response = await generateText({...params});
+    const response = await generateText({ ...params });
 
     for (const step of response.steps) {
       step.content.forEach((part) => {

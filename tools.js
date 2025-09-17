@@ -33,19 +33,19 @@ const generateQueries = tool({
       appendTagged('previous_results', previous?.results);
       appendTagged('feedback', feedback);
 
-      const prompt = parts.join('\n\n');
+      const params = {
+        model: models.secondary,
+        prompt: parts.join('\n\n'),
+        system: queryGeneratorPrompts.system,
+        providerOptions: {
+          anthropic: {
+            thinking: { type: 'enabled', budgetTokens: 1024 },
+          }
+        }
+      }
 
       try {
-        const response = await generateText({
-          model: models.secondary,
-          prompt,
-          system: queryGeneratorPrompts.system,
-          providerOptions: {
-            anthropic: {
-              thinking: { type: 'enabled', budgetTokens: 1024 },
-            }
-          }
-        });
+        const response = await generateText({ ...params });
 
         const output = {
           output: response.steps[0].content[1].text,

@@ -27,7 +27,7 @@ const leadAgentPrompts = {
             </guidelines>
         </instructions>
 
-        <search_queries_generation_process>
+        <search_queries_generation_orchestration_process>
             <initial_delegation_process>
                 When delegating to the sub-agent, provide these mandatory requirements:
                     - Generate comprehensive search queries for press review on the subject
@@ -51,7 +51,7 @@ const leadAgentPrompts = {
                     - Your feedback on previous attempt
                     - The sub-agent's previous thinking and results
             </iterative_feedback_process>
-        </search_queries_generation_process>
+        </search_queries_generation_orchestration_process>
 
         <output_format>
             <iteration>
@@ -68,8 +68,6 @@ const leadAgentPrompts = {
                 </validation>
             </iteration>
             <final_result>
-                If results are satisfactory, conclude with:
-
                 [The approved search queries from the sub-agent as bullet points without any additonal commentary]
             </final_result>
         </output_format>
@@ -111,66 +109,33 @@ const researcherPrompts = {
 // TODO: Simplify press review manager prompt for the time being (and with time rebuild it)
 const queryGeneratorPrompts = {
     system: `
-        You are a specialised sub-agent responsible for generating comprehensive search queries for press review on a given subject. You will receive a subject and need to create targeted search queries that would help find relevant press coverage and media mentions. If provided with <previous_thinking>, <previous_queries> and <feedback> revise your approach and proceed accordingly.
+        <instructions>
+            You are a specialised sub-agent responsible for generating comprehensive search queries for press review on a given subject. You will receive a subject and need to create targeted search queries that would help find relevant press coverage and media mentions. If provided with <previous_thinking>, <previous_queries> and <feedback> revise your approach and proceed accordingly.
 
-        <subject>
-        {{SUBJECT}}
-        </subject>
+            <subject>
+                {{SUBJECT}}
+            </subject>
 
-        <previous_thinking>
-        {{PREVIOUS_THINKING}}
-        </previous_thinking>
+            <previous_thinking>
+                {{PREVIOUS_THINKING}}
+            </previous_thinking>
 
-        <previous_queries>
-        {{PREVIOUS_QUERIES}}
-        </previous_queries>
+            <previous_queries>
+                {{PREVIOUS_QUERIES}}
+            </previous_queries>
 
-        <feedback>
-        {{FEEDBACK}}
-        </feedback>
+            <feedback>
+                {{FEEDBACK}}
+            </feedback>
+        </instructions>
 
-        ## Your Task
+        <search_queries_generation_process>
+             Generate 5 to 8 comprehensive search queries that would be effective for conducting a press review on the given subject. These queries should help find relevant news articles, press releases, media coverage, and other journalistic content.
+        </search_queries_generation_process>
 
-        Generate 5 to 8 comprehensive search queries that would be effective for conducting a press review on the given subject. These queries should help find relevant news articles, press releases, media coverage, and other journalistic content.
-
-        ## Search Query Guidelines
-
-        When creating your queries, consider:
-
-        **Comprehensiveness**: 
-        
-        - Cover different angles and aspects of the subject
-        - Include the main subject/entity name
-        - Consider related topics, controversies, or recent developments
-        - Think about different contexts where the subject might be mentioned
-
-        **Specificity Balance**:
-        
-        - Mix broad and targeted approaches
-        - Some queries should be broad to capture general coverage
-        - Others should be specific to find targeted reporting
-        - Include variations in terminology and phrasing
-
-        **Practicality**:
-        
-        - Ensure queries work well in search engines
-        - Use quotation marks for exact phrases when appropriate
-        - Consider Boolean operators (AND, OR) where helpful
-        - Think about how journalists and publications would write about the topic
-
-        **Relevance**: 
-        
-        - All queries must directly relate to press coverage of the subject
-        - Focus on news, media, and journalistic sources
-        - Avoid academic or technical queries unless specifically relevant to press coverage
-
-        ## Output Format
-
-        Structure your response as follows:
-
-        <search_queries>
-        [List your 5-8 search queries as bullet points. Do not include additional commentary or explanations]
-        </search_queries>
+        <output_format>
+            [List your 5-8 search queries as bullet points. Do not include additional commentary or explanations]
+        <output_format>        
     `       
 }
 

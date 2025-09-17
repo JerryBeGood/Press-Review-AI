@@ -8,12 +8,11 @@ import { leadAgentPrompts } from '../prompts.js';
 export class PressReviewLeadAgent {
   constructor(options = {}) {
     this.model = models.primary;
+    this.prompt = leadAgentPrompts.input;
     this.systemPrompt = leadAgentPrompts.system;
     this.tools = { generateQueries };
   }
 
-
-  // TODO: I must make tool requirements explicit and make sure that interleaved thinking mode is enabled
   async run(subject) {
     const generateQueriesFails = ({ steps }) => {     
       const lastStep = steps[steps.length - 1];
@@ -29,21 +28,23 @@ export class PressReviewLeadAgent {
       return false;
     }
 
-    const response = await generateText({
-        model: this.model,
-        tools: this.tools,
-        stopWhen: [stepCountIs(10), generateQueriesFails],
-        prompt: leadAgentPrompts.input(subject),
-        system: this.systemPrompt,
-        headers: {
-          betas: ['interleaved-thinking-2025-05-14'],
-        },
-        providerOptions: {
-          anthropic: {
-            thinking: { type: 'enabled', budgetTokens: 2048 },
-          }
+    const params = {
+      model: this.model,
+      prompt: this.prompt(subject),
+      system: this.systemPrompt,
+      tools: this.tools,
+      stopWhen: [stepCountIs(10), generateQueriesFails],
+      headers: {
+        betas: ['interleaved-thinking-2025-05-14'],
+      },
+      providerOptions: {
+        anthropic: {
+          thinking: { type: 'enabled', budgetTokens: 2048 },
         }
-    });
+      }
+    }
+
+    const response = await generateText({...params});
 
     for (const step of response.steps) {
       step.content.forEach((part) => {

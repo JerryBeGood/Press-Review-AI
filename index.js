@@ -99,9 +99,8 @@ async function main() {
 
   const subject = readSubject();
   const leadAgent = new PressReviewLeadAgent();
-  const result = await leadAgent.run('ai engineering');
 
-  console.log(`${JSON.stringify(result)}`);
+  await leadAgent.run(subject);
   
   // const aggregated = [];
   // const queries = await generateSearchQueries(subject);

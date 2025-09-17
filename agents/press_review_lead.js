@@ -66,8 +66,6 @@ export class PressReviewLeadAgent {
         console.log(`\n\n`);
       })
     }
-
-    return '';
   };
 }
 

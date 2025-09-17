@@ -7,9 +7,9 @@ import { leadAgentPrompts } from '../prompts.js';
 
 export class PressReviewLeadAgent {
   constructor(options = {}) {
-    this.model = options.model || models.primary;
-    this.systemPrompt = options.systemPrompt || leadAgentPrompts.system;
-    this.tools = options.tools || { generateQueries };
+    this.model = models.primary;
+    this.systemPrompt = leadAgentPrompts.system;
+    this.tools = { generateQueries };
   }
 
 

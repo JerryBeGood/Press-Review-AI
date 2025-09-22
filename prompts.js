@@ -17,8 +17,8 @@ const leadAgentPrompts = {
                 </description>
                 <guidelines>
                     Follow them strictly:
-                        - Always iterate at least once.
-                        - If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback for the next iteration
+                        - Always iterate at least to 2 iteration.
+                        - If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback and continue with the next iteration
                         - If you reach 3 iterations without satisfactory results, provide the queries from the last iteration.
                         - If sub-agent response is empty it means that there is an error on his side. Terminate the process.
                 </guidelines>
@@ -26,6 +26,14 @@ const leadAgentPrompts = {
         </goal>
 
         <search_queries_generation_orchestration_process>
+            <input>
+                <instruction>Instruction for the sub-agent</instruction>
+                <feedback>Feedback for the sub-agent based on the previous iteration</feedback>
+                <previous>
+                    <reasoning>Sub-agent's reasoning from previous iteration</reasoning>
+                    <results>Results from previous iteration</results>
+                </previous>
+            </input>
             <iterative_feedback_process>
                 1. Delegate the task to the sub-agent including these mandatory requirements:
                     - It should generate exactly 5 search queries

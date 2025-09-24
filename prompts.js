@@ -17,8 +17,8 @@ const leadAgentPrompts = {
                 </description>
                 <guidelines>
                     Follow them strictly:
-                        - Always iterate at least once.
-                        - If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback for the next iteration
+                        - Always iterate at least to 2 iteration.
+                        - If results are unsatisfactory and you haven't reached 3 iterations, prepare feedback and continue with the next iteration
                         - If you reach 3 iterations without satisfactory results, provide the queries from the last iteration.
                         - If sub-agent response is empty it means that there is an error on his side. Terminate the process.
                 </guidelines>
@@ -54,9 +54,7 @@ const leadAgentPrompts = {
 
                 [Wait for sub-agent response]
 
-                <validation>
-                    [Your assessment of whether the results meet the criteria - explain your reasoning before stating whether results are satisfactory or not]
-                </validation>
+                [Your assessment of whether the results meet the criteria - explain your reasoning before stating whether results are satisfactory or not]
             </iteration>
             <final_result>
                 [The approved search queries from the sub-agent as bullet points without any additional commentary]

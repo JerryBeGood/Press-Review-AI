@@ -13,24 +13,22 @@ const generateQueries = tool({
     inputSchema: z.object({
         instructions: z.string(),
         feedback: z.string().optional(),
-        previous: z.object({
-          reasoning: z.string(),
-          results: z.string(),
-        }).optional(),
+        previousReasoning: z.string().optional(),
+        previousResults: z.string().optional(),
     }),
     outputSchema: z.object({
       output: z.string().optional(),
       reasoning: z.string().optional(),
     }),
-    execute: async ({ instructions, feedback, previous }) => {
+    execute: async ({ instructions, feedback, previousReasoning, previousResults }) => {
       const parts = [instructions];
 
       const appendTagged = (tag, value) => {
         if (value) parts.push(`<${tag}> ${value} </${tag}>`);
       };
 
-      appendTagged('previous_reasoning', previous?.reasoning);
-      appendTagged('previous_results', previous?.results);
+      appendTagged('previous_reasoning', previousReasoning);
+      appendTagged('previous_results', previousResults);
       appendTagged('feedback', feedback);
 
       const params = {

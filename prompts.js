@@ -54,9 +54,7 @@ const leadAgentPrompts = {
 
                 [Wait for sub-agent response]
 
-                <validation>
-                    [Your assessment of whether the results meet the criteria - explain your reasoning before stating whether results are satisfactory or not]
-                </validation>
+                [Your assessment of whether the results meet the criteria - explain your reasoning before stating whether results are satisfactory or not]
             </iteration>
             <final_result>
                 [The approved search queries from the sub-agent as bullet points without any additional commentary]

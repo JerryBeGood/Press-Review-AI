@@ -26,14 +26,6 @@ const leadAgentPrompts = {
         </goal>
 
         <search_queries_generation_orchestration_process>
-            <input>
-                <instruction>Instruction for the sub-agent</instruction>
-                <feedback>Feedback for the sub-agent based on the previous iteration</feedback>
-                <previous>
-                    <reasoning>Sub-agent's reasoning from previous iteration</reasoning>
-                    <results>Results from previous iteration</results>
-                </previous>
-            </input>
             <iterative_feedback_process>
                 1. Delegate the task to the sub-agent including these mandatory requirements:
                     - It should generate exactly 5 search queries

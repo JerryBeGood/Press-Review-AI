@@ -1,40 +1,46 @@
+import express from 'express';
+
 import { PressReviewLeadAgent } from './agents/press_review_lead.js';
+import { validateSecrets, escapeHtml } from './util.js';
 
 import 'dotenv/config';
 
+const app = express();
 
-function validateSecrets() {
-  const secrets = ['OPENAI_API_KEY', 'EXASEARCH_API_KEY'];
-
-  for(const secret of secrets) {
-    if (!process.env[secret]) {
-      console.error(`Error: Missing ${secret}. Please set it in your environment or .env file.`);
-
-      process.exit(1);
-    }
-  }
-}
-
-// Read subject from CLI; default to DEFAULT_SUBJECT or 'ai engineering' if not provided
-function readSubject() {
-  const args = process.argv.slice(2);
-  let subject = args.join(' ').trim();
-  if (!subject) {
-    const fallback = process.env.DEFAULT_SUBJECT || 'ai engineering';
-    console.log(`No subject provided via CLI. Defaulting to '${fallback}'.`);
-    subject = fallback;
-  }
-
-return subject;
-}
-
-async function main() {
+app.get('/', async (req, res) => {
   validateSecrets();
 
-  const subject = readSubject();
+  const subject = 'ai engineering';
   const leadAgent = new PressReviewLeadAgent();
+  const response = await leadAgent.run(subject);
 
-  await leadAgent.run(subject);
-}
+  const html = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Press Review AI</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.5; }
+      h1 { margin-top: 0; font-size: 1.25rem; }
+      pre { background: #0b1020; color: #e6edf3; padding: 1rem; border-radius: 8px; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+      .container { max-width: 960px; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Press Review: ${escapeHtml(subject)}</h1>
+      <pre>${escapeHtml(response)}</pre>
+    </div>
+  </body>
+</html>
+  `;
 
-main();
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+  res.end();
+});
+
+app.listen(3000);
+

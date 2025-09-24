@@ -6,7 +6,7 @@ import { leadAgentPrompts } from '../prompts.js';
 
 
 export class PressReviewLeadAgent {
-  constructor(options = {}) {
+  constructor() {
     this.model = models.primary;
     this.prompt = leadAgentPrompts.input;
     this.systemPrompt = leadAgentPrompts.system;
@@ -45,27 +45,30 @@ export class PressReviewLeadAgent {
     }
 
     const response = await generateText({ ...params });
+    let output = '';
 
     for (const step of response.steps) {
       step.content.forEach((part) => {
-        console.log(`TYPE: ${part.type}`);
+        output += `TYPE: ${part.type}\n`;
 
         if (['reasoning', 'text'].includes(part.type))
-          console.log(`TEXT: ${part.text}`);
+          output += `\n${part.text}\n`;
 
         if(part.type === 'tool-call')
           for (const instruction of Object.keys(part.input)) {
-            console.log(`${instruction.toUpperCase()}: ${part.input[instruction]}`);
+            output += `${instruction.toUpperCase()}: ${part.input[instruction]}\n`;
           }
 
         if(part.type === 'tool-result') {
-          console.log(`REASONING: ${part.output.reasoning}`);
-          console.log(`OUTPUT: ${part.output.output}`);
+          output += `REASONING: ${part.output.reasoning}\n`;
+          output += `OUTPUT: ${part.output.output}\n`;
         }
 
-        console.log(`\n\n`);
+        output += `\n\n`;
       })
     }
+
+    return output;
   };
 }
 

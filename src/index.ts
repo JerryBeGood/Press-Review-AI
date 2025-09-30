@@ -1,4 +1,4 @@
-import express, { Request, Response, Application } from 'express';
+import express, { Response, Application } from 'express';
 
 import { PressReviewLeadAgent } from '../agents/press_review_lead.js';
 import { validateSecrets, escapeHtml } from '../util.js';

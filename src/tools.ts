@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { tool, generateText } from 'ai';
 
-import { queryGeneratorSystemPrompt } from './prompts.ts';
-import { models } from './models.ts'
-
+import { queryGeneratorSystemPrompt } from './prompts.js';
+import { models } from './models.js'
 
 import 'dotenv/config';
-import Exa from 'exa-js';
+import { Exa } from 'exa-js';
+
 
 interface SearchResult {
   title: string;
@@ -14,6 +14,7 @@ interface SearchResult {
   content: string;
   publicationDate: string;
 }
+
 
 const generateQueries = tool({
     description: `Generate the requested number of search queries for the given subject. Provide feedback with reasoning and previous results (if any) to improve the next attempt.`,
@@ -51,12 +52,12 @@ const generateQueries = tool({
 
       try {
         const response = await generateText({ ...params });
-        const content = response.steps[0].content;
-        const contentText = content.filter(part => part.type === 'text');
+        const content = response.steps[0]?.content;
+        const contentText = content?.filter(part => part.type === 'text') || [];
         
         const output = {
-          output: contentText[1].text,
-          reasoning: contentText[0].text,
+          output: contentText[1]?.text,
+          reasoning: contentText[0]?.text,
         }
 
         return output;
@@ -81,7 +82,7 @@ const webSearch = tool({
       numResults: 3,
     });
 
-    return results.map((result): SearchResult => ({
+    return results.map((result: any): SearchResult => ({
       title: result.title ?? '',
       url: result.url,
       content: result.text,

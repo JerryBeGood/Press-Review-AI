@@ -1,10 +1,11 @@
-import { generateText, stepCountIs, GenerateTextResult } from "ai";
+import { generateText, stepCountIs } from "ai";
 
-import { AnthropicModel } from "../types/models.types.ts";
+import type { AnthropicModel } from "../types/models.types.ts";
+import type { GenerateTextResult } from "ai";
 
 import { models } from "../models.js";
-import { generateQueries } from '../tools.ts';
-import { leadAgentSystemPrompt } from '../prompts.ts';
+import { generateQueries } from '../tools.js';
+import { leadAgentSystemPrompt } from '../prompts.js';
 
 
 interface StepContent {
@@ -31,7 +32,7 @@ export class PressReviewLeadAgent {
   }
 
   async run(subject: string): Promise<string> {
-    const generateQueriesFails = ({ steps }): boolean => {     
+    const generateQueriesFails = ({ steps }: { steps: any }): boolean => {     
       const lastStep = steps[steps.length - 1];
 
       if (lastStep.content.some((part: StepContent) => part.type === 'tool-error' 
@@ -79,7 +80,9 @@ export class PressReviewLeadAgent {
 
         if(part.type === 'tool-call' && part.input)
           for (const instruction of Object.keys(part.input)) {
-            output += `${instruction.toUpperCase()}: ${part.input[instruction]}\n`;
+            const partInput = part.input as { [key: string]: any };
+
+            output += `${instruction.toUpperCase()}: ${partInput[instruction]}\n`;
           }
 
         if(part.type === 'tool-result' && part.output) {

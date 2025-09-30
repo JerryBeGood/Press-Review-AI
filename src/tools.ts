@@ -27,7 +27,7 @@ const generateQueries = tool({
       output: z.string().optional(),
       reasoning: z.string().optional(),
     }),
-    execute: async ({ instructions, feedback, previousReasoning, previousResults }): Promise<{ output: string | undefined, reasoning: string | undefined } | {}> => {
+    execute: async ({ instructions, feedback, previousReasoning, previousResults }): Promise<{ output: string | undefined, reasoning: string | undefined }> => {
       const parts: string[] = [instructions];
 
       const appendTagged = (tag: string, value: string | undefined): void => {
@@ -63,7 +63,7 @@ const generateQueries = tool({
       } catch (error: unknown) {
         console.log(`ERROR: ${error instanceof Error ? error.message : String(error)}`);
     
-        return {};
+        return { output: undefined, reasoning: undefined };
       }
     }
 })

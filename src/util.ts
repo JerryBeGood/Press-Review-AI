@@ -1,5 +1,5 @@
-function validateSecrets() {
-    const secrets = ['OPENAI_API_KEY', 'EXASEARCH_API_KEY'];
+function validateSecrets(): void {
+    const secrets: string[] = ['OPENAI_API_KEY', 'EXASEARCH_API_KEY', 'ANTHROPIC_API_KEY'];
   
     for(const secret of secrets) {
       if (!process.env[secret]) {
@@ -10,7 +10,7 @@ function validateSecrets() {
     }
 }
 
-function escapeHtml(str) {
+function escapeHtml(str: string): string {
   return String(str)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')

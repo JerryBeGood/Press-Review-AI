@@ -1,11 +1,19 @@
 import { z } from 'zod';
 import { tool, generateText } from 'ai';
 
-import { queryGeneratorPrompts } from './prompts.js';
+import { queryGeneratorSystemPrompt } from './prompts.js';
 import { models } from './models.js'
 
 import 'dotenv/config';
-import Exa from 'exa-js';
+import { Exa } from 'exa-js';
+
+
+interface SearchResult {
+  title: string;
+  url: string;
+  content: string;
+  publicationDate: string;
+}
 
 
 const generateQueries = tool({
@@ -20,10 +28,10 @@ const generateQueries = tool({
       output: z.string().optional(),
       reasoning: z.string().optional(),
     }),
-    execute: async ({ instructions, feedback, previousReasoning, previousResults }) => {
-      const parts = [instructions];
+    execute: async ({ instructions, feedback, previousReasoning, previousResults }): Promise<{ output: string | undefined, reasoning: string | undefined }> => {
+      const parts: string[] = [instructions];
 
-      const appendTagged = (tag, value) => {
+      const appendTagged = (tag: string, value: string | undefined): void => {
         if (value) parts.push(`<${tag}> ${value} </${tag}>`);
       };
 
@@ -32,9 +40,9 @@ const generateQueries = tool({
       appendTagged('feedback', feedback);
 
       const params = {
-        model: models.secondary,
+        model: models.secondary!,
         prompt: parts.join('\n\n'),
-        system: queryGeneratorPrompts.system,
+        system: queryGeneratorSystemPrompt,
         providerOptions: {
           anthropic: {
             thinking: { type: 'enabled', budgetTokens: 1024 },
@@ -44,17 +52,19 @@ const generateQueries = tool({
 
       try {
         const response = await generateText({ ...params });
-
+        const content = response.steps[0]?.content;
+        const contentText = content?.filter(part => part.type === 'text') || [];
+        
         const output = {
-          output: response.steps[0].content[1].text,
-          reasoning: response.steps[0].content[0].text,
+          output: contentText[1]?.text,
+          reasoning: contentText[0]?.text,
         }
 
         return output;
-      } catch (error) {
-        console.log(`ERROR: ${error}`);
+      } catch (error: unknown) {
+        console.log(`ERROR: ${error instanceof Error ? error.message : String(error)}`);
     
-        return {};
+        return { output: undefined, reasoning: undefined };
       }
     }
 })
@@ -64,7 +74,7 @@ const webSearch = tool({
   inputSchema: z.object({
     query: z.string(),
   }),
-  execute: async ({ query }) => {
+  execute: async ({ query }): Promise<SearchResult[]> => {
     const exa = new Exa(process.env.EXASEARCH_API_KEY);
 
     const { results } = await exa.searchAndContents(query, {
@@ -72,11 +82,11 @@ const webSearch = tool({
       numResults: 3,
     });
 
-    return results.map(result => ({
-      title: result.title,
+    return results.map((result: any): SearchResult => ({
+      title: result.title ?? '',
       url: result.url,
       content: result.text,
-      publicationDate: result.publishedDate,
+      publicationDate: result.publishedDate ?? '',    
     }));
   },
 });

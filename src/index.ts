@@ -1,20 +1,22 @@
 import express from 'express';
 
-import { PressReviewLeadAgent } from './agents/press_review_lead.js';
+import type { Response, Application } from 'express';
+
+import { LeadAgent } from './agents/lead.js';
 import { validateSecrets, escapeHtml } from './util.js';
 
 import 'dotenv/config';
 
-const app = express();
+const app: Application = express();
 
-app.get('/', async (req, res) => {
+app.get('/', async (_, res: Response): Promise<void> => {
   validateSecrets();
 
-  const subject = 'ai engineering';
-  const leadAgent = new PressReviewLeadAgent();
-  const response = await leadAgent.run(subject);
+  const subject: string = 'ai engineering';
+  const leadAgent: LeadAgent = new LeadAgent();
+  const response: string = await leadAgent.run(subject);
 
-  const html = `
+  const html: string = `
 <!doctype html>
 <html lang="en">
   <head>
@@ -42,5 +44,8 @@ app.get('/', async (req, res) => {
   res.end();
 });
 
-app.listen(3000);
+const PORT: number = 3000;
+app.listen(3000, (): void => {
+  console.log(`Server running on port ${PORT}`);
+});
 

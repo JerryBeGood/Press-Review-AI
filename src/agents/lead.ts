@@ -8,18 +8,6 @@ import { generateQueries } from '../tools.js';
 import { leadAgentSystemPrompt } from '../prompts.js';
 
 
-interface StepContent {
-  type: string;
-  text?: string;
-  toolName?: string;
-  input?: Record<string, any>;
-  output?: {
-    reasoning: string;
-    output: string;
-  };
-}
-
-
 export class LeadAgent {
   private model: AnthropicModel;
   private systemPrompt: string;
@@ -35,7 +23,7 @@ export class LeadAgent {
     const generateQueriesFails = ({ steps }: { steps: any }): boolean => {     
       const lastStep = steps[steps.length - 1];
 
-      if (lastStep.content.some((part: StepContent) => part.type === 'tool-error' 
+      if (lastStep.content.some((part: any) => part.type === 'tool-error' 
         && part.toolName === 'generateQueries')) {
           console.log('Tool error: generateQueries');
           console.log(JSON.stringify(lastStep.content));

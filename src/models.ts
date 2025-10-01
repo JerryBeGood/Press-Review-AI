@@ -1,7 +1,7 @@
 import { anthropic } from '@ai-sdk/anthropic';
 import { openai } from '@ai-sdk/openai';
 
-import { Models } from './types/models.types';
+import type { Models } from './types/models.types.js';
 
 
 const models: Models = {

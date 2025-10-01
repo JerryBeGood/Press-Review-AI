@@ -1,6 +1,6 @@
 import { generateText, stepCountIs } from "ai";
 
-import type { AnthropicModel } from "../types/models.types.ts";
+import type { AnthropicModel } from "../types/models.types.js";
 import type { GenerateTextResult } from "ai";
 
 import { models } from "../models.js";
@@ -20,13 +20,13 @@ interface StepContent {
 }
 
 
-export class PressReviewLeadAgent {
+export class LeadAgent {
   private model: AnthropicModel;
   private systemPrompt: string;
   private tools: { generateQueries: typeof generateQueries };
 
   constructor() {
-    this.model = models.primary;
+    this.model = models.primary!;
     this.systemPrompt = leadAgentSystemPrompt;
     this.tools = { generateQueries };
   }
@@ -100,4 +100,4 @@ export class PressReviewLeadAgent {
   }
 }
 
-export default PressReviewLeadAgent;
+export default LeadAgent;

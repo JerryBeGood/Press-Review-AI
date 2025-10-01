@@ -1,7 +1,9 @@
-import express, { Response, Application } from 'express';
+import express from 'express';
 
-import { PressReviewLeadAgent } from '../agents/press_review_lead.js';
-import { validateSecrets, escapeHtml } from '../util.js';
+import type { Response, Application } from 'express';
+
+import { LeadAgent } from './agents/lead.js';
+import { validateSecrets, escapeHtml } from './util.js';
 
 import 'dotenv/config';
 
@@ -11,7 +13,7 @@ app.get('/', async (_, res: Response): Promise<void> => {
   validateSecrets();
 
   const subject: string = 'ai engineering';
-  const leadAgent: PressReviewLeadAgent = new PressReviewLeadAgent();
+  const leadAgent: LeadAgent = new LeadAgent();
   const response: string = await leadAgent.run(subject);
 
   const html: string = `

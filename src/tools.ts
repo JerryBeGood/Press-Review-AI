@@ -40,7 +40,7 @@ const generateQueries = tool({
       appendTagged('feedback', feedback);
 
       const params = {
-        model: models.secondary,
+        model: models.secondary!,
         prompt: parts.join('\n\n'),
         system: queryGeneratorSystemPrompt,
         providerOptions: {

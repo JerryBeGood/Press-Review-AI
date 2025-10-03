@@ -8,6 +8,15 @@ import { generateQueries } from '../tools.js';
 import { leadAgentSystemPrompt } from '../prompts.js';
 
 
+interface OutputItem {
+  type: string;
+  text?: string;
+  instructions?: Instruction[];
+  reasoning?: string;
+  output?: string;
+}
+
+
 export class LeadAgent {
   private model: AnthropicModel;
   private systemPrompt: string;
@@ -19,7 +28,7 @@ export class LeadAgent {
     this.tools = { generateQueries };
   }
 
-  async run(subject: string): Promise<string> {
+  async run(subject: string): Promise<OutputItem[]> {
     const generateQueriesFails = ({ steps }: { steps: any }): boolean => {     
       const lastStep = steps[steps.length - 1];
 
@@ -54,35 +63,42 @@ export class LeadAgent {
         ...params
      });
 
-    let output = '';
-    for (const step of response.steps) {
+    return this.prepareOutput(response);
+  }
+
+  prepareOutput(textResult: GenerateTextResult<any, any>): OutputItem[] {
+    const output: Array<Object> = [];
+    for (const step of textResult.steps) {
       step.content.forEach((part) => {
-        output += `TYPE: ${part.type}\n`;
+        const obj: any = { type: part.type };
 
         if (['reasoning', 'text'].includes(part.type)) {
-            const textPart = part as { text?: string };
-
-            output += `\n${textPart.text}\n`;
+          const textPart = part as { text?: string };
+          obj.text = textPart.text || '';
         }
-          
 
-        if(part.type === 'tool-call' && part.input)
+        if (part.type === 'tool-call' && part.input) {
+          obj.instructions = [];
           for (const instruction of Object.keys(part.input)) {
             const partInput = part.input as { [key: string]: any };
-
-            output += `${instruction.toUpperCase()}: ${partInput[instruction]}\n`;
+            obj.instructions.push({
+              name: instruction,
+              value: partInput[instruction]
+            });
           }
-
-        if(part.type === 'tool-result' && part.output) {
-          const toolOutput = part.output as { reasoning?: string; output?: string };
-
-          output += `REASONING: ${toolOutput.reasoning || ''}\n`;
-          output += `OUTPUT: ${toolOutput.output || ''}\n`;
         }
 
-        output += `\n\n`;
-      })
+        if (part.type === 'tool-result' && part.output) {
+          const toolOutput = part.output as { reasoning?: string; output?: string };
+          obj.reasoning = toolOutput.reasoning || '';
+          obj.output = toolOutput.output || '';
+        }
+
+        output.push(obj);
+      });
     }
+
+    console.log(JSON.stringify(output));
 
     return output;
   }

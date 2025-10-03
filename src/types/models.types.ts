@@ -1,5 +1,5 @@
-import { anthropic } from '@ai-sdk/anthropic';
-import { openai } from '@ai-sdk/openai';
+import type { anthropic } from '@ai-sdk/anthropic';
+import type { openai } from '@ai-sdk/openai';
 
 type OpenAIModel = ReturnType<typeof openai>;
 type AnthropicModel = ReturnType<typeof anthropic>;

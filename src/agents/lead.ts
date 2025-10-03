@@ -8,6 +8,15 @@ import { generateQueries } from '../tools.js';
 import { leadAgentSystemPrompt } from '../prompts.js';
 
 
+interface OutputItem {
+  type: string;
+  text?: string;
+  instructions?: Instruction[];
+  reasoning?: string;
+  output?: string;
+}
+
+
 export class LeadAgent {
   private model: AnthropicModel;
   private systemPrompt: string;
@@ -19,7 +28,7 @@ export class LeadAgent {
     this.tools = { generateQueries };
   }
 
-  async run(subject: string): Promise<Array<Object>> {
+  async run(subject: string): Promise<OutputItem[]> {
     const generateQueriesFails = ({ steps }: { steps: any }): boolean => {     
       const lastStep = steps[steps.length - 1];
 
@@ -57,7 +66,7 @@ export class LeadAgent {
     return this.prepareOutput(response);
   }
 
-  prepareOutput(textResult: GenerateTextResult<any, any>): Array<Object> {
+  prepareOutput(textResult: GenerateTextResult<any, any>): OutputItem[] {
     const output: Array<Object> = [];
     for (const step of textResult.steps) {
       step.content.forEach((part) => {

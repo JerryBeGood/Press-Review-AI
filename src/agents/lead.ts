@@ -54,8 +54,12 @@ export class LeadAgent {
         ...params
      });
 
+    return this.prepareOutput(response);
+  }
+
+  prepareOutput(textResult: GenerateTextResult<any, any>): Array<Object> {
     const output: Array<Object> = [];
-    for (const step of response.steps) {
+    for (const step of textResult.steps) {
       step.content.forEach((part) => {
         const obj: any = { type: part.type };
 

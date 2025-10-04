@@ -20,7 +20,8 @@
     "astro": "astro",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.17",
@@ -44,6 +45,7 @@
     "eslint-plugin-react-hooks": "^6.1.1",
     "exa-js": "^1.8.27",
     "express": "^5.1.0",
+    "prettier-plugin-astro": "^0.14.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwindcss": "^4.1.13",

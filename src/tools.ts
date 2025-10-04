@@ -68,9 +68,7 @@ const generateQueries = tool({
 
       return output;
     } catch (error: unknown) {
-      console.log(
-        `ERROR: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      console.log(`ERROR: ${error instanceof Error ? error.message : String(error)}`);
 
       return { output: undefined, reasoning: undefined };
     }
@@ -96,7 +94,7 @@ const webSearch = tool({
         url: result.url,
         content: result.text,
         publicationDate: result.publishedDate ?? "",
-      }),
+      })
     );
   },
 });

@@ -35,12 +35,7 @@ export class LeadAgent {
     const generateQueriesFails = ({ steps }: { steps: any }): boolean => {
       const lastStep = steps[steps.length - 1];
 
-      if (
-        lastStep.content.some(
-          (part: any) =>
-            part.type === "tool-error" && part.toolName === "generateQueries",
-        )
-      ) {
+      if (lastStep.content.some((part: any) => part.type === "tool-error" && part.toolName === "generateQueries")) {
         console.log("Tool error: generateQueries");
         console.log(JSON.stringify(lastStep.content));
 

@@ -8,6 +8,11 @@ import { generateQueries } from '../tools.js';
 import { leadAgentSystemPrompt } from '../prompts.js';
 
 
+interface Instruction {
+  name: string;
+  value: string;
+}
+
 interface OutputItem {
   type: string;
   text?: string;
@@ -67,7 +72,7 @@ export class LeadAgent {
   }
 
   prepareOutput(textResult: GenerateTextResult<any, any>): OutputItem[] {
-    const output: Array<Object> = [];
+    const output: Array<OutputItem> = [];
     for (const step of textResult.steps) {
       step.content.forEach((part) => {
         const obj: any = { type: part.type };

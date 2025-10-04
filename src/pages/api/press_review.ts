@@ -3,13 +3,13 @@ import type { APIRoute } from "astro";
 import { LeadAgent } from "../../agents/lead.js";
 import { validateSecrets } from "../../util.js";
 
-export const GET: APIRoute = async ({url}) => {
+export const GET: APIRoute = async ({ url }) => {
   try {
     validateSecrets();
 
-    const subject: string = url.searchParams.get("subject") || 'ai engineering';
+    const subject: string = url.searchParams.get("subject") || "ai engineering";
     const leadAgent: LeadAgent = new LeadAgent();
-    const pressReview: Array<Object> = await leadAgent.run(subject);
+    const pressReview: object[] = await leadAgent.run(subject);
 
     return new Response(JSON.stringify(pressReview), {
       status: 200,
@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({url}) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   }
 };

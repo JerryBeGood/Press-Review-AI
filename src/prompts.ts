@@ -1,4 +1,4 @@
-const leadAgentSystemPrompt: string = `
+const leadAgentSystemPrompt = `
     <role>
         <name>Lead Agent</name>
         <description>
@@ -58,7 +58,7 @@ const leadAgentSystemPrompt: string = `
     </output_format>
 `;
 
-const queryGeneratorSystemPrompt: string = `
+const queryGeneratorSystemPrompt = `
     <role>
         <name>Search Query Generator Agent</name>
         <description>
@@ -77,7 +77,4 @@ const queryGeneratorSystemPrompt: string = `
     </output_format>              
 `;
 
-export {
-    leadAgentSystemPrompt,
-    queryGeneratorSystemPrompt,
-}
+export { leadAgentSystemPrompt, queryGeneratorSystemPrompt };

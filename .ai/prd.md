@@ -34,6 +34,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Automatyczne generowanie prasówek w języku angielskim zgodnie z ustalonym harmonogramem.
 - Każda prasówka składa się z ogólnego podsumowania oraz 7-10 indywidualnych segmentów (tytuł, streszczenie, link do źródła).
 - Agent AI autonomicznie dobiera źródła na podstawie wewnętrznych instrukcji.
+- Zapisywanie logów z procesu generacji prasówki przez agenta AI.
 - Wysłanie powiadomienia e-mail o pomyślnym wygenerowaniu treści.
 - Wysłanie powiadomienia e-mail w przypadku niepowodzenia generowania prasówki.
 
@@ -41,7 +42,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 
 - Dostęp do chronologicznej listy wygenerowanych prasówek (archiwum).
 - Możliwość oceniania każdej prasówki za pomocą przycisków „kciuk w górę” / „kciuk w dół”.
-- Oceny służą do manualnej analizy i iteracyjnego ulepszania instrukcji dla agenta AI.
+- Oceny, w połączeniu z logami z procesu generacji, służą do manualnej analizy i iteracyjnego ulepszania instrukcji dla agenta AI.
 
 ## 4. Granice produktu
 

@@ -1,6 +1,6 @@
 import { generateText, stepCountIs } from "ai";
 
-import type { AnthropicModel } from "../types/models.types.js";
+import type { AnthropicModel } from "../../types.js";
 import type { GenerateTextResult } from "ai";
 
 import { models } from "../models.js";

@@ -1,7 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 
-import type { Models } from "./types/models.types.js";
+import type { Models } from "../types";
 
 const models: Models = {
   main: openai("o4-mini"),

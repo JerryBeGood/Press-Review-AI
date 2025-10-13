@@ -1,102 +1,117 @@
-# Press-Review-AI
+# Press Review AI
 
-A modern web application built with Astro, React, and AI SDK that researches topics using AI agents and presents findings in an interactive web interface.
+Welcome to the official repository for Press Review AI. This document provides all the necessary information to understand, set up, and contribute to the project.
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Project Description
+
+Press Review AI is a web application designed to automate the process of creating periodic press reviews on user-selected topics. The main goal of the product is to provide users with condensed, relevant, and high-quality information from various sources, saving them time and keeping them up-to-date with the latest trends in their areas of interest. The application uses an AI agent to autonomously search, analyze, and synthesize content.
+
+This project is for educational purposes and serves as a portfolio piece.
 
 ## Tech Stack
 
-- **Frontend**: Astro 5.x with React 19
-- **Styling**: Tailwind CSS 4.x
-- **AI**: OpenAI SDK with Anthropic Claude
-- **Search**: Exa Search API
-- **Language**: TypeScript with strict configuration
-- **Code Quality**: ESLint + Prettier with Husky pre-commit hooks
+The project uses a modern tech stack for both frontend and backend development:
 
-## Prerequisites
+### Frontend
 
-- Node.js 18+ (recommended 20+)
-- An OpenAI API key (`OPENAI_API_KEY`)
-- An Exa Search API key (`EXASEARCH_API_KEY`)
+- **[Astro 5](https://astro.build/)**: A web framework for building fast, content-driven websites.
+- **[React 19](https://react.dev/)**: Used for creating interactive UI components.
+- **[TypeScript 5](https://www.typescriptlang.org/)**: For static typing and improved developer experience.
+- **[Tailwind CSS 4](https://tailwindcss.com/)**: A utility-first CSS framework for styling.
+- **[Shadcn/ui](https://ui.shadcn.com/)**: A collection of accessible and reusable UI components.
 
-## Setup
+### Backend
 
-1. Install dependencies:
+- **[Supabase](https://supabase.io/)**: An open-source Firebase alternative providing a PostgreSQL database, authentication, and a BaaS (Backend-as-a-Service) SDK.
 
-```bash
-npm install
-```
+### AI
 
-2. Create a `.env` file in the project root:
+- **[Vercel AI SDK](https://sdk.vercel.ai/)**: A unified programming interface for communicating with a wide range of AI models.
 
-```env
-OPENAI_API_KEY=sk-...your-key...
-EXASEARCH_API_KEY=exakey_...your-key...
-```
+### CI/CD & Hosting
 
-## Development
+- **[GitHub Actions](https://github.com/features/actions)**: For continuous integration and deployment pipelines.
+- **[DigitalOcean](https://www.digitalocean.com/)**: For hosting the application via a Docker image.
 
-Start the development server:
+## Getting Started Locally
 
-```bash
-npm run dev
-```
+To run the project locally, follow these steps:
 
-The application will be available at `http://localhost:4321`
+1.  **Clone the repository:**
+
+    ```sh
+    git clone https://github.com/your-username/press_review_ai.git
+    cd press_review_ai
+    ```
+
+2.  **Install dependencies:**
+
+    ```sh
+    npm install
+    ```
+
+3.  **Set up environment variables:**
+    Create a `.env` file in the root of the project and add the necessary environment variables. You will need to get these from your Supabase project dashboard.
+
+    ```env
+    PUBLIC_SUPABASE_URL="your-supabase-project-url"
+    PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
+    ```
+
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:4321`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run type-check` - Run TypeScript type checking
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues automatically
-- `npm run format` - Format code with Prettier
+The following scripts are available in the `package.json`:
 
-## API Usage
+- `npm start`: Starts the development server.
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm run preview`: Serves the production build locally for previewing.
+- `npm run astro`: Provides access to the Astro CLI.
+- `npm run format`: Formats the code using Prettier.
+- `npm run lint`: Lints the code using ESLint.
 
-The application provides a REST API endpoint:
+## Project Scope
 
-```
-GET /api/press_review?subject=<topic>
-```
+### In Scope (MVP)
 
-**Parameters:**
+- Core features for creating, editing, and viewing press reviews.
+- Basic user account management (registration, login, settings).
+- Simple email notification system for press review generation status.
+- A mechanism to rate the quality of generated content.
 
-- `subject` (optional): Research topic (defaults to "ai engineering")
+### Out of Scope
 
-**Response:** JSON array of research findings and analysis steps
+- Advanced customization options (e.g., source filtering, custom formatting).
+- Push or SMS notifications.
+- Social media login.
+- AI agent personalization for individual users.
+- Monetization and subscription plans.
 
-## Features
+## Project Status
 
-- **Interactive Web Interface**: Modern React-based UI with real-time loading states
-- **AI-Powered Research**: Uses Claude and OpenAI for intelligent topic analysis
-- **Real-time Search**: Integrates with Exa Search for current information
-- **Type Safety**: Full TypeScript support with strict configuration
-- **Code Quality**: Automated linting and formatting with pre-commit hooks
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
+The project is currently **under active development**. The main features planned for the MVP are:
 
-## Project Structure
+- [ ] User Account Management (Registration, Auth, Profile)
+- [ ] Press Review Management (Create, Edit, Delete)
+- [ ] Automated Content Generation and Delivery
+- [ ] Content Review and Rating System
 
-```
-src/
-├── agents/          # AI agent implementations
-├── components/      # React components
-├── layouts/         # Astro layouts
-├── pages/           # Astro pages and API routes
-├── styles/          # Global CSS styles
-├── types/           # TypeScript type definitions
-└── util.ts          # Utility functions
-```
+## License
 
-## Troubleshooting
-
-- **Missing API keys**: Ensure `OPENAI_API_KEY` and `EXASEARCH_API_KEY` are set in `.env`
-- **Type errors**: Run `npm run type-check` to identify TypeScript issues
-- **Linting issues**: Run `npm run lint:fix` to automatically fix code style issues
-- **Build errors**: Check that all dependencies are installed with `npm install`
-
-## Notes
-
-- The application uses paid APIs (OpenAI, Exa). Monitor usage and costs.
-- Results are optimized for web display with interactive components.
-- The codebase follows modern development practices with automated quality checks.
+This project is licensed under the MIT License. See the `LICENSE` file for more details.

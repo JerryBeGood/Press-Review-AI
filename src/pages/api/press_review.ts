@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
-import { LeadAgent } from "../../agents/lead.js";
-import { validateSecrets } from "../../util.js";
+import { LeadAgent } from "../../lib/agents/lead.js";
+import { validateSecrets } from "../../lib/util.js";
 
 export const GET: APIRoute = async ({ url }) => {
   try {

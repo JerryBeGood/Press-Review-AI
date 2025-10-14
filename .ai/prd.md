@@ -35,14 +35,10 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Każda prasówka składa się z ogólnego podsumowania oraz 7-10 indywidualnych segmentów (tytuł, streszczenie, link do źródła).
 - Agent AI autonomicznie dobiera źródła na podstawie wewnętrznych instrukcji.
 - Zapisywanie logów z procesu generacji prasówki przez agenta AI.
-- Wysłanie powiadomienia e-mail o pomyślnym wygenerowaniu treści.
-- Wysłanie powiadomienia e-mail w przypadku niepowodzenia generowania prasówki.
 
-### 3.4. Przeglądanie i ocena
+### 3.4. Przeglądanie
 
 - Dostęp do chronologicznej listy wygenerowanych prasówek (archiwum).
-- Możliwość oceniania każdej prasówki za pomocą przycisków „kciuk w górę” / „kciuk w dół”.
-- Oceny, w połączeniu z logami z procesu generacji, służą do manualnej analizy i iteracyjnego ulepszania instrukcji dla agenta AI.
 
 ## 4. Granice produktu
 
@@ -50,16 +46,15 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 
 - Kluczowe funkcje związane z tworzeniem, edycją i przeglądaniem prasówek.
 - Podstawowe zarządzanie kontem użytkownika (rejestracja, logowanie, ustawienia).
-- Prosty system powiadomień e-mail o statusie generowania prasówki.
-- Mechanizm oceny jakości wygenerowanych treści.
 
 ### Co NIE wchodzi w zakres MVP
 
 - Zaawansowane opcje personalizacji prasówek (np. filtracja źródeł, formatowanie).
-- Powiadomienia push lub SMS.
+- System powiadomień.
 - Logowanie za pośrednictwem mediów społecznościowych.
 - Personalizacja agenta AI pod konkretnego użytkownika.
 - Monetyzacja i plany subskrypcyjne.
+- Mechanizm oceny jakości wygenerowanych treści.
 
 ## 5. Historyjki użytkowników
 
@@ -162,17 +157,9 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - System prosi o potwierdzenie usunięcia.
   - Po potwierdzeniu prasówka jest usuwana z listy aktywnych i przestaje być generowana.
 
-### 5.3. Przeglądanie i ocena
+### 5.3. Przeglądanie
 
 - ID: PRSR-013
-- Tytuł: Otrzymywanie powiadomień e-mail
-- Opis: Jako użytkownik, chcę otrzymywać powiadomienia e-mail o pomyślnym wygenerowaniu nowej prasówki lub o błędzie.
-- Kryteria akceptacji:
-  - Po każdym cyklu generowania użytkownik otrzymuje e-mail.
-  - Wiadomość o sukcesie zawiera link do nowo wygenerowanej treści.
-  - Wiadomość o błędzie zawiera prosty i zrozumiały komunikat.
-
-- ID: PRSR-014
 - Tytuł: Przeglądanie archiwum prasówek
 - Opis: Jako użytkownik, chcę mieć dostęp do archiwum wszystkich moich wygenerowanych prasówek, aby móc je przeglądać w dowolnym momencie.
 - Kryteria akceptacji:
@@ -180,27 +167,15 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - Prasówki są ułożone chronologicznie (od najnowszej).
   - Każdy element na liście prowadzi do pełnej treści prasówki.
 
-- ID: PRSR-015
+- ID: PRSR-014
 - Tytuł: Czytanie prasówki
 - Opis: Jako użytkownik, po wybraniu prasówki z archiwum, chcę widzieć jej pełną treść, w tym ogólne podsumowanie oraz poszczególne segmenty z linkami do źródeł.
 - Kryteria akceptacji:
   - Treść jest czytelna i dobrze sformatowana.
   - Każdy segment zawiera tytuł, streszczenie i klikalny link do oryginalnego artykułu.
 
-- ID: PRSR-016
-- Tytuł: Ocenianie prasówki
-- Opis: Jako użytkownik, po przeczytaniu prasówki, chcę móc ocenić jej jakość za pomocą przycisków "kciuk w górę" / "kciuk w dół".
-- Kryteria akceptacji:
-  - Przyciski oceny są widoczne na stronie z treścią prasówki.
-  - Użytkownik może oddać tylko jeden głos na daną prasówkę.
-  - System zapisuje ocenę i powiązuje ją z konkretną prasówką.
-
 ## 6. Metryki sukcesu
 
 1. Stabilność systemu:
    - Cel: Zaplanowane prasówki generują się bez błędów w ustalonych terminach.
-   - Pomiar: Monitorowanie logów systemowych i odsetka powiadomień o błędach wysyłanych do użytkowników. Cel to < 1% nieudanych generacji.
-
-2. Trafność i jakość treści:
-   - Cel: Treści w prasówkach są trafne i wysokiej jakości.
-   - Pomiar: Osiągnięcie progu ≥ 80% pozytywnych ocen ("kciuk w górę") w systemie oceny wbudowanym w aplikację.
+   - Pomiar: Manualne monitorowanie logów systemowych w celu identyfikacji nieudanych generacji i weryfikacji udanych.

@@ -127,38 +127,6 @@ export interface Database {
         };
         Relationships: [];
       };
-      ratings: {
-        Row: {
-          created_at: string;
-          generated_press_review_id: string;
-          id: string;
-          rating: number;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          generated_press_review_id: string;
-          id?: string;
-          rating: number;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          generated_press_review_id?: string;
-          id?: string;
-          rating?: number;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "ratings_generated_press_review_id_fkey";
-            columns: ["generated_press_review_id"];
-            isOneToOne: false;
-            referencedRelation: "generated_press_reviews";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;

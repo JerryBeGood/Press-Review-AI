@@ -41,19 +41,7 @@ Dodatkowo: funkcja/trigger weryfikujący, że użytkownik nie posiada więcej ni
 
 ---
 
-### 1.3 `ratings`
-
-- **id**: `uuid`, PK, domyślnie `gen_random_uuid()`
-- **generated_press_review_id**: `uuid`, FK → `generated_press_reviews(id)`, `ON DELETE CASCADE`, `NOT NULL`
-- **user_id**: `uuid`, FK → `auth.users(id)`, `ON DELETE CASCADE`, `NOT NULL`
-- **rating**: `smallint`, `NOT NULL`, dozwolone wartości: `1` (kciuk w górę) lub `-1` (kciuk w dół)
-- **created_at**: `timestamptz`, `NOT NULL`, domyślnie `now()`
-
-Ograniczenie unikalności: jeden użytkownik może ocenić daną prasówkę tylko raz (`generated_press_review_id`, `user_id`).
-
----
-
-### 1.4 `generation_logs`
+### 1.3 `generation_logs`
 
 - **id**: `uuid`, PK, domyślnie `gen_random_uuid()`
 - **generated_press_review_id**: `uuid`, FK → `generated_press_reviews(id)`, `ON DELETE CASCADE`, `NOT NULL`
@@ -65,7 +53,7 @@ Każda wygenerowana prasówka posiada dokładnie jeden powiązany rekord z logam
 
 ---
 
-### 1.5 Typy zdefiniowane przez użytkownika
+### 1.4 Typy zdefiniowane przez użytkownika
 
 - **press_review_status** – enum przyjmujący wartości: `pending`, `success`, `failed`.
 
@@ -77,20 +65,17 @@ Każda wygenerowana prasówka posiada dokładnie jeden powiązany rekord z logam
 users (auth.users)
   └──< press_reviews
           └──< generated_press_reviews
-                  ├──< ratings
                   └─── generation_logs (1-do-1)
 ```
 
 - `users` 1-do-∞ `press_reviews`
 - `press_reviews` 1-do-∞ `generated_press_reviews`
-- `generated_press_reviews` 1-do-∞ `ratings`
 - `generated_press_reviews` 1-do-1 `generation_logs`
 
 ## 3. Indeksy
 
 - `press_reviews`: `(user_id, is_active)`, `(user_id, created_at DESC)`
 - `generated_press_reviews`: `(press_review_id, generated_at DESC)`, `(status)`
-- `ratings`: `(user_id)`, `(generated_press_review_id)`
 - `generation_logs`: `(generated_press_review_id)`
 
 ## 4. Zasady RLS (Row-Level Security)

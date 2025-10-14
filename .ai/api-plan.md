@@ -174,6 +174,32 @@ All endpoints are prefixed with `/api`.
   ```
 - **Error Response: `401 Unauthorized`**.
 
+#### **`POST /generated-press-reviews`**
+
+- **Description**: Triggers on-demand generation of a press review instance for the authenticated user. Returns immediately with the newly created generation job, which will transition from `pending` to `success` or `failed` asynchronously.
+- **Request Body**:
+  ```json
+  {
+    "press_review_id": "uuid"
+  }
+  ```
+- **Response: `202 Accepted`**:
+  ```json
+  {
+    "id": "uuid",
+    "press_review_id": "uuid",
+    "generated_at": "timestamptz (null until completed)",
+    "status": "string (initially 'pending')",
+    "content": "null",
+    "generation_log_id": "null"
+  }
+  ```
+- **Error Responses**:
+  - `400 Bad Request`: `press_review_id` missing or user not owner.
+  - `401 Unauthorized`: User not authenticated.
+  - `404 Not Found`: Parent press review not found or inactive.
+  - `409 Conflict`: Another generation for this press review is already in progress.
+
 ---
 
 #### **`GET /generated-press-reviews/{id}`**

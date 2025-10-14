@@ -35,6 +35,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Każda prasówka składa się z ogólnego podsumowania oraz 7-10 indywidualnych segmentów (tytuł, streszczenie, link do źródła).
 - Agent AI autonomicznie dobiera źródła na podstawie wewnętrznych instrukcji.
 - Zapisywanie logów z procesu generacji prasówki przez agenta AI.
+- Możliwość ręcznego wygenerowania prasówki na żądanie użytkownika.
 
 ### 3.4. Przeglądanie
 
@@ -157,9 +158,18 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - System prosi o potwierdzenie usunięcia.
   - Po potwierdzeniu prasówka jest usuwana z listy aktywnych i przestaje być generowana.
 
+- ID: PRSR-013
+- Tytuł: Ręczne wygenerowanie prasówki na żądanie
+- Opis: Jako użytkownik, chcę móc ręcznie wygenerować bieżącą prasówkę niezależnie od harmonogramu.
+- Kryteria akceptacji:
+  - Na liście prasówek oraz w widoku szczegółów prasówki znajduje się przycisk "Generuj teraz".
+  - Po kliknięciu rozpoczyna się proces generacji z natychmiastowym feedbackiem postępu.
+  - Po zakończeniu generacji nowa wersja prasówki pojawia się w archiwum z aktualną datą.
+  - Ręczne wygenerowanie nie wpływa na przyszłe zaplanowane generacje.
+
 ### 5.3. Przeglądanie
 
-- ID: PRSR-013
+- ID: PRSR-014
 - Tytuł: Przeglądanie archiwum prasówek
 - Opis: Jako użytkownik, chcę mieć dostęp do archiwum wszystkich moich wygenerowanych prasówek, aby móc je przeglądać w dowolnym momencie.
 - Kryteria akceptacji:
@@ -167,7 +177,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - Prasówki są ułożone chronologicznie (od najnowszej).
   - Każdy element na liście prowadzi do pełnej treści prasówki.
 
-- ID: PRSR-014
+- ID: PRSR-015
 - Tytuł: Czytanie prasówki
 - Opis: Jako użytkownik, po wybraniu prasówki z archiwum, chcę widzieć jej pełną treść, w tym ogólne podsumowanie oraz poszczególne segmenty z linkami do źródeł.
 - Kryteria akceptacji:

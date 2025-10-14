@@ -34,10 +34,10 @@ Dodatkowo: funkcja/trigger weryfikujący, że użytkownik nie posiada więcej ni
 - **id**: `uuid`, PK, domyślnie `gen_random_uuid()`
 - **press_review_id**: `uuid`, FK → `press_reviews(id)`, `ON DELETE CASCADE`, `NOT NULL`
 - **user_id**: `uuid`, FK → `auth.users(id)`, `ON DELETE CASCADE`, `NOT NULL` _(redundantnie dla uproszczenia RLS)_
-- **generated_at**: `timestamptz`, `NOT NULL`, domyślnie `now()`
+- **generated_at**: `timestamptz`, `NULLABLE`; ustawiane na czas ukończenia generacji.
 - **status**: `press_review_status`, `NOT NULL`, domyślnie `pending`
-- **generation_log_id**: `uuid`, FK → `generation_logs(id)`, `ON DELETE CASCADE` _(referencja do szczegółowych logów)_
-- **content**: `jsonb`, wygenerowana treść, `NOT NULL`
+- **generation_log_id**: `uuid`, FK → `generation_logs(id)`, `ON DELETE CASCADE`, `NULLABLE` (dostępne po zakończeniu generacji)
+- **content**: `jsonb`, wygenerowana treść, `NULLABLE` (uzupełniane po sukcesie)
 
 ---
 

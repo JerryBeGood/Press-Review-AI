@@ -22,27 +22,27 @@ export interface Database {
     Tables: {
       generated_press_reviews: {
         Row: {
-          content: Json;
-          generated_at: string;
-          generation_log_id: string;
+          content: Json | null;
+          generated_at: string | null;
+          generation_log_id: string | null;
           id: string;
           press_review_id: string;
           status: Database["public"]["Enums"]["press_review_status"];
           user_id: string;
         };
         Insert: {
-          content: Json;
-          generated_at?: string;
-          generation_log_id: string;
+          content?: Json | null;
+          generated_at?: string | null;
+          generation_log_id?: string | null;
           id?: string;
           press_review_id: string;
           status?: Database["public"]["Enums"]["press_review_status"];
           user_id: string;
         };
         Update: {
-          content?: Json;
-          generated_at?: string;
-          generation_log_id?: string;
+          content?: Json | null;
+          generated_at?: string | null;
+          generation_log_id?: string | null;
           id?: string;
           press_review_id?: string;
           status?: Database["public"]["Enums"]["press_review_status"];

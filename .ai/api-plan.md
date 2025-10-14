@@ -6,8 +6,6 @@
   - Corresponds to the `press_reviews` table.
 - **Generated Press Reviews**: Represents a single, generated instance of a press review.
   - Corresponds to the `generated_press_reviews` table.
-- **Ratings**: Represents a user's rating for a generated press review.
-  - Corresponds to the `ratings` table.
 - **Generation Logs**: Represents the detailed logs for a generated press review.
   - Corresponds to the `generation_logs` table.
 
@@ -196,33 +194,6 @@ All endpoints are prefixed with `/api`.
   - `401 Unauthorized`.
   - `404 Not Found`.
 
-### 2.3 Ratings
-
-#### **`POST /generated-press-reviews/{id}/ratings`**
-
-- **Description**: Creates a rating for a generated press review. A user can only rate a review once.
-- **Request Body**:
-  ```json
-  {
-    "rating": "integer"
-  }
-  ```
-- **Response: `201 Created`**:
-  ```json
-  {
-    "id": "uuid",
-    "generated_press_review_id": "uuid",
-    "user_id": "uuid",
-    "rating": "integer",
-    "created_at": "timestamptz"
-  }
-  ```
-- **Error Responses**:
-  - `400 Bad Request`: Rating value is not `1` or `-1`.
-  - `401 Unauthorized`.
-  - `404 Not Found`: The generated press review does not exist.
-  - `409 Conflict`: The user has already rated this press review.
-
 ### 2.4 Generation Logs
 
 #### **`GET /generation-logs/{id}`**
@@ -258,10 +229,7 @@ All endpoints are prefixed with `/api`.
 - **`POST /press-reviews`**:
   - `topic`: Must be a non-empty string.
   - `schedule`: Must be a valid CRON expression.
-- **`POST /generated-press-reviews/{id}/ratings`**:
-  - `rating`: Must be an integer with a value of `1` or `-1`.
 
 ### 4.2 Business Logic
 
-- **Unique Ratings**: The `POST /generated-press-reviews/{id}/ratings` endpoint relies on the `UNIQUE` constraint on the `(generated_press_review_id, user_id)` columns in the `ratings` table. If a user attempts to rate the same review twice, the database insert will fail, and the API will catch this specific error to return a `409 Conflict` status.
 - **AI Topic Validation**: A dedicated endpoint, `POST /press-reviews/validate-topic`, is provided to decouple the AI validation logic from the resource creation logic. This allows the frontend to provide real-time feedback to the user as required by the PRD.

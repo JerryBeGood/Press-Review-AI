@@ -60,15 +60,6 @@ export interface GeneratedPressReviewsListDTO {
 }
 
 /* ------------------------------------------------------------------ *
- *  Ratings
- * ------------------------------------------------------------------ */
-export interface CreateRatingCmd {
-  rating: RatingValue;
-}
-
-export type RatingDTO = Tables<"ratings">;
-
-/* ------------------------------------------------------------------ *
  *  Generation Logs
  * ------------------------------------------------------------------ */
 export type GenerationLogDTO = Omit<Tables<"generation_logs">, "user_id">;

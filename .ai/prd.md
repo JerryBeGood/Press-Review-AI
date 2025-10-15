@@ -26,6 +26,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Walidacja tematu przez agenta AI w czasie rzeczywistym z informacją zwrotną w interfejsie.
 - Możliwość ustawienia harmonogramu generowania: codziennie, co tydzień, co miesiąc, z dokładnym określeniem czasu.
 - Obowiązuje limit do 5 zaplanowanych prasówek na jednego użytkownika.
+- Nie ma mozliwości utworzenia więcej niz jednej prasowki o tym samym tytule dla pojedynczego uzytkownika.
 - Możliwość edycji tematu i harmonogramu istniejących prasówek.
 - Możliwość usunięcia zaplanowanej prasówki.
 
@@ -167,9 +168,19 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - Po zakończeniu generacji nowa wersja prasówki pojawia się w archiwum z aktualną datą.
   - Ręczne wygenerowanie nie wpływa na przyszłe zaplanowane generacje.
 
+- ID: PRSR-014
+- Tytuł: Zapobieganie duplikatom tytułów prasówek
+- Opis: Jako użytkownik, chcę być informowany o tym, że nie mogę utworzyć dwóch prasówek o tym samym tytule, aby uniknąć pomyłek i duplikacji treści.
+- Kryteria akceptacji:
+  - System sprawdza unikalność tytułu prasówki w obrębie konta użytkownika podczas tworzenia nowej prasówki.
+  - Jeśli użytkownik próbuje utworzyć prasówkę o tytule, który już istnieje, wyświetlany jest komunikat błędu.
+  - Komunikat informuje użytkownika o konieczności wyboru innego tytułu.
+  - Walidacja unikalności tytułu działa również podczas edycji istniejącej prasówki.
+  - Zapisanie prasówki jest możliwe tylko po wybraniu unikalnego tytułu.
+
 ### 5.3. Przeglądanie
 
-- ID: PRSR-014
+- ID: PRSR-015
 - Tytuł: Przeglądanie archiwum prasówek
 - Opis: Jako użytkownik, chcę mieć dostęp do archiwum wszystkich moich wygenerowanych prasówek, aby móc je przeglądać w dowolnym momencie.
 - Kryteria akceptacji:
@@ -177,7 +188,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
   - Prasówki są ułożone chronologicznie (od najnowszej).
   - Każdy element na liście prowadzi do pełnej treści prasówki.
 
-- ID: PRSR-015
+- ID: PRSR-016
 - Tytuł: Czytanie prasówki
 - Opis: Jako użytkownik, po wybraniu prasówki z archiwum, chcę widzieć jej pełną treść, w tym ogólne podsumowanie oraz poszczególne segmenty z linkami do źródeł.
 - Kryteria akceptacji:

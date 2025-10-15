@@ -25,7 +25,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Tworzenie nowej, cyklicznej prasówki poprzez zdefiniowanie tematu.
 - Walidacja tematu przez agenta AI w czasie rzeczywistym z informacją zwrotną w interfejsie.
 - Możliwość ustawienia harmonogramu generowania: codziennie, co tydzień, co miesiąc, z dokładnym określeniem czasu.
-- Obowiązuje limit do 5 aktywnych (zaplanowanych) prasówek na jednego użytkownika.
+- Obowiązuje limit do 5 zaplanowanych prasówek na jednego użytkownika.
 - Możliwość edycji tematu i harmonogramu istniejących prasówek.
 - Możliwość usunięcia zaplanowanej prasówki.
 
@@ -130,14 +130,14 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 
 - ID: PRSR-009
 - Tytuł: Osiągnięcie limitu prasówek
-- Opis: Jako użytkownik posiadający 5 aktywnych prasówek, przy próbie stworzenia kolejnej chcę otrzymać informację o osiągnięciu limitu.
+- Opis: Jako użytkownik posiadający 5 zaplanowanych prasówek, przy próbie stworzenia kolejnej chcę otrzymać informację o osiągnięciu limitu.
 - Kryteria akceptacji:
-  - System uniemożliwia stworzenie więcej niż 5 aktywnych prasówek.
+  - System uniemożliwia stworzenie więcej niż 5 zaplanowanych prasówek.
   - Użytkownik widzi komunikat informujący o limicie.
 
 - ID: PRSR-010
-- Tytuł: Zarządzanie listą aktywnych prasówek
-- Opis: Jako użytkownik, chcę mieć dostęp do listy moich aktywnych prasówek, aby móc je edytować lub usuwać.
+- Tytuł: Zarządzanie listą zaplanowanych prasówek
+- Opis: Jako użytkownik, chcę mieć dostęp do listy moich zaplanowanych prasówek, aby móc je edytować lub usuwać.
 - Kryteria akceptacji:
   - Dedykowana podstrona wyświetla listę wszystkich zaplanowanych prasówek.
   - Każdy element na liście zawiera informacje o temacie i harmonogramie.
@@ -156,7 +156,7 @@ W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowi
 - Opis: Jako użytkownik, chcę móc usunąć zaplanowaną prasówkę, aby zatrzymać jej generowanie.
 - Kryteria akceptacji:
   - System prosi o potwierdzenie usunięcia.
-  - Po potwierdzeniu prasówka jest usuwana z listy aktywnych i przestaje być generowana.
+  - Po potwierdzeniu prasówka jest usuwana z listy zaplanowanych i przestaje być generowana.
 
 - ID: PRSR-013
 - Tytuł: Ręczne wygenerowanie prasówki na żądanie

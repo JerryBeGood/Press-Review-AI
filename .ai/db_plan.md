@@ -21,7 +21,6 @@ Ta tabela jest zarządzana przez mechanizm autentykacji Supabase; schemat aplika
 - **user_id**: `uuid`, klucz obcy (FK) → `auth.users(id)`, `ON DELETE CASCADE`, `NOT NULL`
 - **topic**: `text`, `NOT NULL`
 - **schedule**: `text`, harmonogram w formacie CRON, `NOT NULL`
-- **is_active**: `boolean`, `NOT NULL`, domyślnie `true`
 - **created_at**: `timestamptz`, `NOT NULL`, domyślnie `now()`
 - **updated_at**: `timestamptz`, `NOT NULL`, domyślnie `now()`
 

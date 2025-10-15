@@ -18,8 +18,6 @@ All endpoints are prefixed with `/api`.
 #### **`GET /press-reviews`**
 
 - **Description**: Retrieves all of the authenticated user's press reviews. Since each user can have at most 5 press reviews, pagination and sorting are not necessary.
-- **Query Parameters**:
-  - `is_active` (boolean, optional): Filter by active status.
 - **Response: `200 OK`**:
   ```json
   {

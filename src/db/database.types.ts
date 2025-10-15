@@ -101,7 +101,6 @@ export interface Database {
         Row: {
           created_at: string;
           id: string;
-          is_active: boolean;
           schedule: string;
           topic: string;
           updated_at: string;
@@ -110,7 +109,6 @@ export interface Database {
         Insert: {
           created_at?: string;
           id?: string;
-          is_active?: boolean;
           schedule: string;
           topic: string;
           updated_at?: string;
@@ -119,7 +117,6 @@ export interface Database {
         Update: {
           created_at?: string;
           id?: string;
-          is_active?: boolean;
           schedule?: string;
           topic?: string;
           updated_at?: string;

@@ -18,8 +18,6 @@ All endpoints are prefixed with `/api`.
 #### **`GET /press-reviews`**
 
 - **Description**: Retrieves all of the authenticated user's press reviews. Since each user can have at most 5 press reviews, pagination and sorting are not necessary.
-- **Query Parameters**:
-  - `is_active` (boolean, optional): Filter by active status.
 - **Response: `200 OK`**:
   ```json
   {
@@ -28,7 +26,6 @@ All endpoints are prefixed with `/api`.
         "id": "uuid",
         "topic": "string",
         "schedule": "string (cron format)",
-        "is_active": "boolean",
         "created_at": "timestamptz",
         "updated_at": "timestamptz"
       }
@@ -47,8 +44,7 @@ All endpoints are prefixed with `/api`.
   ```json
   {
     "topic": "string",
-    "schedule": "string (cron format)",
-    "is_active": "boolean"
+    "schedule": "string (cron format)"
   }
   ```
 - **Response: `201 Created`**:
@@ -57,7 +53,6 @@ All endpoints are prefixed with `/api`.
     "id": "uuid",
     "topic": "string",
     "schedule": "string (cron format)",
-    "is_active": "boolean",
     "created_at": "timestamptz",
     "updated_at": "timestamptz"
   }
@@ -66,6 +61,7 @@ All endpoints are prefixed with `/api`.
   - `400 Bad Request`: Invalid input (e.g., bad cron format, missing fields).
   - `401 Unauthorized`: User not authenticated.
   - `403 Forbidden`: User has reached the limit of 5 active press reviews.
+  - `409 Conflict`: User already has scheduled press review with duplicate title
 
 ---
 
@@ -78,7 +74,6 @@ All endpoints are prefixed with `/api`.
     "id": "uuid",
     "topic": "string",
     "schedule": "string (cron format)",
-    "is_active": "boolean",
     "created_at": "timestamptz",
     "updated_at": "timestamptz"
   }
@@ -96,8 +91,7 @@ All endpoints are prefixed with `/api`.
   ```json
   {
     "topic": "string (optional)",
-    "schedule": "string (cron format, optional)",
-    "is_active": "boolean (optional)"
+    "schedule": "string (cron format, optional)"
   }
   ```
 - **Response: `200 OK`**:
@@ -106,7 +100,6 @@ All endpoints are prefixed with `/api`.
     "id": "uuid",
     "topic": "string",
     "schedule": "string (cron format)",
-    "is_active": "boolean",
     "created_at": "timestamptz",
     "updated_at": "timestamptz"
   }

@@ -32,10 +32,10 @@ export interface PressReviewsListDTO {
 }
 
 /** Body of POST /press-reviews */
-export type CreatePressReviewCmd = Pick<TablesInsert<"press_reviews">, "topic" | "schedule" | "is_active">;
+export type CreatePressReviewCmd = Pick<TablesInsert<"press_reviews">, "topic" | "schedule">;
 
 /** Body of PATCH /press-reviews/{id} */
-export type UpdatePressReviewCmd = Partial<Pick<PressReviewDTO, "topic" | "schedule" | "is_active">>;
+export type UpdatePressReviewCmd = Partial<Pick<PressReviewDTO, "topic" | "schedule">>;
 
 /* Topic validation */
 export interface ValidateTopicCmd {

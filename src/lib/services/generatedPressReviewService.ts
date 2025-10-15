@@ -12,7 +12,7 @@ export class GeneratedPressReviewService {
    * Creates a new on-demand generation job for a press review
    *
    * Business logic checks:
-   * 1. Verifies that the parent press_review exists and is active (is_active = true)
+   * 1. Verifies that the parent press_review exists
    * 2. Confirms that the authenticated user is the owner of the press_review
    * 3. Checks for any other pending generations for the same press_review_id to prevent duplicates
    *
@@ -22,10 +22,10 @@ export class GeneratedPressReviewService {
    * @throws Error with specific message for different failure scenarios
    */
   async createOnDemandGeneration(pressReviewId: string, userId: string): Promise<GeneratedPressReviewDetailDTO> {
-    // Step 1: Verify press_review exists, is active, and user is the owner
+    // Step 1: Verify press_review exists and user is the owner
     const { data: pressReview, error: pressReviewError } = await this.supabase
       .from("press_reviews")
-      .select("id, is_active, user_id")
+      .select("id, user_id")
       .eq("id", pressReviewId)
       .single();
 
@@ -36,11 +36,6 @@ export class GeneratedPressReviewService {
     // Check if press_review is owned by the user
     if (pressReview.user_id !== userId) {
       throw new Error("NOT_FOUND"); // Don't leak information about existence
-    }
-
-    // Check if press_review is active
-    if (!pressReview.is_active) {
-      throw new Error("NOT_FOUND"); // Don't leak information about inactive reviews
     }
 
     // Step 2: Check for existing pending generations

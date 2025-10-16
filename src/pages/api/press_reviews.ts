@@ -112,3 +112,53 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
   }
 };
+
+/**
+ * GET /api/press_reviews
+ * Retrieves all press reviews for the authenticated user
+ * Returns 200 OK with a list of press reviews and count
+ */
+export const GET: APIRoute = async ({ locals }) => {
+  try {
+    // Step 1: Initialize service with Supabase client from middleware
+    const service = new PressReviewService(locals.supabase);
+
+    // Step 2: Get all press reviews for the user (using DEFAULT_USER_ID in development)
+    const result = await service.getPressReviews(DEFAULT_USER_ID);
+
+    // Step 3: Return successful response with data and count
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    // Step 4: Handle errors
+    // eslint-disable-next-line no-console
+    console.error("[GET /api/press_reviews] Error:", error);
+
+    if (error instanceof Error && error.message === "DATABASE_ERROR") {
+      return new Response(
+        JSON.stringify({
+          message: "Database error occurred",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Unexpected error
+    return new Response(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};

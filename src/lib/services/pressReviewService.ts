@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreatePressReviewCmd, PressReviewDTO, UpdatePressReviewCmd } from "../../types";
+import type { CreatePressReviewCmd, PressReviewDTO, PressReviewsListDTO, UpdatePressReviewCmd } from "../../types";
 
 /**
  * Service for managing press reviews
@@ -152,5 +152,39 @@ export class PressReviewService {
 
     // If count is 0 or null, no record was deleted
     return { success: (count ?? 0) > 0 };
+  }
+
+  /**
+   * Retrieves all press reviews for a specific user
+   *
+   * Business logic:
+   * 1. Fetches all press_reviews records for the given userId
+   * 2. Returns list with count (max 5 press reviews per user)
+   * 3. Removes user_id from results to match PressReviewDTO
+   *
+   * @param userId - UUID of the authenticated user
+   * @returns List of press reviews with total count
+   * @throws Error with specific message for database failures
+   */
+  async getPressReviews(userId: string): Promise<PressReviewsListDTO> {
+    const { data, error, count } = await this.supabase
+      .from("press_reviews")
+      .select("*", { count: "exact" })
+      .eq("user_id", userId);
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching press reviews:", error);
+      throw new Error("DATABASE_ERROR");
+    }
+
+    // Remove user_id from results to match PressReviewDTO
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const pressReviews: PressReviewDTO[] = (data || []).map(({ user_id, ...rest }) => rest);
+
+    return {
+      data: pressReviews,
+      count: count || 0,
+    };
   }
 }

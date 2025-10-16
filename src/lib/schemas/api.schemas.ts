@@ -37,3 +37,34 @@ export const deletePressReviewParamsSchema = z.object({
 });
 
 export type DeletePressReviewParams = z.infer<typeof deletePressReviewParamsSchema>;
+
+/**
+ * Validation schema for PATCH /api/press-reviews/:id
+ * Validates that the id parameter is a valid UUID
+ */
+export const updatePressReviewParamsSchema = z.object({
+  id: uuidSchema,
+});
+
+export type UpdatePressReviewParams = z.infer<typeof updatePressReviewParamsSchema>;
+
+/**
+ * Validation schema for PATCH /api/press-reviews/:id body
+ * Validates topic (optional string) and schedule (optional CRON format)
+ * At least one field must be present
+ */
+export const updatePressReviewSchema = z
+  .object({
+    topic: z.string().optional(),
+    schedule: z
+      .string()
+      .refine((val) => isValidCron(val), {
+        message: "Schedule must be a valid CRON expression (e.g., '0 9 * * *')",
+      })
+      .optional(),
+  })
+  .refine((data) => data.topic !== undefined || data.schedule !== undefined, {
+    message: "At least one field (topic or schedule) must be provided",
+  });
+
+export type UpdatePressReviewInput = z.infer<typeof updatePressReviewSchema>;

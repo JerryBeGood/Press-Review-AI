@@ -15,7 +15,7 @@ All endpoints are prefixed with `/api`.
 
 ### 2.1 Press Reviews
 
-#### **`GET /press-reviews`**
+#### **`GET /press_reviews`**
 
 - **Description**: Retrieves all of the authenticated user's press reviews. Since each user can have at most 5 press reviews, pagination and sorting are not necessary.
 - **Response: `200 OK`**:
@@ -37,7 +37,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`POST /press-reviews`**
+#### **`POST /press_reviews`**
 
 - **Description**: Creates a new press review for the authenticated user.
 - **Request Body**:
@@ -65,7 +65,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`GET /press-reviews/{id}`**
+#### **`GET /press_reviews/{id}`**
 
 - **Description**: Retrieves a single press review by its ID.
 - **Response: `200 OK`**:
@@ -84,7 +84,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`PATCH /press-reviews/{id}`**
+#### **`PATCH /press_reviews/{id}`**
 
 - **Description**: Updates an existing press review.
 - **Request Body**:
@@ -111,7 +111,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`DELETE /press-reviews/{id}`**
+#### **`DELETE /press_reviews/{id}`**
 
 - **Description**: Deletes a press review.
 - **Response: `204 No Content`**
@@ -121,7 +121,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`POST /press-reviews/validate-topic`**
+#### **`POST /press_reviews/validate_topic`**
 
 - **Description**: Validates a press review topic using the AI agent.
 - **Request Body**:
@@ -144,7 +144,7 @@ All endpoints are prefixed with `/api`.
 
 ### 2.2 Generated Press Reviews
 
-#### **`GET /generated-press-reviews`**
+#### **`GET /generated_press_reviews`**
 
 - **Description**: Retrieves a list of generated press reviews for the authenticated user. Can be filtered by the parent `press_review_id`.
 - **Query Parameters**:
@@ -167,7 +167,7 @@ All endpoints are prefixed with `/api`.
   ```
 - **Error Response: `401 Unauthorized`**.
 
-#### **`POST /generated-press-reviews`**
+#### **`POST /generated_press_reviews`**
 
 - **Description**: Triggers on-demand generation of a press review instance for the authenticated user. Returns immediately with the newly created generation job, which will transition from `pending` to `success` or `failed` asynchronously.
 - **Request Body**:
@@ -195,7 +195,7 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-#### **`GET /generated-press-reviews/{id}`**
+#### **`GET /generated_press_reviews/{id}`**
 
 - **Description**: Retrieves a single generated press review by its ID.
 - **Response: `200 OK`**:
@@ -215,7 +215,7 @@ All endpoints are prefixed with `/api`.
 
 ### 2.4 Generation Logs
 
-#### **`GET /generation-logs/{id}`**
+#### **`GET /generation_logs/{id}`**
 
 - **Description**: Retrieves the generation log for a specific generated press review. The ID corresponds to the `generation_logs` table ID.
 - **Response: `200 OK`**:
@@ -245,10 +245,10 @@ All endpoints are prefixed with `/api`.
 ### 4.1 Validation
 
 - All API endpoints will validate incoming data against the `NOT NULL` and data type constraints defined in the database schema before executing a query.
-- **`POST /press-reviews`**:
+- **`POST /press_reviews`**:
   - `topic`: Must be a non-empty string.
   - `schedule`: Must be a valid CRON expression.
 
 ### 4.2 Business Logic
 
-- **AI Topic Validation**: A dedicated endpoint, `POST /press-reviews/validate-topic`, is provided to decouple the AI validation logic from the resource creation logic. This allows the frontend to provide real-time feedback to the user as required by the PRD.
+- **AI Topic Validation**: A dedicated endpoint, `POST /press_reviews/validate_topic`, is provided to decouple the AI validation logic from the resource creation logic. This allows the frontend to provide real-time feedback to the user as required by the PRD.

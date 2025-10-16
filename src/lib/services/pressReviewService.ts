@@ -60,4 +60,33 @@ export class PressReviewService {
 
     return pressReviewWithoutUserId;
   }
+
+  /**
+   * Deletes a press review by id for a specific user
+   *
+   * Business logic:
+   * 1. Attempts to delete a press review matching both id and userId
+   * 2. Ensures users can only delete their own resources
+   * 3. Returns success status based on whether a record was deleted
+   *
+   * @param id - UUID of the press review to delete
+   * @param userId - UUID of the authenticated user
+   * @returns Object with success flag indicating if the resource was deleted
+   */
+  async deletePressReview(id: string, userId: string): Promise<{ success: boolean }> {
+    const { error, count } = await this.supabase
+      .from("press_reviews")
+      .delete({ count: "exact" })
+      .eq("id", id)
+      .eq("user_id", userId);
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error deleting press review:", error);
+      throw new Error("DATABASE_ERROR");
+    }
+
+    // If count is 0 or null, no record was deleted
+    return { success: (count ?? 0) > 0 };
+  }
 }

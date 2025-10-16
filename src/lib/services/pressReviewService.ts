@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreatePressReviewCmd, PressReviewDTO } from "../../types";
+import type { CreatePressReviewCmd, PressReviewDTO, UpdatePressReviewCmd } from "../../types";
 
 /**
  * Service for managing press reviews
@@ -57,6 +57,70 @@ export class PressReviewService {
     // Return without user_id (as per DTO definition)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user_id, ...pressReviewWithoutUserId } = newPressReview;
+
+    return pressReviewWithoutUserId;
+  }
+
+  /**
+   * Updates an existing press review by id for a specific user
+   *
+   * Business logic:
+   * 1. Updates a press review matching both id and userId
+   * 2. Ensures users can only update their own resources
+   * 3. Only updates fields that are provided in the command object
+   * 4. Returns the updated press review without exposing user_id
+   *
+   * @param id - UUID of the press review to update
+   * @param cmd - Command object containing optional topic and/or schedule
+   * @param userId - UUID of the authenticated user
+   * @returns The updated press review as PressReviewDTO
+   * @throws Error with specific message for different failure scenarios
+   */
+  async updatePressReview(id: string, cmd: UpdatePressReviewCmd, userId: string): Promise<PressReviewDTO> {
+    // Build update object with only provided fields
+    const updateData: Partial<{ topic: string; schedule: string; updated_at: string }> = {};
+
+    if (cmd.topic !== undefined) {
+      updateData.topic = cmd.topic;
+    }
+
+    if (cmd.schedule !== undefined) {
+      updateData.schedule = cmd.schedule;
+    }
+
+    // Update press review
+    const { data: updatedPressReview, error: updateError } = await this.supabase
+      .from("press_reviews")
+      .update(updateData)
+      .eq("id", id)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (updateError) {
+      // Check if error is due to duplicate topic for the same user (trigger)
+      if (updateError.message.includes("already has a press review with topic")) {
+        throw new Error("DUPLICATE_TOPIC");
+      }
+
+      // Check if error is due to record not found
+      if (updateError.code === "PGRST116") {
+        throw new Error("NOT_FOUND");
+      }
+
+      // Log unexpected database errors
+      // eslint-disable-next-line no-console
+      console.error("Error updating press review:", updateError);
+      throw new Error("DATABASE_ERROR");
+    }
+
+    if (!updatedPressReview) {
+      throw new Error("NOT_FOUND");
+    }
+
+    // Return without user_id (as per DTO definition)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user_id, ...pressReviewWithoutUserId } = updatedPressReview;
 
     return pressReviewWithoutUserId;
   }

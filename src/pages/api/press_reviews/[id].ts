@@ -1,10 +1,138 @@
 import type { APIRoute } from "astro";
 
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
-import { deletePressReviewParamsSchema } from "../../../lib/schemas/api.schemas";
+import {
+  deletePressReviewParamsSchema,
+  updatePressReviewParamsSchema,
+  updatePressReviewSchema,
+} from "../../../lib/schemas/api.schemas";
 import { PressReviewService } from "../../../lib/services/pressReviewService";
 
 export const prerender = false;
+
+/**
+ * PATCH /api/press_reviews/:id
+ * Updates an existing press review for the authenticated user
+ * Returns 200 OK with the updated press review
+ */
+export const PATCH: APIRoute = async ({ params, request, locals }) => {
+  // Step 1: Validate path parameters
+  const paramsValidationResult = updatePressReviewParamsSchema.safeParse(params);
+  if (!paramsValidationResult.success) {
+    return new Response(
+      JSON.stringify({
+        message: "Invalid press review ID",
+        errors: paramsValidationResult.error.errors,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const { id } = paramsValidationResult.data;
+
+  // Step 2: Parse and validate request body
+  let requestBody;
+  try {
+    requestBody = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ message: "Invalid JSON in request body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const validationResult = updatePressReviewSchema.safeParse(requestBody);
+  if (!validationResult.success) {
+    return new Response(
+      JSON.stringify({
+        message: "Invalid request body",
+        errors: validationResult.error.errors,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const updateData = validationResult.data;
+
+  // Step 3: Call service to update press review
+  const service = new PressReviewService(locals.supabase);
+
+  try {
+    const pressReview = await service.updatePressReview(id, updateData, DEFAULT_USER_ID);
+
+    return new Response(JSON.stringify(pressReview), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Step 4: Map service errors to HTTP responses
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "NOT_FOUND":
+          return new Response(
+            JSON.stringify({
+              message: "Press review not found or you do not have permission to update it",
+            }),
+            {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        case "DUPLICATE_TOPIC":
+          return new Response(
+            JSON.stringify({
+              message: "Press review with the same topic already exists",
+            }),
+            {
+              status: 409,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        case "DATABASE_ERROR":
+          return new Response(
+            JSON.stringify({
+              message: "Database error occurred",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        default:
+          // eslint-disable-next-line no-console
+          console.error("Unexpected error:", error);
+          return new Response(
+            JSON.stringify({
+              message: "Internal server error",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+      }
+    }
+
+    // Unexpected error type
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error type:", error);
+    return new Response(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
 
 /**
  * DELETE /api/press_reviews/:id

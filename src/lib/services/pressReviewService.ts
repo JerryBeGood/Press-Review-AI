@@ -1,5 +1,11 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreatePressReviewCmd, PressReviewDTO, PressReviewsListDTO, UpdatePressReviewCmd } from "../../types";
+import type {
+  CreatePressReviewCmd,
+  PressReviewDTO,
+  PressReviewsListDTO,
+  UpdatePressReviewCmd,
+  ValidateTopicResultDTO,
+} from "../../types";
 
 /**
  * Service for managing press reviews
@@ -185,6 +191,26 @@ export class PressReviewService {
     return {
       data: pressReviews,
       count: count || 0,
+    };
+  }
+
+  /**
+   * Validates a press review topic
+   *
+   * In development phase, this always returns a static success response.
+   * In production, this would use AI agent to validate the topic.
+   *
+   * @param topic - The topic to validate
+   * @param userId - UUID of the authenticated user (for future AI agent context)
+   * @returns Validation result with is_valid flag and suggestions array
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async validateTopic(_topic: string, _userId: string): Promise<ValidateTopicResultDTO> {
+    // Currently returns a static response in development phase
+    // AI validation to be implemented in production
+    return {
+      is_valid: true,
+      suggestions: [],
     };
   }
 }

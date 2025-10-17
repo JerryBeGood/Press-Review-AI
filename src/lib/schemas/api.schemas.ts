@@ -4,6 +4,16 @@ import { z } from "zod";
 const uuidSchema = z.string().uuid({ message: "Must be a valid UUID" });
 
 /**
+ * Validation schema for POST /api/press_reviews/validate_topic
+ * Simple validation for topic string
+ */
+export const validateTopicSchema = z.object({
+  topic: z.string(),
+});
+
+export type ValidateTopicInput = z.infer<typeof validateTopicSchema>;
+
+/**
  * Validation schema for POST /api/generated-press-reviews
  * Ensures press_review_id is a valid UUID
  */

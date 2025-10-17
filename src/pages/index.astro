@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/layout.astro";
-import PressReviewOutput from "../components/press_review_output.tsx";
+import { DashboardView } from "../components/dashboard/DashboardView";
 ---
 
 <Layout>
-  <PressReviewOutput client:load />
+  <DashboardView client:load />
 </Layout>

@@ -23,6 +23,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  // TODO: Schedule is passed as a string, but it should be parsed into a cron expression
+  console.log(JSON.stringify(requestBody, null, 2));
+  requestBody.schedule = "0 9 * * *";
+
   const validationResult = createPressReviewSchema.safeParse(requestBody);
   if (!validationResult.success) {
     return new Response(

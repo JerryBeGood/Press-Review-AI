@@ -23,6 +23,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  console.log(JSON.stringify(requestBody, null, 2));
+
   const validationResult = createGeneratedPressReviewSchema.safeParse(requestBody);
   if (!validationResult.success) {
     return new Response(

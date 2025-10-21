@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { Toaster } from "../components/ui/sonner";
 ---
 
 <!doctype html>
@@ -7,10 +8,12 @@ import "../styles/global.css";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Press Review AI</title>
   </head>
   <body>
     <div>
       <slot />
     </div>
+    <Toaster client:load />
   </body>
 </html>

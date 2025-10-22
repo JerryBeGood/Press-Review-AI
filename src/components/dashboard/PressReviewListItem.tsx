@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { PressReviewViewModel } from "@/types";
+import { formatCronToReadable } from "@/lib/cronUtils";
 
 interface PressReviewListItemProps {
   pressReview: PressReviewViewModel;
@@ -36,7 +37,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>{pressReview.schedule}</span>
+            <span>{formatCronToReadable(pressReview.schedule)}</span>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:flex-shrink-0">

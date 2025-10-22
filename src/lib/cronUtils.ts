@@ -101,3 +101,47 @@ export function parseCronExpression(cronString: string): ScheduleConfig | null {
 
   return null;
 }
+
+export function formatCronToReadable(cronString: string): string {
+  const config = parseCronExpression(cronString);
+
+  if (!config) {
+    return cronString; // Fallback to original string if unparseable
+  }
+
+  const formatTime = (time: string): string => {
+    const hour = parseInt(time, 10);
+    if (hour === 0) return "12:00 AM";
+    if (hour < 12) return `${hour}:00 AM`;
+    if (hour === 12) return "12:00 PM";
+    return `${hour - 12}:00 PM`;
+  };
+
+  const timeStr = formatTime(config.time);
+
+  switch (config.schedule) {
+    case "daily":
+      return `Daily at ${timeStr}`;
+
+    case "weekly": {
+      const dayName = config.dayOfWeek ? config.dayOfWeek.charAt(0).toUpperCase() + config.dayOfWeek.slice(1) : "";
+      return `Every ${dayName} at ${timeStr}`;
+    }
+
+    case "monthly": {
+      const day = config.dayOfMonth;
+      const suffix =
+        day === "1" || day === "21" || day === "31"
+          ? "st"
+          : day === "2" || day === "22"
+            ? "nd"
+            : day === "3" || day === "23"
+              ? "rd"
+              : "th";
+      return `Monthly on the ${day}${suffix} at ${timeStr}`;
+    }
+
+    default:
+      return cronString;
+  }
+}

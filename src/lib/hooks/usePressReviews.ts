@@ -119,7 +119,8 @@ export function usePressReviews(): UsePressReviewsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate press review: ${response.statusText}`);
+        const error = { message: `Failed to generate press review: ${response.statusText}`, status: response.status };
+        throw error;
       }
 
       // Clear generating status after a short delay

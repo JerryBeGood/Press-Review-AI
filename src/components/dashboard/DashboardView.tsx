@@ -95,8 +95,12 @@ export function DashboardView() {
     try {
       await generatePressReview(id);
       toast.success("Generowanie prasówki rozpoczęte");
-    } catch {
-      toast.error("Nie udało się rozpocząć generowania. Spróbuj ponownie.");
+    } catch (error) {
+      if ((error as { status?: number }).status === 409) {
+        toast.error("Generowanie tej prasówki już trwa.");
+      } else {
+        toast.error("Nie udało się rozpocząć generowania. Spróbuj ponownie.");
+      }
     }
   };
 

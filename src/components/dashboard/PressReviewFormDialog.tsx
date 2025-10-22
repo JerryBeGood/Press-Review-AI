@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useTopicValidation } from "@/lib/hooks/useTopicValidation";
+import { buildCronExpression, parseCronExpression } from "@/lib/cronUtils";
 import type { CreatePressReviewCmd, UpdatePressReviewCmd, PressReviewDTO } from "@/types";
 
 interface PressReviewFormDialogProps {
@@ -25,6 +26,9 @@ interface PressReviewFormDialogProps {
 interface FormValues {
   topic: string;
   schedule: string;
+  dayOfWeek: string;
+  dayOfMonth: string;
+  time: string;
 }
 
 export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }: PressReviewFormDialogProps) {
@@ -34,10 +38,14 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
   const form = useForm<FormValues>({
     defaultValues: {
       topic: initialData?.topic || "",
-      schedule: initialData?.schedule || "daily at 08:00",
+      schedule: "daily",
+      dayOfWeek: "",
+      dayOfMonth: "",
+      time: "9",
     },
   });
 
+  const scheduleValue = form.watch("schedule");
   const topicValue = form.watch("topic");
 
   // Validate topic on change (with debounce in hook)
@@ -50,9 +58,34 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
   // Reset form when dialog closes or opens with new data
   useEffect(() => {
     if (isOpen) {
+      let scheduleConfig: {
+        schedule: "daily" | "weekly" | "monthly";
+        dayOfWeek: string;
+        dayOfMonth: string;
+        time: string;
+      } = {
+        schedule: "daily",
+        dayOfWeek: "",
+        dayOfMonth: "",
+        time: "9",
+      };
+
+      // Parse CRON expression if editing existing review
+      if (initialData?.schedule) {
+        const parsed = parseCronExpression(initialData.schedule);
+        if (parsed) {
+          scheduleConfig = {
+            schedule: parsed.schedule,
+            dayOfWeek: parsed.dayOfWeek || "",
+            dayOfMonth: parsed.dayOfMonth || "",
+            time: parsed.time,
+          };
+        }
+      }
+
       form.reset({
         topic: initialData?.topic || "",
-        schedule: initialData?.schedule || "daily at 08:00",
+        ...scheduleConfig,
       });
       reset();
     }
@@ -60,7 +93,23 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      await onSubmit(values);
+      // Build CRON expression from form values
+      const cronExpression = buildCronExpression({
+        schedule: values.schedule as "daily" | "weekly" | "monthly",
+        time: values.time,
+        dayOfWeek: values.dayOfWeek
+          ? (values.dayOfWeek as "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")
+          : undefined,
+        dayOfMonth: values.dayOfMonth || undefined,
+      });
+
+      // Construct payload with topic and CRON schedule
+      const payload = {
+        topic: values.topic,
+        schedule: cronExpression,
+      };
+
+      await onSubmit(payload);
       onClose();
       form.reset();
     } catch {
@@ -120,32 +169,124 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="schedule"
-              rules={{ required: "Harmonogram jest wymagany" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Harmonogram</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Wybierz harmonogram" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="daily at 08:00">Codziennie o 8:00</SelectItem>
-                      <SelectItem value="daily at 12:00">Codziennie o 12:00</SelectItem>
-                      <SelectItem value="daily at 18:00">Codziennie o 18:00</SelectItem>
-                      <SelectItem value="weekly on Monday at 08:00">Co tydzień w poniedziałek o 8:00</SelectItem>
-                      <SelectItem value="weekly on Friday at 17:00">Co tydzień w piątek o 17:00</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>Wybierz, jak często chcesz otrzymywać prasówkę.</FormDescription>
-                  <FormMessage />
-                </FormItem>
+            <div className="flex w-full items-end gap-4">
+              <div className="flex-1">
+                <FormField
+                  control={form.control}
+                  name="schedule"
+                  rules={{ required: "Harmonogram jest wymagany" }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Harmonogram</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz harmonogram" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {scheduleValue === "weekly" && (
+                <div className="flex-1">
+                  <FormField
+                    control={form.control}
+                    name="dayOfWeek"
+                    rules={{
+                      required: scheduleValue === "weekly" ? "Dzień tygodnia jest wymagany" : false,
+                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz dzień tygodnia" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monday">Monday</SelectItem>
+                            <SelectItem value="tuesday">Tuesday</SelectItem>
+                            <SelectItem value="wednesday">Wednesday</SelectItem>
+                            <SelectItem value="thursday">Thursday</SelectItem>
+                            <SelectItem value="friday">Friday</SelectItem>
+                            <SelectItem value="saturday">Saturday</SelectItem>
+                            <SelectItem value="sunday">Sunday</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
-            />
+
+              {scheduleValue === "monthly" && (
+                <div className="flex-1">
+                  <FormField
+                    control={form.control}
+                    name="dayOfMonth"
+                    rules={{
+                      required: scheduleValue === "monthly" ? "Dzień miesiąca jest wymagany" : false,
+                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz dzień miesiąca" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 overflow-y-auto">
+                            {Array.from({ length: 31 }, (_, index) => (
+                              <SelectItem key={index} value={(index + 1).toString()}>
+                                {index + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+
+              <div className="flex-1">
+                <FormField
+                  control={form.control}
+                  name="time"
+                  rules={{
+                    required: "Godzina jest wymagana",
+                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Wybierz godzinę" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          {Array.from({ length: 24 }, (_, index) => {
+                            const hour = String(index).padStart(2, "0");
+
+                            return (
+                              <SelectItem key={index} value={index.toString()}>
+                                {`${hour}:00`}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <DialogFooter className="gap-2 sm:gap-0">
               <Button

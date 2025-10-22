@@ -132,17 +132,21 @@ export function DashboardView() {
 
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8 max-w-5xl">
-      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pulpit</h1>
-          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Zarządzaj swoimi cyklicznymi prasówkami</p>
+      {!isLoading && pressReviews.length > 0 ? (
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pulpit</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Zarządzaj swoimi cyklicznymi prasówkami</p>
+          </div>
+          {!isLoading && pressReviews.length > 0 && (
+            <Button onClick={handleOpenCreateDialog} disabled={hasReachedLimit} size="lg" className="w-full sm:w-auto">
+              Dodaj prasówkę
+            </Button>
+          )}
         </div>
-        {!isLoading && pressReviews.length > 0 && (
-          <Button onClick={handleOpenCreateDialog} disabled={hasReachedLimit} size="lg" className="w-full sm:w-auto">
-            Dodaj prasówkę
-          </Button>
-        )}
-      </div>
+      ) : (
+        <></>
+      )}
 
       {hasReachedLimit && pressReviews.length > 0 && (
         <div className="mb-6 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-3 sm:p-4 text-sm">
@@ -182,14 +186,12 @@ export function DashboardView() {
           onGenerate={handleGenerate}
         />
       )}
-
       <PressReviewFormDialog
         isOpen={isFormOpen}
         onClose={handleCloseFormDialog}
         onSubmit={handleFormSubmit}
         initialData={editingPressReview || undefined}
       />
-
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={handleCloseDeleteDialog}

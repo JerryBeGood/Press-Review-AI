@@ -9,6 +9,7 @@ interface PressReviewListItemProps {
   onGenerate: (id: string) => void;
 }
 
+// TODO: pressReview.status is never set and does not take any effect on the component
 export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate }: PressReviewListItemProps) {
   const isDeleting = pressReview.status === "deleting";
   const isGenerating = pressReview.status === "generating";

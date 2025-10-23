@@ -8,8 +8,6 @@ import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
 import type { PressReviewViewModel, CreatePressReviewCmd, UpdatePressReviewCmd } from "@/types";
 
-// TODO: When empty state is shown the caption "Pulpit" should not be displayed
-
 export function DashboardView() {
   const {
     pressReviews,

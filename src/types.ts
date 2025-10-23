@@ -31,6 +31,11 @@ export interface PressReviewsListDTO {
   count: number;
 }
 
+/** View model extending PressReviewDTO with UI state */
+export type PressReviewViewModel = PressReviewDTO & {
+  status?: "deleting" | "generating";
+};
+
 /** Body of POST /press-reviews */
 export type CreatePressReviewCmd = Pick<TablesInsert<"press_reviews">, "topic" | "schedule">;
 

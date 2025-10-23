@@ -53,7 +53,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             Edytuj
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
             onClick={() => onDelete(pressReview.id)}
             disabled={isDeleting || isGenerating}

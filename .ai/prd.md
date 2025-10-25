@@ -190,3 +190,12 @@ In today's world, the sheer volume of information makes it extremely time-consum
 - ID: PRSR-016
 - Title: Reading press releases
 - Description: As a user, after selecting a press release from the archive, I want to see its full content, including a general summary.
+- Acceptance criteria:
+  - The content is legible and well formatted.
+  - Each segment contains a title, summary, and clickable link to the original article.
+
+## 6. Success metrics
+
+1. System stability:
+   - Goal: Scheduled press releases are generated without errors on the set dates.
+   - Measurement: Manual monitoring of system logs to identify failed generations and verify successful ones.

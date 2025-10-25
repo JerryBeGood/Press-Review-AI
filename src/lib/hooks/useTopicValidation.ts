@@ -49,7 +49,7 @@ export function useTopicValidation(): UseTopicValidationReturn {
       } catch {
         setValidationResult({
           is_valid: false,
-          suggestions: ["Nie udało się zwalidować tematu. Spróbuj ponownie."],
+          suggestions: ["Failed to validate topic. Please try again."],
         });
       } finally {
         setIsValidating(false);

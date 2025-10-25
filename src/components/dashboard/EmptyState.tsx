@@ -25,14 +25,14 @@ export function EmptyState({ onCreateFirst }: EmptyStateProps) {
               />
             </svg>
           </div>
-          <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">Brak zaplanowanych prasówek</h3>
+          <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No scheduled press reviews</h3>
           <p className="text-sm sm:text-base mb-6 leading-relaxed">
-            Zacznij od stworzenia swojej pierwszej prasówki. Zdefiniuj temat i harmonogram, a my automatycznie
-            wygenerujemy dla Ciebie cykliczne podsumowania.
+            Start by creating your first press review. Define the topic and schedule and we&apos;ll automatically
+            generate recurring summaries for you.
           </p>
         </div>
         <Button onClick={onCreateFirst} size="lg" className="w-full sm:w-auto">
-          Stwórz pierwszą prasówkę
+          Create first press review
         </Button>
       </div>
     </div>

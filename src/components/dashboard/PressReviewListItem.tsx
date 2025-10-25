@@ -47,30 +47,30 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             size="sm"
             onClick={() => onEdit(pressReview)}
             disabled={isDeleting || isGenerating}
-            aria-label={`Edytuj prasówkę: ${pressReview.topic}`}
+            aria-label={`Edit press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
           >
-            Edytuj
+            Edit
           </Button>
           <Button
             variant="destructive"
             size="sm"
             onClick={() => onDelete(pressReview.id)}
             disabled={isDeleting || isGenerating}
-            aria-label={`Usuń prasówkę: ${pressReview.topic}`}
+            aria-label={`Delete press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
           >
-            {isDeleting ? "Usuwanie..." : "Usuń"}
+            {isDeleting ? "Deleting..." : "Delete"}
           </Button>
           <Button
             variant="default"
             size="sm"
             onClick={() => onGenerate(pressReview.id)}
             disabled={isDeleting || isGenerating}
-            aria-label={`Generuj prasówkę: ${pressReview.topic}`}
+            aria-label={`Generate press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
           >
-            {isGenerating ? "Generowanie..." : "Generuj teraz"}
+            {isGenerating ? "Generating..." : "Generate now"}
           </Button>
         </div>
       </div>

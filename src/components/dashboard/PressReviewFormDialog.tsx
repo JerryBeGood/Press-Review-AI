@@ -133,11 +133,11 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? "Edytuj prasówkę" : "Utwórz nową prasówkę"}</DialogTitle>
+          <DialogTitle>{isEditMode ? "Edit press review" : "Create new press review"}</DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? "Zaktualizuj temat lub harmonogram prasówki."
-              : "Zdefiniuj temat i harmonogram dla swojej nowej prasówki."}
+              ? "Update the topic or schedule of the press review."
+              : "Define the topic and schedule for your new press review."}
           </DialogDescription>
         </DialogHeader>
 
@@ -147,26 +147,26 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
               control={form.control}
               name="topic"
               rules={{
-                required: "Temat jest wymagany",
+                required: "Topic is required",
                 minLength: {
                   value: 3,
-                  message: "Temat musi mieć co najmniej 3 znaki",
+                  message: "Topic must have at least 3 characters",
                 },
               }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Temat prasówki</FormLabel>
+                  <FormLabel>Press review topic</FormLabel>
                   <FormControl>
-                    <Input placeholder="np. Sztuczna inteligencja" {...field} aria-invalid={isTopicInvalid} />
+                    <Input placeholder="e.g. Artificial intelligence" {...field} aria-invalid={isTopicInvalid} />
                   </FormControl>
                   <FormDescription>
-                    {isValidating && "Sprawdzanie tematu..."}
-                    {!isValidating && validationResult && validationResult.is_valid && "Temat wygląda dobrze!"}
+                    {isValidating && "Checking topic..."}
+                    {!isValidating && validationResult && validationResult.is_valid && "Topic looks good!"}
                   </FormDescription>
                   <FormMessage />
                   {isTopicInvalid && validationResult.suggestions.length > 0 && (
                     <div className="text-sm text-destructive space-y-1">
-                      <p className="font-medium">Sugestie:</p>
+                      <p className="font-medium">Suggestions:</p>
                       <ul className="list-disc list-inside space-y-1">
                         {validationResult.suggestions.map((suggestion, idx) => (
                           <li key={idx}>{suggestion}</li>
@@ -183,14 +183,14 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                 <FormField
                   control={form.control}
                   name="schedule"
-                  rules={{ required: "Harmonogram jest wymagany" }}
+                  rules={{ required: "Schedule is required" }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Harmonogram</FormLabel>
+                      <FormLabel>Schedule</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Wybierz harmonogram" />
+                            <SelectValue placeholder="Select schedule" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -211,13 +211,13 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                     control={form.control}
                     name="dayOfWeek"
                     rules={{
-                      required: scheduleValue === "weekly" ? "Dzień tygodnia jest wymagany" : false,
+                      required: scheduleValue === "weekly" ? "Day of week is required" : false,
                     }}
                     render={({ field }) => (
                       <FormItem>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Wybierz dzień tygodnia" />
+                            <SelectValue placeholder="Select day of week" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="monday">Monday</SelectItem>
@@ -242,13 +242,13 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                     control={form.control}
                     name="dayOfMonth"
                     rules={{
-                      required: scheduleValue === "monthly" ? "Dzień miesiąca jest wymagany" : false,
+                      required: scheduleValue === "monthly" ? "Day of month is required" : false,
                     }}
                     render={({ field }) => (
                       <FormItem>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Wybierz dzień miesiąca" />
+                            <SelectValue placeholder="Select day of month" />
                           </SelectTrigger>
                           <SelectContent className="max-h-60 overflow-y-auto">
                             {Array.from({ length: 31 }, (_, index) => (
@@ -270,13 +270,13 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                   control={form.control}
                   name="time"
                   rules={{
-                    required: "Godzina jest wymagana",
+                    required: "Time is required",
                   }}
                   render={({ field }) => (
                     <FormItem>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Wybierz godzinę" />
+                          <SelectValue placeholder="Select time" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60 overflow-y-auto">
                           {Array.from({ length: 24 }, (_, index) => {
@@ -305,10 +305,10 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                 disabled={form.formState.isSubmitting}
                 className="w-full sm:w-auto"
               >
-                Anuluj
+                Cancel
               </Button>
               <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-                {form.formState.isSubmitting ? "Zapisywanie..." : isEditMode ? "Zapisz zmiany" : "Utwórz prasówkę"}
+                {form.formState.isSubmitting ? "Saving..." : isEditMode ? "Save changes" : "Create press review"}
               </Button>
             </DialogFooter>
           </form>

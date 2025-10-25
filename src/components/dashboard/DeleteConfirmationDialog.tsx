@@ -26,21 +26,21 @@ export function DeleteConfirmationDialog({
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>Czy na pewno chcesz usunąć?</AlertDialogTitle>
+          <AlertDialogTitle>Are you sure you want to delete?</AlertDialogTitle>
           <AlertDialogDescription className="text-sm leading-relaxed">
-            Ta akcja jest nieodwracalna. Prasówka
+            This action cannot be undone. The press review
             {pressReviewTopic && (
               <>
                 {" "}
                 &ldquo;<strong className="text-foreground">{pressReviewTopic}</strong>&rdquo;
               </>
-            )}{" "}
-            zostanie trwale usunięta wraz z wszystkimi wygenerowanymi podsumowaniami.
+            )}
+            will be permanently deleted along with all generated summaries.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2 sm:gap-0">
           <AlertDialogCancel onClick={onClose} className="w-full sm:w-auto">
-            Anuluj
+            Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
@@ -49,7 +49,7 @@ export function DeleteConfirmationDialog({
             }}
             className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Usuń prasówkę
+            Delete press review
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

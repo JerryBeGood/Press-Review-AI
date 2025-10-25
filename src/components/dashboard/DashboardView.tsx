@@ -46,21 +46,21 @@ export function DashboardView() {
     try {
       if (editingPressReview) {
         await updatePressReview(editingPressReview.id, data);
-        toast.success("Prasówka została zaktualizowana");
+        toast.success("Press review updated");
       } else {
         await addPressReview(data as CreatePressReviewCmd);
-        toast.success("Prasówka została utworzona");
+        toast.success("Press review created");
       }
       handleCloseFormDialog();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Nieznany błąd";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
       if (errorMessage.includes("409") || errorMessage.includes("duplicate")) {
-        toast.error("Prasówka o takim temacie już istnieje");
+        toast.error("A press review with this topic already exists");
       } else if (errorMessage.includes("limit")) {
-        toast.error("Osiągnięto limit 5 prasówek");
+        toast.error("Limit of 5 press reviews reached");
       } else {
-        toast.error("Nie udało się zapisać prasówki. Spróbuj ponownie.");
+        toast.error("Failed to save press review. Please try again.");
       }
       throw error;
     }
@@ -81,9 +81,9 @@ export function DashboardView() {
 
     try {
       await deletePressReview(deletingPressReviewId);
-      toast.success("Prasówka została usunięta");
+      toast.success("Press review deleted");
     } catch {
-      toast.error("Nie udało się usunąć prasówki. Spróbuj ponownie.");
+      toast.error("Failed to delete press review. Please try again.");
     } finally {
       handleCloseDeleteDialog();
     }
@@ -92,12 +92,12 @@ export function DashboardView() {
   const handleGenerate = async (id: string) => {
     try {
       await generatePressReview(id);
-      toast.success("Generowanie prasówki rozpoczęte");
+      toast.success("Press review generation started");
     } catch (error) {
       if ((error as { status?: number }).status === 409) {
-        toast.error("Generowanie tej prasówki już trwa.");
+        toast.error("Generation of this press review is already in progress.");
       } else {
-        toast.error("Nie udało się rozpocząć generowania. Spróbuj ponownie.");
+        toast.error("Failed to start generation. Please try again.");
       }
     }
   };
@@ -124,9 +124,9 @@ export function DashboardView() {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold mb-2">Wystąpił błąd podczas ładowania</h3>
-          <p className="text-sm text-muted-foreground mb-6">Nie udało się załadować listy prasówek.</p>
-          <Button onClick={refetch}>Spróbuj ponownie</Button>
+          <h3 className="text-lg font-semibold mb-2">An error occurred while loading</h3>
+          <p className="text-sm text-muted-foreground mb-6">Failed to load press reviews list.</p>
+          <Button onClick={refetch}>Try again</Button>
         </div>
       </div>
     );
@@ -137,12 +137,12 @@ export function DashboardView() {
       {!isLoading && pressReviews.length > 0 ? (
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pulpit</h1>
-            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Zarządzaj swoimi cyklicznymi prasówkami</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your recurring press reviews</p>
           </div>
           {!isLoading && pressReviews.length > 0 && (
             <Button onClick={handleOpenCreateDialog} disabled={hasReachedLimit} size="lg" className="w-full sm:w-auto">
-              Dodaj prasówkę
+              Add press review
             </Button>
           )}
         </div>
@@ -168,9 +168,9 @@ export function DashboardView() {
               />
             </svg>
             <div>
-              <p className="font-medium text-yellow-700 dark:text-yellow-400">Osiągnięto limit prasówek</p>
+              <p className="font-medium text-yellow-700 dark:text-yellow-400">Press review limit reached</p>
               <p className="mt-1 text-yellow-600 dark:text-yellow-500">
-                Możesz mieć maksymalnie 5 aktywnych prasówek. Usuń jedną z istniejących, aby dodać nową.
+                You can have up to 5 active press reviews. Delete one of the existing ones to add a new one.
               </p>
             </div>
           </div>

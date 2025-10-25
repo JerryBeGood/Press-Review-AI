@@ -47,6 +47,8 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
 
   const scheduleValue = form.watch("schedule");
   const topicValue = form.watch("topic");
+  const dayOfWeekValue = form.watch("dayOfWeek");
+  const dayOfMonthValue = form.watch("dayOfMonth");
 
   // Validate topic on change (with debounce in hook)
   useEffect(() => {
@@ -118,7 +120,14 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
   };
 
   const isTopicInvalid = validationResult !== null && !validationResult.is_valid;
-  const canSubmit = !isValidating && topicValue.trim().length > 0 && !isTopicInvalid && !form.formState.isSubmitting;
+
+  const isScheduleValid =
+    scheduleValue === "daily" ||
+    (scheduleValue === "weekly" && dayOfWeekValue && dayOfWeekValue.trim().length > 0) ||
+    (scheduleValue === "monthly" && dayOfMonthValue && dayOfMonthValue.trim().length > 0);
+
+  const canSubmit =
+    !isValidating && topicValue.trim().length > 0 && !isTopicInvalid && isScheduleValid && !form.formState.isSubmitting;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

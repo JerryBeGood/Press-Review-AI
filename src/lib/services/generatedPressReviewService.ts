@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { GeneratedPressReviewDetailDTO } from "../../types";
+import type { GeneratedPressReviewDetailDTO, GeneratedPressReviewsListDTO, PressReviewStatus } from "../../types";
 
 /**
  * Service for managing generated press reviews
@@ -81,5 +81,65 @@ export class GeneratedPressReviewService {
     const { user_id, ...generationWithoutUserId } = newGeneration;
 
     return generationWithoutUserId;
+  }
+
+  /**
+   * Retrieves generated press reviews for a user with optional filters
+   *
+   * @param userId - UUID of the authenticated user
+   * @param filters - Optional filters for press_review_id and status
+   * @returns List of generated press reviews with count
+   * @throws Error with "DATABASE_ERROR" message if query fails
+   */
+  async getGeneratedPressReviews(
+    userId: string,
+    filters?: {
+      pressReviewId?: string;
+      status?: PressReviewStatus;
+    }
+  ): Promise<GeneratedPressReviewsListDTO> {
+    try {
+      // Build query with user filter
+      let query = this.supabase
+        .from("generated_press_reviews")
+        .select("id, press_review_id, generated_at, status, content", { count: "exact" })
+        .eq("user_id", userId)
+        .order("generated_at", { ascending: false, nullsFirst: false })
+        .order("id", { ascending: false });
+
+      // Apply optional filters
+      if (filters?.pressReviewId) {
+        query = query.eq("press_review_id", filters.pressReviewId);
+      }
+
+      if (filters?.status) {
+        query = query.eq("status", filters.status);
+      }
+
+      // Execute query
+      const { data, count, error } = await query;
+
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching generated press reviews:", error);
+        throw new Error("DATABASE_ERROR");
+      }
+
+      // Return data without user_id (as per DTO definition)
+      return {
+        data: data || [],
+        count: count || 0,
+      };
+    } catch (error) {
+      // Re-throw if already a known error
+      if (error instanceof Error && error.message === "DATABASE_ERROR") {
+        throw error;
+      }
+
+      // Log unexpected errors
+      // eslint-disable-next-line no-console
+      console.error("Unexpected error in getGeneratedPressReviews:", error);
+      throw new Error("DATABASE_ERROR");
+    }
   }
 }

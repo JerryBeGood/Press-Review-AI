@@ -1,98 +1,98 @@
-# Architektura UI dla Press Review AI
+# UI Architecture for Press Review AI
 
-## 1. Przegląd struktury UI
+## 1. Overview of the UI Structure
 
-Architektura interfejsu użytkownika (UI) dla aplikacji Press Review AI opiera się na frameworku Astro, z dynamicznymi i interaktywnymi komponentami ("wyspami") budowanymi w React. Centralnym punktem nawigacyjnym jest boczny pasek (sidebar), który zapewnia dostęp do kluczowych widoków aplikacji. Zarządzanie stanem serwera jest realizowane przez bibliotekę TanStack Query, co gwarantuje efektywne pobieranie, buforowanie i synchronizację danych z API. Formularze są obsługiwane przez React Hook Form z walidacją schematów Zod. Interfejs jest zbudowany z gotowych komponentów Shadcn/ui, co zapewnia spójność wizualną i wysoką dostępność. Architektura jest zaprojektowana z myślą o desktopach i koncentruje się na zapewnieniu płynnego, reaktywnego doświadczenia użytkownika poprzez jasne komunikowanie stanu aplikacji.
+The user interface (UI) architecture for the Press Review AI application is based on the Astro framework, with dynamic and interactive components (‘islands’) built in React. The central navigation point is the sidebar, which provides access to key application views. Server state management is handled by the TanStack Query library, which ensures efficient data retrieval, caching, and synchronisation from the API. Forms are handled by React Hook Form with Zod schema validation. The interface is built with ready-made Shadcn/ui components, ensuring visual consistency and high accessibility. The architecture is designed with desktops in mind and focuses on providing a smooth, responsive user experience by clearly communicating the application's state.
 
-## 2. Lista widoków
+## 2. List of views
 
-### Widok: Uwierzytelnianie (Auth)
+### View: Authentication (Auth)
 
-- **Ścieżka:** `/auth`
-- **Główny cel:** Umożliwienie nowym użytkownikom rejestracji, a istniejącym zalogowania się do aplikacji. Widok ten jest niedostępny dla zalogowanych użytkowników.
-- **Kluczowe informacje do wyświetlenia:** Formularz logowania i rejestracji.
-- **Kluczowe komponenty:**
-  - `AuthForm`: Komponent-kontener z zakładkami (`Tabs`) do przełączania między logowaniem a rejestracją.
-  - `LoginForm`: Formularz z polami na e-mail i hasło.
-  - `RegisterForm`: Formularz z polami na e-mail i hasło.
-- **UX, dostępność i względy bezpieczeństwa:**
-  - **UX:** Wyraźne komunikaty o błędach walidacji i nieprawidłowych danych logowania. Przycisk przesyłania jest dezaktywowany podczas operacji.
-  - **Dostępność:** Poprawne etykiety formularzy i zarządzanie focusem.
-  - **Bezpieczeństwo:** Użycie pola typu `password`. Trasy chronione są przez middleware Astro, który przekierowuje niezalogowanych użytkowników do `/auth`.
+- **Path:** `/auth`
+- **Main purpose:** To allow new users to register and existing users to log in to the application. This view is not available to logged-in users.
+- **Key information to display:** Login and registration form.
+- **Key components:**
+  - `AuthForm`: Container component with tabs (`Tabs`) for switching between login and registration.
+  - `LoginForm`: Form with fields for email and password.
+  - `RegisterForm`: Form with fields for email and password.
+- **UX, accessibility, and security considerations:**
+  - **UX:** Clear error messages for validation and incorrect login details. The submit button is disabled during the operation.
+  - **Accessibility:** Correct form labels and focus management.
+- **Security:** Use of a `password` field. Routes are protected by Astro middleware, which redirects unlogged-in users to `/auth`.
 
-### Widok: Pulpit (Dashboard)
+### View: Dashboard
 
-- **Ścieżka:** `/`
-- **Główny cel:** Wyświetlanie i zarządzanie listą zaplanowanych prasówek. To główny ekran aplikacji po zalogowaniu.
-- **Kluczowe informacje do wyświetlenia:** Lista zaplanowanych prasówek z ich tematem i harmonogramem. Stan pusty z wezwaniem do działania (CTA) dla nowych użytkowników.
-- **Kluczowe komponenty:**
-  - `PressReviewList`: Wyświetla listę zaplanowanych prasówek.
-  - `PressReviewListItem`: Reprezentuje pojedynczą prasówkę z przyciskami akcji (`Edytuj`, `Usuń`, `Generuj teraz`).
-  - `PressReviewFormDialog`: Okno modalne (`Dialog`) z formularzem do tworzenia i edycji prasówki.
-  - `AlertDialog`: Potwierdzenie usunięcia prasówki.
-- **UX, dostępność i względy bezpieczeństwa:**
-  - **UX:** Użycie szkieletów interfejsu (`Skeleton`) podczas ładowania danych. Optymistyczne aktualizacje przy usuwaniu dla płynniejszego doświadczenia.
-  - **Dostępność:** Etykiety `aria-label` dla przycisków-ikon.
-  - **Bezpieczeństwo:** Dostęp do widoku i wszystkie operacje wymagają uwierzytelnienia.
+- **Path:** `/`
+- **Main purpose:** Display and manage the list of scheduled press releases. This is the main screen of the application after logging in.
+- **Key information to display:** List of scheduled press reviews with their topic and schedule. Empty state with a call to action (CTA) for new users.
+- **Key components:**
+  - `PressReviewList`: Displays a list of scheduled press reviews.
+  - `PressReviewListItem`: Represents a single press review with action buttons (`Edit`, `Delete`, `Generate now`).
+  - `PressReviewFormDialog`: Modal window (`Dialog`) with a form for creating and editing press reviews.
+  - `AlertDialog`: Confirmation of press review deletion.
+- **UX, accessibility, and security considerations:**
+  - **UX:** Use of interface skeletons (`Skeleton`) when loading data. Optimistic updates on deletion for a smoother experience.
+  - **Accessibility:** `aria-label` labels for icon buttons.
+  - **Security:** Access to the view and all operations require authentication.
 
-### Widok: Archiwum (Archive)
+### View: Archive
 
-- **Ścieżka:** `/archive`
-- **Główny cel:** Przeglądanie historii wszystkich wygenerowanych prasówek.
-- **Kluczowe informacje do wyświetlenia:** Chronologiczna lista wygenerowanych prasówek z datą, tematem i statusem (`oczekująca`, `sukces`, `nieudana`).
-- **Kluczowe komponenty:**
-  - `GeneratedPressReviewList`: Wyświetla listę wygenerowanych prasówek.
-  - `GeneratedPressReviewListItem`: Reprezentuje pojedynczy wpis w archiwum.
-  - `Badge`: Komponent do wizualnego przedstawienia statusu generacji.
-  - `GeneratedPressReviewContentDialog`: Okno modalne (`Dialog`) wyświetlające pełną treść wygenerowanej prasówki.
-- **UX, dostępność i względy bezpieczeństwa:**
-  - **UX:** Automatyczne odświeżanie (polling) statusu dla prasówek w toku. Komunikat o błędzie i opcja ponowienia dla nieudanych generacji.
-  - **Dostępność:** Okno modalne z treścią prasówki blokuje focus wewnątrz siebie.
-  - **Bezpieczeństwo:** Dostęp do widoku wymaga uwierzytelnienia.
+- **Path:** `/archive`
+- **Main purpose:** Browsing the history of all generated press releases.
+- **Key information to display:** Chronological list of generated press releases with date, topic, and status (`pending`, `successful`, `failed`).
+- **Key components:**
+  - `GeneratedPressReviewList`: Displays a list of generated press releases.
+  - `GeneratedPressReviewListItem`: Represents a single entry in the archive.
+  - `Badge`: Component for visual representation of generation status.
+  - `GeneratedPressReviewContentDialog`: Modal window (`Dialog`) displaying the full content of the generated press release.
+- **UX, accessibility and security considerations:**
+  - **UX:** Automatic status refresh (polling) for press releases in progress. Error message and retry option for failed generations.
+  - **Accessibility:** The modal window with the press release content blocks focus within itself.
+  - **Security:** Access to the view requires authentication.
 
-### Widok: Ustawienia (Settings)
+### View: Settings
 
-- **Ścieżka:** `/settings`
-- **Główny cel:** Zarządzanie kontem użytkownika, w tym zmiana hasła, adresu e-mail i usunięcie konta.
-- **Kluczowe informacje do wyświetlenia:** Formularze do zmiany danych uwierzytelniających oraz wydzielona "strefa niebezpieczeństwa".
-- **Kluczowe komponenty:**
-  - `ChangePasswordForm`: Formularz do zmiany hasła.
-  - `ChangeEmailForm`: Formularz do zmiany adresu e-mail.
-  - `DeleteAccountSection`: Sekcja z przyciskiem do usunięcia konta.
-  - `AlertDialog`: Potwierdzenie usunięcia konta.
-- **UX, dostępność i względy bezpieczeństwa:**
-  - **UX:** Jasne komunikaty (toasts) po pomyślnej zmianie danych. Usunięcie konta wymaga dodatkowego potwierdzenia (np. wpisania hasła) w celu uniknięcia pomyłki.
-  - **Dostępność:** Poprawne etykiety formularzy i komunikaty.
-  - **Bezpieczeństwo:** Zmiana hasła wymaga podania starego hasła. Usunięcie konta jest operacją krytyczną i wymaga ponownego uwierzytelnienia.
+- **Path:** `/settings`
+- **Main purpose:** User account management, including changing your password, email address, and deleting your account.
+- **Key information to display:** Forms for changing authentication data and a separate ‘danger zone’.
+- **Key components:**
+  - `ChangePasswordForm`: Form for changing your password.
+  - `ChangeEmailForm`: Form for changing your email address.
+  - `DeleteAccountSection`: Section with a button to delete your account.
+  - `AlertDialog`: Confirmation of account deletion.
+- **UX, accessibility and security considerations:**
+  - **UX:** Clear messages (toasts) after successful data changes. Account deletion requires additional confirmation (e.g. entering a password) to avoid mistakes.
+  - **Accessibility:** Correct form labels and messages.
+  - **Security:** Changing your password requires entering your old password. Deleting your account is a critical operation and requires re-authentication.
 
-## 3. Mapa podróży użytkownika
+## 3. User journey map
 
-**Główny przepływ dla nowego użytkownika:**
+**Main flow for a new user:**
 
-1.  **Rejestracja:** Użytkownik trafia na widok `Uwierzytelnianie` (`/auth`), wypełnia formularz rejestracyjny i otrzymuje e-mail weryfikacyjny.
-2.  **Logowanie:** Po weryfikacji e-maila, użytkownik loguje się i zostaje przekierowany na `Pulpit` (`/`).
-3.  **Tworzenie prasówki:** Na `Pulpicie` klika CTA, co otwiera `PressReviewFormDialog`. Wypełnia temat (z walidacją w czasie rzeczywistym) i harmonogram, a następnie zapisuje. Nowa prasówka pojawia się na liście.
-4.  **Generowanie na żądanie:** Użytkownik klika przycisk `Generuj teraz` przy nowo utworzonej prasówce.
-5.  **Przeglądanie w archiwum:** Przechodzi do widoku `Archiwum` (`/archive`), gdzie widzi swoją prasówkę ze statusem `oczekująca`. Status jest automatycznie odświeżany.
-6.  **Czytanie treści:** Gdy status zmieni się na `sukces`, użytkownik klika na element, co otwiera `GeneratedPressReviewContentDialog` z pełną treścią prasówki.
-7.  **Zarządzanie kontem:** W dowolnym momencie użytkownik może przejść do `Ustawień` (`/settings`), aby zmienić swoje hasło lub usunąć konto.
+1.  **Registration:** The user is taken to the `Authentication` view (`/auth`), fills out the registration form, and receives a verification email.
+2.  **Login:** After verifying the email, the user logs in and is redirected to the `Dashboard` (`/`).
+3.  **Creating a press review:** On the `Dashboard`, they click the CTA, which opens the `PressReviewFormDialog`. They fill in the topic (with real-time validation) and schedule, then save. The new press review appears in the list.
+4.  **On-demand generation:** The user clicks the `Generate Now` button next to the newly created press review.
+5.  **Viewing in the archive:** The user navigates to the `Archive` view (`/archive`), where they see their press review with the status `pending`. The status is automatically refreshed.
+6.  **Reading content:** When the status changes to `successful`, the user clicks on the item, which opens `GeneratedPressReviewContentDialog` with the full content of the press release.
+7.  **Account management:** At any time, the user can go to `Settings` (`/settings`) to change their password or delete their account.
 
-## 4. Układ i struktura nawigacji
+## 4. Layout and navigation structure
 
-- **Główny układ:** Aplikacja wykorzystuje stały układ z bocznym panelem nawigacyjnym (sidebar) i głównym obszarem treści.
-- **Nawigacja główna (Sidebar):**
-  - Link do `Pulpitu` (`/`)
-  - Link do `Archiwum` (`/archive`)
-- **Nawigacja użytkownika:**
-  - Link do `Ustawień` (`/settings`)
-  - Przycisk `Wyloguj`
-- **Ochrona tras (Route Guarding):** Wszystkie widoki z wyjątkiem `/auth` są chronione. Próba dostępu bez uwierzytelnienia skutkuje przekierowaniem do strony logowania.
+- **Main layout:** The application uses a fixed layout with a sidebar and a main content area.
+- **Main navigation (Sidebar):**
+  - Link to `Dashboard` (`/`)
+  - Link to `Archive` (`/archive`)
+- **User navigation:**
+  - Link to `Settings` (`/settings`)
+  - `Log out` button
+- **Route Guarding:** All views except `/auth` are protected. Attempting to access without authentication results in redirection to the login page.
 
-## 5. Kluczowe komponenty
+## 5. Key components
 
-- **`Layout`:** Główny komponent otaczający widoki, zawierający boczny panel nawigacyjny i nagłówek. Odpowiada za spójną strukturę aplikacji.
-- **`PressReviewFormDialog`:** Reużywalne okno modalne do tworzenia i edycji zaplanowanych prasówek. Zawiera logikę formularza, walidację tematu w czasie rzeczywistym i obsługę przesyłania danych do API.
-- **`GeneratedPressReviewContentDialog`:** Okno modalne wyświetlające sformatowaną treść wygenerowanej prasówki, w tym podsumowanie i poszczególne segmenty z linkami do źródeł.
-- **`Toast`:** Komponent do wyświetlania globalnych, nieblokujących powiadomień (np. o sukcesie operacji lub błędzie API).
-- **`AlertDialog`:** Komponent modalny używany do uzyskania od użytkownika potwierdzenia wykonania destrukcyjnej akcji (np. usunięcia prasówki lub konta).
-- **`Skeleton`:** Komponent używany jako placeholder podczas ładowania danych, poprawiający postrzeganą wydajność aplikacji.
+- **`Layout`:** The main component surrounding the views, containing the side navigation panel and header. Responsible for the consistent structure of the application.
+- **`PressReviewFormDialog`:** Reusable modal window for creating and editing scheduled press releases. Contains form logic, real-time topic validation, and API data transfer handling.
+- **`GeneratedPressReviewContentDialog`:** A modal window displaying the formatted content of the generated press review, including a summary and individual segments with links to sources.
+- **`Toast`:** A component for displaying global, non-blocking notifications (e.g., about a successful operation or API error).
+- **`AlertDialog`:** A modal component used to obtain user confirmation for destructive actions (e.g., deleting a press release or account).
+- **`Skeleton`:** A component used as a placeholder while loading data, improving the perceived performance of the application.

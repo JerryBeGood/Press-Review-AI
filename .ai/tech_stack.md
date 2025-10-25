@@ -1,23 +1,23 @@
-Frontend – Astro z React dla komponentów interaktywnych:
+Frontend – Astro with React for interactive components:
 
-- Astro 5 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript
-- React 19 zapewni interaktywność tam, gdzie jest potrzebna
-- TypeScript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
-- Tailwind 4 pozwala na wygodne stylowanie aplikacji
-- Shadcn/ui zapewnia bibliotekę dostępnych komponentów React, na których oprzemy UI
+- Astro 5 allows you to create fast, efficient websites and applications with minimal JavaScript
+- React 19 provides interactivity where it is needed
+- TypeScript 5 for static code typing and better IDE support
+- Tailwind 4 allows for convenient application styling
+- Shadcn/ui provides a library of available React components on which we will base the UI
 
-Backend – Supabase jako kompleksowe rozwiązanie backendowe:
+Backend – Supabase as a comprehensive backend solution:
 
-- Zapewnia bazę danych PostgreSQL
-- Zapewnia SDK w wielu językach, które posłużą jako Backend-as-a-Service
-- Jest rozwiązaniem open source, które można hostować lokalnie lub na własnym serwerze
-- Posiada wbudowaną autentykację użytkowników
+- Provides a PostgreSQL database
+- Provides SDKs in multiple languages that will serve as Backend-as-a-Service
+- Is an open source solution that can be hosted locally or on your own server
+- Has built-in user authentication
 
-AI – Komunikacja z modelami przez AI SDK od Vercel
+AI – Communication with models via AI SDK from Vercel
 
-- Zunifikowany interfejs programistyczny do komunikacji z szeroką bazą modeli AI
+- Unified programming interface for communication with a wide range of AI models
 
-CI/CD i Hosting:
+CI/CD and Hosting:
 
-- Github Actions do tworzenia pipeline’ów CI/CD
-- DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+- Github Actions for creating CI/CD pipelines
+- DigitalOcean for hosting applications via a Docker image

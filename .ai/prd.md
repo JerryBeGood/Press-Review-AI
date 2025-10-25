@@ -1,202 +1,192 @@
-# Dokument wymagań produktu (PRD) - Press Review AI
+# Product Requirements Document (PRD) - Press Review AI
 
-## 1. Przegląd produktu
+## 1. Product Overview
 
-Press Review AI to aplikacja internetowa zaprojektowana w celu automatyzacji procesu tworzenia cyklicznych przeglądów prasowych na wybrane przez użytkownika tematy. Głównym celem produktu jest dostarczanie użytkownikom skondensowanych, trafnych i wysokiej jakości informacji z różnych źródeł, co pozwala im zaoszczędzić czas i być na bieżąco z najnowszymi trendami w interesujących ich dziedzinach. Aplikacja wykorzystuje agenta AI do autonomicznego wyszukiwania, analizy i syntezy treści.
+Press Review AI is a web application designed to automate the process of creating regular press reviews on topics selected by the user. The main purpose of the product is to provide users with condensed, accurate and high-quality information from various sources, allowing them to save time and stay up to date with the latest trends in their areas of interest. The application uses an AI agent to autonomously search, analyse and synthesise content.
 
-Projekt ma charakter edukacyjny i stanowi element portfolio.
+The project is educational in nature and forms part of a portfolio.
 
-## 2. Problem użytkownika
+## 2. User problem
 
-W dzisiejszym świecie natłok informacji sprawia, że bycie na bieżąco z nowinkami w danej dziedzinie jest niezwykle czasochłonne. Wymaga to nie tylko regularnego przeglądania wielu źródeł, ale także umiejętności oddzielania wartościowych treści od informacyjnego szumu. Użytkownicy potrzebują narzędzia, które zautomatyzuje ten proces, dostarczając im gotowe, wiarygodne i zwięzłe podsumowania na interesujące ich tematy.
+In today's world, the sheer volume of information makes it extremely time-consuming to keep up to date with the latest developments in a given field. This requires not only regularly browsing multiple sources, but also the ability to separate valuable content from information noise. Users need a tool that automates this process, providing them with ready-made, reliable and concise summaries on topics of interest to them.
 
-## 3. Wymagania funkcjonalne
+## 3. Functional requirements
 
-### 3.1. Zarządzanie kontem użytkownika
+### 3.1. User account management
 
-- Rejestracja nowego użytkownika przy użyciu adresu e-mail i hasła.
-- Weryfikacja adresu e-mail poprzez link aktywacyjny.
-- Logowanie do aplikacji za pomocą zweryfikowanych danych.
-- Możliwość zmiany hasła i adresu e-mail w ustawieniach konta.
-- Możliwość trwałego usunięcia konta wraz ze wszystkimi powiązanymi danymi.
+- Registration of a new user using an e-mail address and password.
+- Verification of the email address via an activation link.
+- Logging into the application using verified data.
+- Ability to change the password and email address in the account settings.
+- Ability to permanently delete the account along with all associated data.
 
-### 3.2. Zarządzanie prasówkami
+### 3.2. Press release management
 
-- Tworzenie nowej, cyklicznej prasówki poprzez zdefiniowanie tematu.
-- Walidacja tematu przez agenta AI w czasie rzeczywistym z informacją zwrotną w interfejsie.
-- Możliwość ustawienia harmonogramu generowania: codziennie, co tydzień, co miesiąc, z dokładnym określeniem czasu.
-- Obowiązuje limit do 5 zaplanowanych prasówek na jednego użytkownika.
-- Nie ma mozliwości utworzenia więcej niz jednej prasowki o tym samym tytule dla pojedynczego uzytkownika.
-- Możliwość edycji tematu i harmonogramu istniejących prasówek.
-- Możliwość usunięcia zaplanowanej prasówki.
+- Create a new, recurring press release by defining a topic.
+- Real-time topic validation by an AI agent with feedback in the interface.
+- Option to set a generation schedule: daily, weekly, monthly, with a specific time.
+- There is a limit of 5 scheduled press releases per user.
+- It is not possible to create more than one press release with the same title for a single user.
+- Ability to edit the topic and schedule of existing press releases.
+- Ability to delete a scheduled press release.
 
-### 3.3. Generowanie i dostarczanie treści
+### 3.3. Content generation and delivery
 
-- Automatyczne generowanie prasówek w języku angielskim zgodnie z ustalonym harmonogramem.
-- Każda prasówka składa się z ogólnego podsumowania oraz 7-10 indywidualnych segmentów (tytuł, streszczenie, link do źródła).
-- Agent AI autonomicznie dobiera źródła na podstawie wewnętrznych instrukcji.
-- Zapisywanie logów z procesu generacji prasówki przez agenta AI.
-- Możliwość ręcznego wygenerowania prasówki na żądanie użytkownika.
+- Automatic generation of press releases in English according to a set schedule.
+- Each press release consists of a general summary and 7-10 individual segments (title, summary, link to source).
+- The AI agent autonomously selects sources based on internal instructions.
+- Saving logs from the news release generation process by the AI agent.
+- Ability to manually generate a news release at the user's request.
 
-### 3.4. Przeglądanie
+### 3.4. Viewing
 
-- Dostęp do chronologicznej listy wygenerowanych prasówek (archiwum).
+- Access to a chronological list of generated news releases (archive).
 
-## 4. Granice produktu
+## 4. Product limitations
 
-### Co wchodzi w zakres MVP
+### What is included in the MVP
 
-- Kluczowe funkcje związane z tworzeniem, edycją i przeglądaniem prasówek.
-- Podstawowe zarządzanie kontem użytkownika (rejestracja, logowanie, ustawienia).
+- Key features related to creating, editing and viewing press releases.
+- Basic user account management (registration, login, settings).
 
-### Co NIE wchodzi w zakres MVP
+### What is NOT included in the MVP
 
-- Zaawansowane opcje personalizacji prasówek (np. filtracja źródeł, formatowanie).
-- System powiadomień.
-- Logowanie za pośrednictwem mediów społecznościowych.
-- Personalizacja agenta AI pod konkretnego użytkownika.
-- Monetyzacja i plany subskrypcyjne.
-- Mechanizm oceny jakości wygenerowanych treści.
+- Advanced press release customisation options (e.g. source filtering, formatting).
+- Notification system.
+- Social media login.
+- AI agent customisation for specific users.
+- Monetisation and subscription plans.
+- Mechanism for evaluating the quality of generated content.
 
-## 5. Historyjki użytkowników
+## 5. User stories
 
-### 5.1. Zarządzanie kontem
+### 5.1. Account management
 
 - ID: PRSR-001
-- Tytuł: Rejestracja nowego użytkownika
-- Opis: Jako nowy użytkownik, chcę móc zarejestrować konto w aplikacji za pomocą adresu e-mail i hasła, aby uzyskać dostęp do jej funkcjonalności.
-- Kryteria akceptacji:
-  - Formularz rejestracji zawiera pola na adres e-mail i hasło.
-  - System waliduje poprawność formatu adresu e-mail.
-  - System wymaga bezpiecznego hasła (np. min. 8 znaków).
-  - Po pomyślnej rejestracji na podany adres e-mail wysyłana jest wiadomość z linkiem weryfikacyjnym.
-  - Użytkownik nie może zalogować się przed weryfikacją adresu e-mail.
+- Title: New user registration
+- Description: As a new user, I want to be able to register an account in the application using my email address and password to access its functionality.
+- Acceptance criteria:
+  - The registration form contains fields for an email address and password.
+  - The system validates the correctness of the email address format.
+  - The system requires a secure password (e.g. min. 8 characters).
+  - After successful registration, a message with a verification link is sent to the provided email address.
+  - The user cannot log in before verifying their email address.
 
 - ID: PRSR-002
-- Tytuł: Weryfikacja adresu e-mail
-- Opis: Jako zarejestrowany użytkownik, chcę móc zweryfikować swój adres e-mail klikając w link otrzymany w wiadomości, aby aktywować swoje konto.
-- Kryteria akceptacji:
-  - Link weryfikacyjny jest unikalny i jednorazowy.
-  - Po kliknięciu w link użytkownik jest przenoszony na stronę z potwierdzeniem aktywacji konta.
-  - Po pomyślnej weryfikacji status konta zmienia się na "aktywne".
+- Title: Email address verification
+- Description: As a registered user, I want to be able to verify my email address by clicking on the link received in the message to activate my account.
+- Acceptance criteria:
+  - The verification link is unique and one-time.
+  - After clicking on the link, the user is taken to a page confirming the activation of the account.
+  - After successful verification, the account status changes to ‘active’.
 
 - ID: PRSR-003
-- Tytuł: Logowanie użytkownika
-- Opis: Jako zweryfikowany użytkownik, chcę móc zalogować się do aplikacji przy użyciu mojego e-maila i hasła, aby móc zarządzać swoimi prasówkami.
-- Kryteria akceptacji:
-  - Formularz logowania zawiera pola na adres e-mail i hasło.
-  - System wyświetla komunikat o błędzie w przypadku podania nieprawidłowych danych.
-  - Po pomyślnym zalogowaniu użytkownik jest przekierowywany na główny pulpit aplikacji.
+- Title: User login
+- Description: As a verified user, I want to be able to log in to the application using my email address and password to manage my press releases.
+- Acceptance criteria:
+  - The login form contains fields for email address and password.
+  - The system displays an error message if incorrect data is entered.
+  - After successful login, the user is redirected to the main dashboard of the application.
 
 - ID: PRSR-004
-- Tytuł: Zmiana hasła
-- Opis: Jako zalogowany użytkownik, chcę móc zmienić swoje hasło w ustawieniach konta, aby zabezpieczyć swoje konto.
-- Kryteria akceptacji:
-  - Formularz zmiany hasła wymaga podania starego i nowego hasła.
-  - Nowe hasło musi spełniać wymogi bezpieczeństwa.
-  - Po pomyślnej zmianie hasła użytkownik otrzymuje powiadomienie e-mail.
+- Title: Change password
+- Description: As a logged-in user, I want to be able to change my password in my account settings to secure my account.
+- Acceptance criteria:
+  - The password change form requires the old and new passwords to be entered.
+  - The new password must meet security requirements.
 
 - ID: PRSR-005
-- Tytuł: Zmiana adresu e-mail
-- Opis: Jako zalogowany użytkownik, chcę móc zmienić swój adres e-mail w ustawieniach konta.
-- Kryteria akceptacji:
-  - Użytkownik musi potwierdzić zmianę, klikając w link weryfikacyjny wysłany na nowy adres e-mail.
-  - Stary adres e-mail pozostaje aktywny do momentu weryfikacji nowego.
+- Title: Change of e-mail address
+- Description: As a logged-in user, I want to be able to change my e-mail address in my account settings.
+- Acceptance criteria:
+  - The user must confirm the change by clicking on the verification link sent to the new e-mail address.
+  - The old email address remains active until the new one is verified.
 
 - ID: PRSR-006
-- Tytuł: Usunięcie konta
-- Opis: Jako zalogowany użytkownik, chcę móc trwale usunąć swoje konto wraz ze wszystkimi danymi.
-- Kryteria akceptacji:
-  - Użytkownik musi potwierdzić chęć usunięcia konta (np. poprzez wpisanie hasła).
-  - Po usunięciu konta wszystkie dane użytkownika (w tym prasówki) są trwale usuwane z systemu.
+- Title: Account deletion
+- Description: As a logged-in user, I want to be able to permanently delete my account along with all my data.
+- Acceptance criteria:
+  - The user must confirm their desire to delete their account (e.g. by entering their password).
+  - After deleting the account, all user data (including press releases) is permanently deleted from the system.
 
-### 5.2. Zarządzanie prasówkami
+### 5.2. Press release management
 
 - ID: PRSR-007
-- Tytuł: Tworzenie pierwszej prasówki
-- Opis: Jako nowy, zalogowany użytkownik, po wejściu na pusty pulpit chcę zobaczyć wyraźny przycisk i komunikat zachęcający do stworzenia pierwszej prasówki.
-- Kryteria akceptacji:
-  - Na pulpicie nowego użytkownika znajduje się widoczny element CTA (Call To Action).
-  - Kliknięcie w przycisk przenosi do formularza tworzenia nowej prasówki.
+- Title: Creating the first press release
+- Description: As a new, logged-in user, when I enter the empty desktop, I want to see a clear button and message encouraging me to create my first press release.
+- Acceptance criteria:
+  - There is a visible CTA (Call To Action) element on the new user's desktop.
+  - Clicking on the button takes me to the form for creating a new press release.
 
 - ID: PRSR-008
-- Tytuł: Konfiguracja nowej prasówki
-- Opis: Jako użytkownik, chcę móc stworzyć nową prasówkę, definiując jej temat oraz harmonogram (codziennie, tygodniowo, miesięcznie z dokładnym czasem).
-- Kryteria akceptacji:
-  - Formularz zawiera pole tekstowe na temat prasówki.
-  - Formularz zawiera opcje wyboru częstotliwości (codziennie, tygodniowo, miesięcznie) i dokładnego czasu generowania.
-  - Podczas wpisywania tematu, jest on weryfikowany w czasie rzeczywistym przez agenta AI.
-  - Interfejs wyświetla informację o statusie walidacji tematu (poprawny/niepoprawny/sugestie).
-  - Zapisanie konfiguracji jest możliwe tylko po pomyślnej walidacji tematu.
+- Title: Configuring a new press release
+- Description: As a user, I want to be able to create a new press release by defining its topic and schedule (daily, weekly, monthly with exact time).
+- Acceptance criteria:
+  - The form contains a text field for the press release topic.
+  - The form contains options for selecting the frequency (daily, weekly, monthly) and the exact time of generation.
+  - When entering the topic, it is verified in real time by an AI agent.
+  - The interface displays information about the topic validation status (correct/incorrect/suggestions).
+  - The configuration can only be saved after successful topic validation.
 
 - ID: PRSR-009
-- Tytuł: Osiągnięcie limitu prasówek
-- Opis: Jako użytkownik posiadający 5 zaplanowanych prasówek, przy próbie stworzenia kolejnej chcę otrzymać informację o osiągnięciu limitu.
-- Kryteria akceptacji:
-  - System uniemożliwia stworzenie więcej niż 5 zaplanowanych prasówek.
-  - Użytkownik widzi komunikat informujący o limicie.
+- Title: Reaching the press release limit
+- Description: As a user with 5 scheduled press releases, when I try to create another one, I want to receive information about reaching the limit.
+- Acceptance criteria:
+  - The system prevents the creation of more than 5 scheduled press releases.
+  - The user sees a message informing them of the limit.
 
 - ID: PRSR-010
-- Tytuł: Zarządzanie listą zaplanowanych prasówek
-- Opis: Jako użytkownik, chcę mieć dostęp do listy moich zaplanowanych prasówek, aby móc je edytować lub usuwać.
-- Kryteria akceptacji:
-  - Dedykowana podstrona wyświetla listę wszystkich zaplanowanych prasówek.
-  - Każdy element na liście zawiera informacje o temacie i harmonogramie.
-  - Przy każdym elemencie znajdują się opcje "Edytuj" i "Usuń".
+- Title: Managing the list of scheduled press releases
+- Description: As a user, I want to have access to the list of my scheduled press releases so that I can edit or delete them.
+- Acceptance criteria:
+  - A dedicated subpage displays a list of all scheduled press releases.
+  - Each item on the list contains information about the topic and schedule.
+  - Each item has ‘Edit’ and ‘Delete’ options.
 
 - ID: PRSR-011
-- Tytuł: Edycja zaplanowanej prasówki
-- Opis: Jako użytkownik, chcę móc edytować temat i harmonogram istniejącej prasówki.
-- Kryteria akceptacji:
-  - Formularz edycji jest pre-wypełniony aktualnymi danymi prasówki.
-  - Zmiana tematu podlega ponownej walidacji przez agenta AI.
-  - Zmiany są zapisywane i stosowane od następnego cyklu generowania.
+- Title: Editing a scheduled press release
+- Description: As a user, I want to be able to edit the topic and schedule of an existing press release.
+- Acceptance criteria:
+  - The edit form is pre-filled with the current press release data.
+  - The topic change is subject to re-validation by an AI agent.
+  - Changes are saved and applied from the next generation cycle.
 
 - ID: PRSR-012
-- Tytuł: Usunięcie zaplanowanej prasówki
-- Opis: Jako użytkownik, chcę móc usunąć zaplanowaną prasówkę, aby zatrzymać jej generowanie.
-- Kryteria akceptacji:
-  - System prosi o potwierdzenie usunięcia.
-  - Po potwierdzeniu prasówka jest usuwana z listy zaplanowanych i przestaje być generowana.
+- Title: Deleting a scheduled press release
+- Description: As a user, I want to be able to delete a scheduled press release to stop it from being generated.
+- Acceptance criteria:
+  - The system asks for confirmation of deletion.
+  - Upon confirmation, the press release is removed from the scheduled list and is no longer generated.
 
 - ID: PRSR-013
-- Tytuł: Ręczne wygenerowanie prasówki na żądanie
-- Opis: Jako użytkownik, chcę móc ręcznie wygenerować bieżącą prasówkę niezależnie od harmonogramu.
-- Kryteria akceptacji:
-  - Na liście prasówek oraz w widoku szczegółów prasówki znajduje się przycisk "Generuj teraz".
-  - Po kliknięciu rozpoczyna się proces generacji z natychmiastowym feedbackiem postępu.
-  - Po zakończeniu generacji nowa wersja prasówki pojawia się w archiwum z aktualną datą.
-  - Ręczne wygenerowanie nie wpływa na przyszłe zaplanowane generacje.
+- Title: Manually generate a press release on demand
+- Description: As a user, I want to be able to manually generate the current press release regardless of the schedule.
+- Acceptance criteria:
+  - There is a ‘Generate now’ button in the press release list and in the press release details view.
+  - After clicking, the generation process starts with immediate progress feedback.
+  - After generation is complete, the new version of the press release appears in the archive with the current date.
+  - Manual generation does not affect future scheduled generations.
 
 - ID: PRSR-014
-- Tytuł: Zapobieganie duplikatom tytułów prasówek
-- Opis: Jako użytkownik, chcę być informowany o tym, że nie mogę utworzyć dwóch prasówek o tym samym tytule, aby uniknąć pomyłek i duplikacji treści.
-- Kryteria akceptacji:
-  - System sprawdza unikalność tytułu prasówki w obrębie konta użytkownika podczas tworzenia nowej prasówki.
-  - Jeśli użytkownik próbuje utworzyć prasówkę o tytule, który już istnieje, wyświetlany jest komunikat błędu.
-  - Komunikat informuje użytkownika o konieczności wyboru innego tytułu.
-  - Walidacja unikalności tytułu działa również podczas edycji istniejącej prasówki.
-  - Zapisanie prasówki jest możliwe tylko po wybraniu unikalnego tytułu.
+- Title: Preventing duplicate press release titles
+- Description: As a user, I want to be informed that I cannot create two press releases with the same title to avoid confusion and duplication of content.
+- Acceptance criteria:
+  - The system checks the uniqueness of the press release title within the user's account when creating a new press release.
+  - If the user attempts to create a press release with a title that already exists, an error message is displayed.
+  - The message informs the user that they must choose a different title.
+  - Title uniqueness validation also works when editing an existing press release.
+  - Saving a press release is only possible after selecting a unique title.
 
-### 5.3. Przeglądanie
+### 5.3. Browsing
 
 - ID: PRSR-015
-- Tytuł: Przeglądanie archiwum prasówek
-- Opis: Jako użytkownik, chcę mieć dostęp do archiwum wszystkich moich wygenerowanych prasówek, aby móc je przeglądać w dowolnym momencie.
-- Kryteria akceptacji:
-  - Archiwum jest dostępne na dedykowanej podstronie.
-  - Prasówki są ułożone chronologicznie (od najnowszej).
-  - Każdy element na liście prowadzi do pełnej treści prasówki.
+- Title: Browsing the press release archive
+- Description: As a user, I want to have access to an archive of all my generated press releases so that I can browse them at any time.
+- Acceptance criteria:
+  - The archive is available on a dedicated subpage.
+  - Press releases are arranged chronologically (from the most recent).
+  - Each item on the list leads to the full content of the press release.
 
 - ID: PRSR-016
-- Tytuł: Czytanie prasówki
-- Opis: Jako użytkownik, po wybraniu prasówki z archiwum, chcę widzieć jej pełną treść, w tym ogólne podsumowanie oraz poszczególne segmenty z linkami do źródeł.
-- Kryteria akceptacji:
-  - Treść jest czytelna i dobrze sformatowana.
-  - Każdy segment zawiera tytuł, streszczenie i klikalny link do oryginalnego artykułu.
-
-## 6. Metryki sukcesu
-
-1. Stabilność systemu:
-   - Cel: Zaplanowane prasówki generują się bez błędów w ustalonych terminach.
-   - Pomiar: Manualne monitorowanie logów systemowych w celu identyfikacji nieudanych generacji i weryfikacji udanych.
+- Title: Reading press releases
+- Description: As a user, after selecting a press release from the archive, I want to see its full content, including a general summary.

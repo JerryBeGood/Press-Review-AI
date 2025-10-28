@@ -117,6 +117,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
  * GET /api/generated_press_reviews
  * Retrieves all generated press reviews for the authenticated user
  * Supports optional filtering by press_review_id and status
+ * Supports optional include_topic parameter to join with press_reviews table
  * Returns 200 OK with a list of generated press reviews and count
  */
 export const GET: APIRoute = async ({ request, locals }) => {
@@ -126,6 +127,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const queryParams = {
       press_review_id: url.searchParams.get("press_review_id") || undefined,
       status: url.searchParams.get("status") || undefined,
+      include_topic: url.searchParams.get("include_topic") || undefined,
     };
 
     const validationResult = getGeneratedPressReviewsQuerySchema.safeParse(queryParams);
@@ -142,16 +144,22 @@ export const GET: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const { press_review_id, status } = validationResult.data;
+    const { press_review_id, status, include_topic } = validationResult.data;
 
     // Step 2: Initialize service with Supabase client from middleware
     const service = new GeneratedPressReviewService(locals.supabase);
 
     // Step 3: Get generated press reviews with optional filters
-    const result = await service.getGeneratedPressReviews(DEFAULT_USER_ID, {
-      pressReviewId: press_review_id,
-      status,
-    });
+    // Use method with topic join if include_topic is true
+    const result = include_topic
+      ? await service.getGeneratedPressReviewsWithTopic(DEFAULT_USER_ID, {
+          pressReviewId: press_review_id,
+          status,
+        })
+      : await service.getGeneratedPressReviews(DEFAULT_USER_ID, {
+          pressReviewId: press_review_id,
+          status,
+        });
 
     // Step 4: Return successful response with data and count
     return new Response(JSON.stringify(result), {

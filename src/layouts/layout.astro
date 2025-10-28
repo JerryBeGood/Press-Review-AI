@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "../components/ui/sonner";
-import Header from "../components/layout/Header.astro";
+import Sidebar from "../components/layout/Sidebar.astro";
 ---
 
 <!doctype html>
@@ -12,9 +12,11 @@ import Header from "../components/layout/Header.astro";
     <title>Press Review AI</title>
   </head>
   <body>
-    <Header />
-    <div>
-      <slot />
+    <div class="flex min-h-screen">
+      <Sidebar />
+      <main class="flex-1 ml-64">
+        <slot />
+      </main>
     </div>
     <Toaster client:load />
   </body>

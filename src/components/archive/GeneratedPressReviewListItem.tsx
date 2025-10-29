@@ -29,8 +29,6 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
     failed: "Failed",
   };
 
-  // TODO: Badge should have the same size as the similiar elements in the dashboard view
-
   return (
     <button
       type="button"

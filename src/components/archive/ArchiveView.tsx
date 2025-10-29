@@ -10,7 +10,7 @@ export default function ArchiveView() {
   // Loading state
   if (status === "loading") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="rounded-lg border border-border p-4 space-y-3">
             <Skeleton className="h-6 w-3/4" />

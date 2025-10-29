@@ -22,7 +22,7 @@ export interface Database {
     Tables: {
       generated_press_reviews: {
         Row: {
-          content: Json | null;
+          content: Json | null; // TODO: Content is stored as JSON but the Supabase documentation recommends using JSONB (binary format). In general, storing unstructured data as JSON/JSONB is not recommended because it misses the benefits of relational database.
           generated_at: string | null;
           generation_log_id: string | null;
           id: string;

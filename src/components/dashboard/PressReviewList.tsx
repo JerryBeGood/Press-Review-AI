@@ -13,16 +13,12 @@ interface PressReviewListProps {
 export function PressReviewList({ pressReviews, isLoading, onEdit, onDelete, onGenerate }: PressReviewListProps) {
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="p-4 sm:p-5 border rounded-lg">
-            <Skeleton className="h-6 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-1/2 mb-4" />
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Skeleton className="h-9 w-full sm:w-20" />
-              <Skeleton className="h-9 w-full sm:w-20" />
-              <Skeleton className="h-9 w-full sm:w-28" />
-            </div>
+      <div className="space-y-4 container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="rounded-lg border border-border p-4 space-y-3">
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/4" />
           </div>
         ))}
       </div>

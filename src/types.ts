@@ -64,6 +64,34 @@ export interface GeneratedPressReviewsListDTO {
   count: number;
 }
 
+/** Expected structure of the 'content' JSONB field */
+export interface ContentSegment {
+  title: string;
+  summary: string;
+  link: string;
+}
+
+export interface PressReviewContent {
+  general_summary: string;
+  segments: ContentSegment[];
+}
+
+/** Modified DTO from API to include the topic from press_reviews relation */
+export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {
+  press_reviews: {
+    topic: string;
+  } | null;
+};
+
+/** ViewModel for the Archive View components */
+export type ArchiveViewModel = GeneratedPressReviewWithTopicDTO;
+
+/** API Response Type for the list with topic included */
+export interface GeneratedPressReviewsListWithTopicDTO {
+  data: GeneratedPressReviewWithTopicDTO[];
+  count: number;
+}
+
 /* ------------------------------------------------------------------ *
  *  Generation Logs
  * ------------------------------------------------------------------ */

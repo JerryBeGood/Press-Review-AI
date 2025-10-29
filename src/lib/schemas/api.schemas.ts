@@ -81,12 +81,16 @@ export type UpdatePressReviewInput = z.infer<typeof updatePressReviewSchema>;
 
 /**
  * Validation schema for GET /api/generated_press_reviews query parameters
- * Validates optional press_review_id (UUID) and status (enum)
+ * Validates optional press_review_id (UUID), status (enum), and include_topic (boolean)
  */
 export const getGeneratedPressReviewsQuerySchema = z.object({
   press_review_id: z.string().uuid({ message: "press_review_id must be a valid UUID" }).optional(),
   status: z
     .enum(["pending", "success", "failed"], { message: "status must be pending, success, or failed" })
+    .optional(),
+  include_topic: z
+    .string()
+    .transform((val) => val === "true")
     .optional(),
 });
 

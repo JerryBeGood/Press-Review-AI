@@ -95,17 +95,16 @@ export default function ArchiveView() {
             </p>
           </div>
         </div>
+        <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
+        <GeneratedPressReviewContentDialog
+          review={selectedReview}
+          onOpenChange={(isOpen: boolean) => {
+            if (!isOpen) {
+              clearSelection();
+            }
+          }}
+        />
       </div>
-
-      <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
-      <GeneratedPressReviewContentDialog
-        review={selectedReview}
-        onOpenChange={(isOpen: boolean) => {
-          if (!isOpen) {
-            clearSelection();
-          }
-        }}
-      />
     </>
   );
 }

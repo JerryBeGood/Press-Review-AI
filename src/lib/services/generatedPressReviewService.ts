@@ -114,7 +114,7 @@ export class GeneratedPressReviewService {
             ? {
                 status: "failed",
                 content: null,
-                generated_at: null,
+                generated_at: new Date().toISOString(),
               }
             : {
                 status: "pending",

@@ -29,6 +29,8 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
     failed: "Failed",
   };
 
+  // TODO: Badge should have the same size as the similiar elements in the dashboard view
+
   return (
     <button
       type="button"
@@ -43,8 +45,10 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
           </h3>
           <p className="text-sm text-muted-foreground">{formattedDate}</p>
         </div>
-        <div className="flex-shrink-0">
-          <Badge variant={statusVariant[review.status]}>{statusLabel[review.status]}</Badge>
+        <div className="flex flex-col sm:flex-row gap-2 sm:flex-shrink-0">
+          <Badge variant={statusVariant[review.status]} className="h-8 px-3">
+            {statusLabel[review.status]}
+          </Badge>
         </div>
       </div>
     </button>

@@ -84,6 +84,17 @@ export default function ArchiveView() {
   // Success state with data
   return (
     <>
+      <div className="container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Archive</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+              Browse your generated press reviews history
+            </p>
+          </div>
+        </div>
+      </div>
+
       <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
       <GeneratedPressReviewContentDialog
         review={selectedReview}

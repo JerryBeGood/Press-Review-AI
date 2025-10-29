@@ -52,29 +52,31 @@ export default function ArchiveView() {
   // Empty state
   if (reviews.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
-        <div className="max-w-md space-y-6">
-          <div className="text-muted-foreground">
-            <div className="mx-auto w-fit p-4 rounded-full bg-primary/10 mb-6">
-              <svg
-                className="h-12 w-12 sm:h-16 sm:w-16 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                />
-              </svg>
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-5xl">
+        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
+          <div className="max-w-md space-y-6">
+            <div className="text-muted-foreground">
+              <div className="mx-auto w-fit p-4 rounded-full bg-primary/10 mb-6">
+                <svg
+                  className="h-12 w-12 sm:h-16 sm:w-16 text-primary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No generated reviews yet</h3>
+              <p className="text-sm sm:text-base leading-relaxed">
+                Your generated press reviews will appear here once they are created.
+              </p>
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No generated reviews yet</h3>
-            <p className="text-sm sm:text-base leading-relaxed">
-              Your generated press reviews will appear here once they are created.
-            </p>
           </div>
         </div>
       </div>

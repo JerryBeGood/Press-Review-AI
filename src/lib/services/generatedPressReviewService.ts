@@ -3,45 +3,8 @@ import type {
   GeneratedPressReviewDetailDTO,
   GeneratedPressReviewsListDTO,
   GeneratedPressReviewsListWithTopicDTO,
-  PressReviewStatus,
+  GenerationStatus,
 } from "../../types";
-
-const MOCK_CONTENT = {
-  general_summary:
-    "Tydzień od 21 do 28 października 2024 był niezwykle bogaty w wydarzenia związane z AI Engineering. OpenAI zaprezentowało na DevDay 2024 przełomowe narzędzia dla developerów, włączając Realtime API, Vision Fine-tuning i Prompt Caching. Anthropic wydało zaktualizowaną wersję Claude 3.5 Sonnet z rewolucyjną funkcją 'computer use', pozwalającą AI na bezpośrednią interakcję z komputerem. Microsoft przedstawił kompleksowe aktualizacje Copilot, wprowadzając 12 nowych funkcji. Google rozszerzyło AI Overviews na ponad 100 krajów i wzmocniło możliwości Google Lens. Równocześnie odbył się AI Summit 2024 w Waszyngtonie oraz rozpoczęły się prace nad nowym standardem evaluacji AI przez NIST. Te wydarzenia sygnalizują znaczący postęp w praktycznym zastosowaniu AI w inżynierii oprogramowania i automatyzacji procesów biznesowych.",
-  segments: [
-    {
-      title: "OpenAI DevDay 2024: Nowe API dla developerów w czasie rzeczywistym",
-      summary:
-        "OpenAI zaprezentowało na DevDay w San Francisco cztery kluczowe narzędzia dla developerów: Realtime API umożliwiające natychmiastową komunikację głos-do-głos przez WebSocket, Vision Fine-tuning pozwalający dostrajać GPT-4o z wykorzystaniem obrazów i tekstu, Prompt Caching obniżający koszty API o 50% dla powtarzanych zapytań, oraz Model Distillation do trenowania mniejszych modeli z wykorzystaniem większych. Te funkcje znacząco rozszerzają możliwości tworzenia aplikacji AI, szczególnie w obszarze asystentów głosowych i aplikacji multimodalnych.",
-      link: "https://openai.com/devday/2024/",
-    },
-    {
-      title: "Anthropic wprowadza Computer Use - AI steruje komputerem jak człowiek",
-      summary:
-        "Anthropic wydało zaktualizowaną wersję Claude 3.5 Sonnet z przełomową funkcją 'computer use', pozwalającą AI na bezpośrednie sterowanie komputerem - patrzenie na ekran, poruszanie kursorem, klikanie i wpisywanie tekstu. To pierwsza publicznie dostępna funkcja tego typu w modelu frontier AI. Dodatkowo wydano Claude 3.5 Haiku, który dorównuje wydajnością poprzedniemu Claude 3 Opus. Funkcja computer use jest dostępna w wersji beta przez API Anthropic, Amazon Bedrock i Google Cloud Vertex AI.",
-      link: "https://www.anthropic.com/news/3-5-models-and-computer-use",
-    },
-    {
-      title: "Microsoft Copilot otrzymuje 12 głównych aktualizacji na jesień 2024",
-      summary:
-        "Microsoft zaprezentował kompleksową aktualizację Copilot, wprowadzając 12 nowych funkcji: Copilot Groups dla współpracy do 32 osób, funkcję Imagine do tworzenia treści AI, nową postać Mico jako interfejs głosowy, tryb Real Talk dla naturalnych rozmów, Memory & Personalization do zapamiętywania kontekstu, integrację z Gmail i Google Drive, oraz Proactive Actions dostarczające kontekstowe sugestie. Dodatkowo wprowadzono Copilot for Health, Learn Live dla edukacji, oraz głębszą integrację z Windows 11 i Edge.",
-      link: "https://www.microsoft.com/en-us/copilot",
-    },
-    {
-      title: "Google rozszerzyło AI Overviews na ponad 100 krajów i wzmocniło możliwości Google Lens",
-      summary:
-        "Google rozszerzyło AI Overviews na ponad 100 krajów i wzmocniło możliwości Google Lens. AI Overviews to narzędzie, które analizuje teksty i obrazy, aby dostarczać informacje o tematach, które są dla Ciebie ważne. Google Lens to narzędzie, które pozwala na identyfikację obiektów na obrazach i filmach, a także na przetwarzanie tekstu.",
-      link: "https://www.google.com/ai-overviews",
-    },
-    {
-      title: "IBM prezentuje Granite 3.0 - modele AI dla przedsiębiorstw",
-      summary:
-        "IBM na konferencji TechXchange zaprezentowało trzecią generację modeli językowych Granite 3.0, zaprojektowane specjalnie dla zastosowań biznesowych. Flagowy model Granite 3.0 8B Instruct został wytrenowany na danych w 12 językach i 116 językach programowania, oferując zaawansowane możliwości generowania tekstu, klasyfikacji, podsumowywania, ekstrakcji encji i aplikacji kodowych. Modele są zoptymalizowane pod kątem skalowania AI w przedsiębiorstwach, zwiększania efektywności i produktywności operacji biznesowych.",
-      link: "https://www.ibm.com/products/granite-3.0",
-    },
-  ],
-};
 
 /**
  * Service for managing generated press reviews
@@ -104,24 +67,9 @@ export class GeneratedPressReviewService {
       .insert({
         press_review_id: pressReviewId,
         user_id: userId,
-        ...(pressReviewId === "029c82d5-cb79-4d59-beb3-12b68bd8990a"
-          ? {
-              status: "success",
-              content: MOCK_CONTENT,
-              generated_at: new Date().toISOString(),
-            }
-          : pressReviewId === "80df6b8a-2bb2-45eb-a83a-058ed67056b5"
-            ? {
-                status: "failed",
-                content: null,
-                generated_at: new Date().toISOString(),
-              }
-            : {
-                status: "pending",
-                content: null,
-                generated_at: null,
-              }),
-        generation_log_id: null,
+        status: "pending",
+        content: null,
+        generated_at: null,
       })
       .select()
       .single();
@@ -151,7 +99,7 @@ export class GeneratedPressReviewService {
     userId: string,
     filters?: {
       pressReviewId?: string;
-      status?: PressReviewStatus;
+      status?: GenerationStatus;
     }
   ): Promise<GeneratedPressReviewsListDTO> {
     try {
@@ -212,7 +160,7 @@ export class GeneratedPressReviewService {
     userId: string,
     filters?: {
       pressReviewId?: string;
-      status?: PressReviewStatus;
+      status?: GenerationStatus;
     }
   ): Promise<GeneratedPressReviewsListWithTopicDTO> {
     try {

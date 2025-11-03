@@ -18,7 +18,7 @@ import type { Tables, TablesInsert, Enums } from "./db/database.types";
 /* ------------------------------------------------------------------ *
  *  Shared helpers
  * ------------------------------------------------------------------ */
-export type PressReviewStatus = Enums<"press_review_status">;
+export type GenerationStatus = Enums<"generation_status">;
 export type RatingValue = -1 | 1; // business rule: only -1 or 1
 
 /* ------------------------------------------------------------------ *
@@ -55,7 +55,12 @@ export interface ValidateTopicResultDTO {
 /* ------------------------------------------------------------------ *
  *  Generated Press Reviews
  * ------------------------------------------------------------------ */
-export type GeneratedPressReviewDTO = Omit<Tables<"generated_press_reviews">, "user_id" | "generation_log_id">;
+
+// TODO: Omitted these columns to keep generatedPressReviewService working -> Should they be included in the DTO?
+export type GeneratedPressReviewDTO = Omit<
+  Tables<"generated_press_reviews">,
+  "user_id" | "analysis" | "generated_queries" | "research_results" | "error"
+>;
 
 export type GeneratedPressReviewDetailDTO = Omit<Tables<"generated_press_reviews">, "user_id">;
 
@@ -92,7 +97,33 @@ export interface GeneratedPressReviewsListWithTopicDTO {
   count: number;
 }
 
+// TODO: Seems to ma that this is not necessary, these type already exist in the types file in the edge functions directory
+
 /* ------------------------------------------------------------------ *
- *  Generation Logs
+ *  Agent Workflow Artifacts
  * ------------------------------------------------------------------ */
-export type GenerationLogDTO = Omit<Tables<"generation_logs">, "user_id">;
+/** Generated search queries for research */
+export type GeneratedQueries = string[];
+
+/** Single research result from Exa search */
+export interface ResearchArticle {
+  title: string;
+  url: string;
+  author?: string;
+  publishedDate?: string;
+  summary: string;
+  keyFacts: string[];
+  opinions: string[];
+}
+
+/** Collection of research results */
+export type ResearchResults = ResearchArticle[];
+
+/** Analysis of the research process and source quality */
+export interface ProcessAnalysis {
+  totalSourcesEvaluated: number;
+  relevantSources: number;
+  irrelevantSources: number;
+  keyThemes: string[];
+  sourceQualityNotes: string;
+}

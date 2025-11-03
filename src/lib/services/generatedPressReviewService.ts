@@ -14,7 +14,7 @@ export class GeneratedPressReviewService {
   constructor(private supabase: SupabaseClient) {}
 
   /**
-   * Creates a new on-demand generation job for a press review
+   * Creates a generation job for a press review
    *
    * Business logic checks:
    * 1. Verifies that the parent press_review exists
@@ -26,7 +26,7 @@ export class GeneratedPressReviewService {
    * @returns The newly created generation job with status 'pending'
    * @throws Error with specific message for different failure scenarios
    */
-  async createOnDemandGeneration(pressReviewId: string, userId: string): Promise<GeneratedPressReviewDetailDTO> {
+  async triggerGeneration(pressReviewId: string, userId: string): Promise<GeneratedPressReviewDetailDTO> {
     // Step 1: Verify press_review exists and user is the owner
     const { data: pressReview, error: pressReviewError } = await this.supabase
       .from("press_reviews")

@@ -76,3 +76,25 @@ export function successResponse(message: string, data?: Record<string, unknown>)
     }
   );
 }
+
+export function calculateStartPublishedDate(cronSchedule: string): string {
+  const now = new Date();
+  let days = 1;
+
+  const cronParts = cronSchedule.trim().split(/\s+/);
+  if (cronParts.length === 5) {
+    const isMonthly = cronParts[2] !== "*";
+    const isWeekly = cronParts[4] !== "*";
+
+    if (isMonthly) {
+      days = 30;
+    } else if (isWeekly) {
+      days = 7;
+    }
+  }
+
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - days);
+
+  return startDate.toISOString();
+}

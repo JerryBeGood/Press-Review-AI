@@ -4,6 +4,7 @@
  */
 
 import { openai } from "npm:@ai-sdk/openai@2.0.9";
+import Exa from "npm:exa-js@1.8.27";
 
 /**
  * Initialize OpenAI client for Vercel AI SDK
@@ -20,4 +21,14 @@ export function createOpenAIClient() {
   return {
     model: (modelName: string) => openai(modelName, { apiKey }),
   };
+}
+
+export function createExaClient(): Exa {
+  const apiKey = Deno.env.get("EXA_API_KEY");
+
+  if (!apiKey) {
+    throw new Error("Missing EXA_API_KEY environment variable");
+  }
+
+  return new Exa(apiKey);
 }

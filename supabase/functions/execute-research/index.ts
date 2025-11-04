@@ -5,6 +5,7 @@ import {
   errorResponse,
   successResponse,
   calculateStartPublishedDate,
+  invokeEdgeFunction,
 } from "../_shared/utils.ts";
 import type { AgentFunctionRequest, ResearchArticle } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
@@ -264,9 +265,9 @@ Be precise and extract the information as written. Do not add your own interpret
     console.log(`Research results saved successfully to database`);
 
     // Invoke the next function in the chain: synthesize-content
-    // await invokeEdgeFunction("synthesize-content", {
-    //   generated_press_review_id,
-    // });
+    await invokeEdgeFunction("synthesize-content", {
+      generated_press_review_id,
+    });
 
     return successResponse("Research completed successfully");
   } catch (error) {

@@ -3,7 +3,7 @@ import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createSupabaseClient } from "../_shared/supabase-client.ts";
 import { createOpenAIClient } from "../_shared/ai-clients.ts";
-import { updateGenerationStatus, errorResponse, successResponse } from "../_shared/utils.ts";
+import { updateGenerationStatus, invokeEdgeFunction, errorResponse, successResponse } from "../_shared/utils.ts";
 import type { EdgeFunctionRequest } from "../_shared/types.ts";
 
 const QueriesSchema = z.object({
@@ -79,6 +79,10 @@ serve(async (req: Request) => {
     if (updateError) {
       throw new Error(`Failed to save queries: ${updateError.message}`);
     }
+
+    invokeEdgeFunction("execute-research", {
+      generated_press_review_id,
+    });
 
     return successResponse("Queries generated successfully");
   } catch (error) {

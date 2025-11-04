@@ -1,14 +1,6 @@
-/**
- * Utility functions for Edge Functions
- * Common helpers for error handling, logging, and response formatting
- */
-
 import type { GenerationStatus } from "./types.ts";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.75.0";
 
-/**
- * Updates the status of a generated press review
- */
 export async function updateGenerationStatus(
   supabase: SupabaseClient,
   generatedPressReviewId: string,
@@ -33,9 +25,6 @@ export async function updateGenerationStatus(
   }
 }
 
-/**
- * Invokes another Edge Function asynchronously
- */
 export async function invokeEdgeFunction(functionName: string, payload: Record<string, unknown>): Promise<void> {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
@@ -61,9 +50,6 @@ export async function invokeEdgeFunction(functionName: string, payload: Record<s
   }
 }
 
-/**
- * Creates a standard error response
- */
 export function errorResponse(message: string, status = 500): Response {
   return new Response(
     JSON.stringify({
@@ -77,9 +63,6 @@ export function errorResponse(message: string, status = 500): Response {
   );
 }
 
-/**
- * Creates a standard success response
- */
 export function successResponse(message: string, data?: Record<string, unknown>): Response {
   return new Response(
     JSON.stringify({

@@ -21,10 +21,8 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Update status to 'researching_sources'
     await updateGenerationStatus(supabase, generated_press_review_id, "researching_sources");
 
-    // Step 1: Fetch the generated queries, schedule and topic from the database
     const { data: generatedReview, error: fetchError } = await supabase
       .from("generated_press_reviews")
       .select(
@@ -53,12 +51,11 @@ serve(async (req: Request) => {
     // eslint-disable-next-line no-console
     console.log(`Processing ${queries.length} queries for topic: "${topic}" with schedule: ${schedule}`);
 
-    // Step 2: Calculate the startPublishedDate based on the schedule
     const startPublishedDate = calculateStartPublishedDate(schedule);
+
     // eslint-disable-next-line no-console
     console.log(`Searching for sources published after: ${startPublishedDate}`);
 
-    // Step 3a: Search sources using Exa for each query
     const exa = createExaClient();
     const allSearchResults: {
       query: string;
@@ -76,6 +73,20 @@ serve(async (req: Request) => {
       console.log(`Searching for: "${query}"`);
 
       try {
+        /*
+          * Ideas for improvement:
+            - Params:
+              a. type - the type of search. Neural uses an embeddings-based model, keyword is google-like SERP, and auto (default) intelligently combines the two. Fast uses streamlined versions of the neural and keyword models
+              b. category - a data category to focus on e.g. news
+              ! I could leverage next one by researching the proper list of influential domains for the topic's domain !
+              c. includeDomains - list of domains to include in the search. If specified, results will only come from these domains.
+              ! Check the date format !
+              d. startPublishDate - date must be provided in ISO 8601 format
+              ? If the following are set do I still need to provide maxCharacters settings ?
+              e. content:
+                i. highlights
+                ii. summary
+        */
         const searchResponse = await exa.searchAndContents(query, {
           numResults: 5,
           startPublishedDate,
@@ -99,14 +110,12 @@ serve(async (req: Request) => {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(`Error searching for query "${query}":`, error);
-        // Continue with other queries even if one fails
       }
     }
 
     // eslint-disable-next-line no-console
     console.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
 
-    // Step 3b: Evaluate each source
     const ai = createOpenAIClient();
     const relevantSources = new Set<string>();
     const irrelevantSources = new Set<string>();
@@ -119,19 +128,18 @@ serve(async (req: Request) => {
 
     for (const searchResult of allSearchResults) {
       for (const source of searchResult.results) {
-        // Check if source was already processed
         if (relevantSources.has(source.url) || irrelevantSources.has(source.url)) {
           // eslint-disable-next-line no-console
           console.log(`Skipping already processed source: ${source.url}`);
           continue;
         }
 
-        // Evaluate source using AI
         try {
-          // TODO: Some sources that are not relevant to the topic are still being evaluated as relevant.
           // eslint-disable-next-line no-console
           console.log(`Evaluating source: ${source.title}`);
 
+          // TODO: Some sources that are not relevant to the topic are still being evaluated as relevant.
+          // TODO: How can I improve the evaluation?
           const evaluation = await generateObject({
             model: ai.model("gpt-4o-mini"),
             schema: evaluationSchema,
@@ -178,10 +186,8 @@ Provide your evaluation.`,
     // eslint-disable-next-line no-console
     console.log(`Evaluation complete: ${relevantSources.size} relevant, ${irrelevantSources.size} irrelevant`);
 
-    // Step 3c: Extract key facts and opinions from relevant sources
     const researchResults: ResearchArticle[] = [];
 
-    // Schema for content extraction
     const extractionSchema = z.object({
       summary: z.string().describe("Brief summary of the article content"),
       keyFacts: z.array(z.string()).describe("List of key facts extracted from the article"),

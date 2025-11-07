@@ -7,6 +7,20 @@ import { updateGenerationStatus, invokeEdgeFunction, errorResponse, successRespo
 import { contextGeneration, queryGeneration } from "../_shared/prompts.ts";
 import type { EdgeFunctionRequest } from "../_shared/types.ts";
 
+const contextSchema = z.object({
+  audience: z.string().describe("The audience that the large language models aim for"),
+  persona: z.string().describe("The role to inpersonate to provide audience with matching results"),
+  goal: z.string().describe("The goal to pursue by the persona to provide audience with proper results"),
+  domain: z.object({
+    themes: z.array(z.string()).min(3).max(5).describe("Important themes within the provided topic"),
+    trends: z.array(z.string()).min(3).max(5).describe("Topic related trends that are happening right now"),
+  }),
+});
+
+const querySchema = z.object({
+  queries: z.array(z.string()).min(3).max(10).describe("A list of search queries to research the topic"),
+});
+
 serve(async (req: Request) => {
   const supabase = createSupabaseClient();
   const openai = createOpenAIClient();
@@ -38,26 +52,15 @@ serve(async (req: Request) => {
 
     const { object: context } = await generateObject({
       model: openai.model("gpt-4o-mini"),
-      schema: z.object({
-        audience: z.string().describe("The audience that the large language models aim for"),
-        persona: z.string().describe("The role to inpersonate to provide audience with matching results"),
-        goal: z.string().describe("The goal to pursue by the persona to provide audience with proper results"),
-        domain: z.object({
-          themes: z.array(z.string()).min(3).max(5).describe("Important themes within the provided topic"),
-          trends: z.array(z.string()).min(3).max(5).describe("Topic related trends that are happening right now"),
-        }),
-      }),
+      schema: contextSchema,
       prompt: contextGeneration(topic),
     });
 
-    // TODO: What vercel settings I can use to improve the quality of the queries?
     const {
       object: { queries },
     } = await generateObject({
       model: openai("gpt-4o-mini"),
-      schema: z.object({
-        queries: z.array(z.string()).min(3).max(10).describe("A list of search queries to research the topic"),
-      }),
+      schema: querySchema,
       prompt: queryGeneration(topic, context),
     });
 

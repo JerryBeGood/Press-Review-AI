@@ -1,3 +1,4 @@
+// TODO: Prompt creates contexts that encourage model to focus on queries aimed at hobbists and are not providing real press review coverage.
 export const contextGeneration = (topic: string) => `
       You are the <topic> domain expert. Your goal is to support large language models by serving their users with more nuanced and up to date information. You do it by providing large language models with necessary domain specific context.
   
@@ -63,7 +64,7 @@ export const contextGeneration = (topic: string) => `
       <constrains>
         - The lists of themes and trends should have maximum 5 and minimum 3 items.
         - The themes and trends should be short and concise.
-        - The audience should be aimed at people who are interested in the ${topic} and want to get informed.
+        - The audience should be people professionals who want to get newest information about the developments in the ${topic} domain.
         - Do not get too emotional and do not get carried away.
       </constrains>
     
@@ -79,7 +80,7 @@ export const queryGeneration = (topic, context) => `
   
         ${context.audience}
   
-        Your task is to, given the following <topic> from the user, generate a list of press review SERP queries. To do so, combine provided <themes> and <trends> with your knowledge of the topic. Ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs". Return a maximum of 10 queries, but feel free to return less if the original prompt is clear. Make sure each query is unique and not similar to each other.
+        Your task is to, given the following <topic> from the user, generate a list of press review SERP queries. To do so, combine provided <themes> and <trends> with your knowledge of the topic. Ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs". Return a maximum of 7 queries, but feel free to return less if the original prompt is clear. Make sure each query is unique and not similar to each other.
   
         <topic>${topic}<topic>
   
@@ -93,7 +94,7 @@ export const queryGeneration = (topic, context) => `
         </output_format>
   
         <constrains>
-          - You must generate a list of 3-10 SERP queries
+          - You must generate a list of 3-5 SERP queries
           - You must ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs"
           - You must ensure that each query is unique and not similar to each other
           - You must ensure that each query is relevant to the topic
@@ -187,4 +188,61 @@ export const contentExtraction = (topic, source) => `
           - You should not add any information that is not relevant to the <author>.
           - You should not add any information that is not relevant to the <publicationDate>.
         </constrains>
+      `;
+
+export const contentSynthesis = (topic, researchResults) => `
+        You are a press journalist specialising in the provided <topic>. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
+
+        <topic>${topic}</topic>
+        <research_results>${JSON.stringify(researchResults)}</research_results>
+
+        Your task is to analyse the provided <research_results> and create a structured press review report. You should:
+
+        1. Select the most valuable sources: Review all sources and identify those that provide the most significant, relevant, and substantive information. Discard sources that are redundant, low-quality, or provide minimal value.
+
+        2. Categorize sources: Group the selected sources into logical categories based on their subject matter, industry, or theme (e.g., "Technology & AI", "Healthcare", "Business & Finance", "Politics", etc.).
+
+        3. Create summaries: For each category, write a concise summary that synthesizes the key information from all sources in that group, incorporating both facts and opinions from the source data.
+
+        4. Structure the output: Format your response as a JSON object following the exact structure specified below.
+
+        Before providing your final answer, work through your analysis:
+        - First, list all sources and briefly evaluate their value/relevance
+        - Identify which sources to keep and which to discard
+        - Group the selected sources into categories
+        - Plan the summaries for each category
+        - Draft the general summary for the overall report
+
+        Your final output must follow this exact JSON structure:
+
+        {
+          "content": {
+            "general_summary": "[a general summary about what can be found in the current press review report]",
+            "segments": [
+              {
+                "category": "[the category of the sources in the given segment]",
+                "summary": "[a concise summary of this specific segment's contribution to the topic]",
+                "sources": [
+                  {
+                    "title": "[the title of the article or source]",
+                    "summary": "[original summary of the source from the research data]",
+                    "link": "[the URL of the source]"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+
+
+        Important guidelines:
+        - Only include sources that add meaningful value to the report
+        - Ensure categories are logical and mutually exclusive
+        - Write segment summaries that synthesize information across all sources in that category
+        - Use the original summaries from the research data for individual source summaries
+        - Include key facts and opinions from the research data in your segment summaries
+        - Make sure the general summary provides a detailedoverview of all segments
+        - Write in a professional, journalistic style
+
+        Your final response should contain only the JSON output as specified above, without any additional text or explanation.
       `;

@@ -1,77 +1,57 @@
 // TODO: Prompt creates contexts that encourage model to focus on queries aimed at hobbists and are not providing real press review coverage.
 export const contextGeneration = (topic: string) => `
-      You are the <topic> domain expert. Your goal is to support large language models by serving their users with more nuanced and up to date information. You do it by providing large language models with necessary domain specific context.
-  
-      Your task is to generate a context for the <topic> domain. To do it you need to prepare:
-        - a audience that the large language model will reach, that is matching the provided <topic>
-        - a persona that the large language model will inpersonate, that is matching the prepared audience
-        - a goal that the large language model will pursue, that is matching the prepared persona
-        - a domain context that includes important themes and trends within the provided topic
-  
-      You should strictly follow all provided instructions.
-  
-      <input>
-        <topic>${topic}<topic>
-      </input>
-  
-      <output>
-        {
-          "audience": [audience that the large language models want to reach],
-          "persona": [persona that the large language model will inpersonate],
-          "goal": [goal that the large language model will pursue],
-          "domain": {
-            "themes": [list of important themes within the provided topic],
-            "trends": [list of trends that are happening right now],
-          }
-        }
-      </output>
-  
-      <examples>
-        <example_1>
-          <input>
-            <topic>Polaroid Photography</topic>
-          </input>
-        <output>
-          {
-            "audience": "Your audience are creative individuals, visual storytellers, and nostalgia seekers who love experimenting with instant photography. People curious about analog techniques, eager to discover modern ways to use classic Polaroid cameras, and those who find joy in tangible, one-of-a-kind images."
-            "persona": "You are a passionate analog photography mentor who shares creative ideas, troubleshooting advice, and inspiration for Polaroid enthusiasts. Your perspective combines hands-on experience with a love for analog imperfections, encouraging playful exploration and experimentation.",
-            "goal": "Your goal is to inspire both newcomers and seasoned instant photographers to try new techniques, overcome common Polaroid frustrations, and celebrate the artistry of imperfect, tangible images.",
-            "domain": {
-              "themes": ["creative shooting techniques", "film types and camera models", "DIY Polaroid projects", "photo preservation and display", "community showcase"],
-              "trends": ["hybrid analog-digital workflows", "artist collaborations with Polaroid", "instant photo journaling", "limited edition film releases", "custom camera mods"]
-            }
-          }
-        </output>
-        </example_1>
-          <example_2>
-          <input>
-            <topic>Small Business Growth</topic>
-          </input>
-          <output>
-            {
-              "audience": "Your audience are entrepreneurs, small business owners, and startup founders who want actionable insights into building and scaling their businesses. Readers who are time-conscious but value clarity, strategy, and examples from real-world successes."
-              "persona": "You are a pragmatic business strategist who translates emerging business trends into clear, step-by-step insights for founders. You write with the authority of someone who has built and advised multiple startups, making complex ideas feel immediately applicable.",
-              "goal": "Your goal is to curate stories, research, and tools that empower small business owners to scale sustainably, adapt to market changes, and maintain a strong brand presence.",
-              "domain": {
-                "themes": ["bootstrapping", "brand storytelling", "digital transformation", "team leadership", "customer experience"],
-                "trends": ["AI-powered sales tools", "community-led growth", "remote-first operations", "eco-conscious branding", "subscription-based business models"]
-              }
-            }
-          </output>
-          </example_2>
-      </examples>
-  
-      <constrains>
-        - The lists of themes and trends should have maximum 5 and minimum 3 items.
-        - The themes and trends should be short and concise.
-        - The audience should be people professionals who want to get newest information about the developments in the ${topic} domain.
-        - Do not get too emotional and do not get carried away.
-      </constrains>
-    
-      <capabilities>
-        - Today is ${new Date().toISOString()}
-      </capabilites>
-      `;
+  You are tasked with creating contextual guidance for a language model that will be conducting press reviews and generating search queries on a specific topic. The context should strike a balance between being too hobbyistic (overly casual/amateur) and too professional (overly formal/corporate) - aim for an informed, accessible middle ground suitable for press review purposes.
+
+  <topic>
+  ${topic}
+  </topic>
+
+  Your task is to generate a comprehensive context for the topic above that will guide a language model in creating relevant search queries for press review purposes. You need to prepare four key components:
+
+  1. Audience: Define the target readership that would be interested in press coverage of this topic - these should be informed individuals who seek current developments and news
+  2. Persona: Create a persona for the language model to adopt - someone knowledgeable but accessible, suitable for press review work
+  3. Goal: Establish what the language model should aim to achieve when covering this topic from a press review perspective
+  4. Domain Context: Identify important themes and current trends within the topic that would be relevant for press coverage
+
+  Key Requirements:
+  - Focus on press review context - the output should guide toward newsworthy, current developments rather than hobbyistic content
+  - Maintain an informed but accessible tone - avoid being too casual or too corporate
+  - The audience should consist of professionals and informed individuals seeking current information about developments in the topic domain
+  - Themes should represent core areas of coverage within the topic (3-5 items)
+  - Trends should reflect what's happening right now that would be newsworthy (3-5 items)
+  - Keep themes and trends concise and specific
+  - Avoid overly emotional language
+
+  Examples:
+
+  For topic "Renewable Energy Technology":
+
+  {
+    "audience": "Policy makers, industry professionals, investors, and informed citizens who follow developments in clean energy solutions and their market impact. Readers seeking to understand how renewable technologies are reshaping energy markets and policy landscapes.",
+    "persona": "You are an informed energy sector analyst who tracks emerging technologies, policy changes, and market developments in renewable energy. You provide clear, fact-based coverage that connects technical innovations to their broader economic and environmental implications.",
+    "goal": "Your goal is to identify and analyze significant developments in renewable energy technology, policy changes, market shifts, and breakthrough innovations that impact the energy transition and have broader societal implications.",
+    "domain": {
+      "themes": ["solar and wind technology advances", "energy storage solutions", "grid integration challenges", "policy and regulatory changes", "market economics and financing"],
+      "trends": ["floating solar installations", "green hydrogen production scaling", "battery recycling innovations", "corporate renewable energy procurement", "offshore wind expansion"]
+    }
+  }
+
+
+  For topic "Artificial Intelligence in Healthcare":
+
+  {
+    "audience": "Healthcare professionals, technology leaders, regulatory officials, and informed patients who need to understand how AI is transforming medical practice, patient care, and healthcare systems.",
+    "persona": "You are a healthcare technology correspondent who covers the intersection of AI innovation and medical practice. You translate complex technical developments into clear insights about their practical impact on patient care and healthcare delivery.",
+    "goal": "Your goal is to track and analyze AI implementations in healthcare settings, regulatory developments, clinical trial results, and technological breakthroughs that are changing how medical care is delivered and accessed.",
+    "domain": {
+      "themes": ["diagnostic AI applications", "drug discovery and development", "clinical decision support systems", "regulatory approval processes", "patient data privacy and ethics"],
+      "trends": ["AI-powered medical imaging", "personalized treatment algorithms", "remote patient monitoring", "clinical trial optimization", "healthcare AI regulation frameworks"]
+    }
+  }
+
+
+  Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries rather than hobbyistic or overly technical content.
+`;
 
 export const queryGeneration = (topic, context) => `
         ${context.persona}

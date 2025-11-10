@@ -48,7 +48,7 @@ export class GeneratedPressReviewService {
       .from("generated_press_reviews")
       .select("id, status")
       .eq("press_review_id", pressReviewId)
-      .eq("status", "pending")
+      .in("status", ["pending", "generating_queries", "researching_sources", "synthesizing_content"])
       .maybeSingle();
 
     if (pendingError) {

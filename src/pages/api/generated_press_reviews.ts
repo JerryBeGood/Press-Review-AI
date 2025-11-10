@@ -8,7 +8,7 @@ export const prerender = false;
 
 /**
  * POST /api/generated_press_reviews
- * Triggers on-demand generation of a press review
+ * Triggers generation of a press review
  * Returns 202 Accepted with a pending generation job
  */
 export const POST: APIRoute = async ({ request, locals }) => {

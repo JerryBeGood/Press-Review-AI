@@ -7,6 +7,7 @@ import {
   calculateStartPublishedDate,
   invokeEdgeFunction,
 } from "../_shared/utils.ts";
+import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
 import type { AgentFunctionRequest, ResearchArticle } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
@@ -52,6 +53,7 @@ serve(async (req: Request) => {
     console.log(`Processing ${queries.length} queries for topic: "${topic}" with schedule: ${schedule}`);
 
     const startPublishedDate = calculateStartPublishedDate(schedule);
+    const endPublishedDate = new Date().toISOString();
 
     // eslint-disable-next-line no-console
     console.log(`Searching for sources published after: ${startPublishedDate}`);
@@ -73,25 +75,13 @@ serve(async (req: Request) => {
       console.log(`Searching for: "${query}"`);
 
       try {
-        /*
-          * Ideas for improvement:
-            - Params:
-              a. type - the type of search. Neural uses an embeddings-based model, keyword is google-like SERP, and auto (default) intelligently combines the two. Fast uses streamlined versions of the neural and keyword models
-              b. category - a data category to focus on e.g. news
-              ! I could leverage next one by researching the proper list of influential domains for the topic's domain !
-              c. includeDomains - list of domains to include in the search. If specified, results will only come from these domains.
-              ! Check the date format !
-              d. startPublishDate - date must be provided in ISO 8601 format
-              ? If the following are set do I still need to provide maxCharacters settings ?
-              e. content:
-                i. highlights
-                ii. summary
-        */
         const searchResponse = await exa.searchAndContents(query, {
-          numResults: 5,
+          numResults: 10,
           startPublishedDate,
+          endPublishedDate,
           type: "auto",
-          text: { maxCharacters: 2000 },
+          moderation: true,
+          text: true,
         });
 
         allSearchResults.push({
@@ -116,11 +106,10 @@ serve(async (req: Request) => {
     // eslint-disable-next-line no-console
     console.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
 
-    const ai = createOpenAIClient();
+    const openai = createOpenAIClient();
     const relevantSources = new Set<string>();
     const irrelevantSources = new Set<string>();
 
-    // Schema for source evaluation
     const evaluationSchema = z.object({
       isRelevant: z.boolean().describe("Whether the source is objective, credible, and relevant to the topic"),
       reasoning: z.string().describe("Brief explanation of the evaluation decision"),
@@ -138,8 +127,6 @@ serve(async (req: Request) => {
           // eslint-disable-next-line no-console
           console.log(`Evaluating source: ${source.title}`);
 
-          // TODO: Some sources that are not relevant to the topic are still being evaluated as relevant.
-          // TODO: How can I improve the evaluation?
           const evaluation = await generateObject({
             model: openai.model("gpt-4o-mini"),
             schema: evaluationSchema,

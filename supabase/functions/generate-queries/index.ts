@@ -59,7 +59,7 @@ serve(async (req: Request) => {
     const {
       object: { queries },
     } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: openai.model("gpt-4o-mini"),
       schema: querySchema,
       prompt: queryGeneration(topic, context),
     });

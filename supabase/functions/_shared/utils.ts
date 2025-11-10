@@ -78,7 +78,7 @@ export function successResponse(message: string, data?: Record<string, unknown>)
 }
 
 export function calculateStartPublishedDate(cronSchedule: string): string {
-  const now = new Date();
+  const startDate = new Date();
   let days = 1;
 
   const cronParts = cronSchedule.trim().split(/\s+/);
@@ -93,7 +93,6 @@ export function calculateStartPublishedDate(cronSchedule: string): string {
     }
   }
 
-  const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - days);
 
   return startDate.toISOString();

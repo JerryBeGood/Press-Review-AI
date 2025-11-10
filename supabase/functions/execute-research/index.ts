@@ -7,7 +7,7 @@ import {
   calculateStartPublishedDate,
   invokeEdgeFunction,
 } from "../_shared/utils.ts";
-import { sourceEvaluation } from "../_shared/prompts.ts";
+import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
 import type { AgentFunctionRequest, ResearchArticle } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
@@ -76,7 +76,7 @@ serve(async (req: Request) => {
 
       try {
         const searchResponse = await exa.searchAndContents(query, {
-          numResults: 10,
+          numResults: 5,
           startPublishedDate,
           endPublishedDate,
           type: "auto",

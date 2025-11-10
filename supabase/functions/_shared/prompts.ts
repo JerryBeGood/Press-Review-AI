@@ -133,7 +133,7 @@ export const sourceEvaluation = (topic, source) => `
         - The source is clearly outdated for the purposes of current press review
         - The source lacks credibility or appears to be spam/promotional content
 
-        Important context: Today's date is 2024-12-19. Use this to assess whether the publication date is recent enough for current press review purposes.
+        Important context: Today's date is ${new Date().toISOString()}. Use this to assess whether the publication date is recent enough for current press review purposes.
 
         First, provide your reasoning for why this source should or should not be considered relevant for press review coverage of the topic. Consider the content quality, relevance to the topic, recency, and credibility of the source.
 
@@ -198,6 +198,7 @@ export const contentExtraction = (topic, source) => `
         Your final output should contain only the JSON object with no additional text, formatting, or explanations.
       `;
 
+// TODO: The general summary does not bring any value to the report. It should combine some information from the segments and provide a high-level overview of the report.
 export const contentSynthesis = (topic, researchResults) => `
         You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
 

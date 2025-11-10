@@ -7,7 +7,7 @@ import {
   calculateStartPublishedDate,
   invokeEdgeFunction,
 } from "../_shared/utils.ts";
-import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
+import { sourceEvaluation } from "../_shared/prompts.ts";
 import type { AgentFunctionRequest, ResearchArticle } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
@@ -174,26 +174,9 @@ serve(async (req: Request) => {
           console.log(`Extracting content from: ${source.title}`);
 
           const extraction = await generateObject({
-            model: ai.model("gpt-4o-mini"),
+            model: openai.model("gpt-4o-mini"),
             schema: extractionSchema,
-            prompt: `You are a research assistant extracting information from sources. Extract facts and opinions but DO NOT summarize or interpret.
-
-Topic: ${topic}
-
-Source Information:
-- Title: ${source.title}
-- Author: ${source.author || "Unknown"}
-- Published: ${source.publishedDate || "Unknown"}
-
-Content:
-${source.text || "No content available"}
-
-Extract:
-1. A brief summary of what the article is about
-2. Key facts: Concrete, verifiable statements and data points
-3. Opinions: Viewpoints, analysis, or interpretations expressed by the author or quoted sources
-
-Be precise and extract the information as written. Do not add your own interpretation.`,
+            prompt: contentExtraction(topic, source),
           });
 
           const article: ResearchArticle = {

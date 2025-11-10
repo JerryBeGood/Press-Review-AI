@@ -145,60 +145,66 @@ export const sourceEvaluation = (topic, source) => `
 
         {
           "reasoning": "[Your detailed explanation of why this source is or isn't relevant]",
-          "isRelevant": [true or false]
+          "isRelevant": [boolean value expressing whether the source is relevant or not]
         }
 
         Your output should consist of only the JSON response with no additional text or formatting.
       `;
 
 export const contentExtraction = (topic, source) => `
-        You are a press journalist specialising in the <topic>.
+        You are a press journalist specializing in the following topic:
 
-        Your goal is to prepare provided <source> for further synthesis into a press review raport. You do so by extracting key facts and opinions from the <content> and writing its summary.
+        <topic>
+        ${topic}
+        </topic>
 
-        Strictly follow these instructions:
-        1.  Carefully read the <content> of the <source> to understand its main arguments, facts, and opinions.
-        2.  Write a concise, objective summary of the article. Do not add any information not present in the text.
-        3.  Identify and list the most important, verifiable pieces of information from the text. A "key fact" is a statement that can be proven true or false (e.g., statistics, dates, events).
-        4.  Identify and list statements that reflect the author's or a quoted person's beliefs, views, or judgments. An "opinion" is subjective and often contains interpretive language.
-        5.  Structure your entire output as a single, valid JSON object, without any markdown formatting or explanatory text outside of the JSON structure itself.
-        
-        <input>
-            <topic>${topic}</topic>
-            <source>
-              <tittle>${source.title}</tittle>
-              <url>${source.url}</url>
-              <author>${source.author || "Unknown"}</author>
-              <publicationDate>${source.publishedDate}</publicationDate>
-              <content>${source.text}</content>
-            </source>
-        </input>
+        You will analyze the following source material:
 
-        <output>
-          {
-            "summary": [comprehensive summary of the source text]
-            "keyFacts": [key facts stated in the source text]
-            "opinions": [opinions stated in the source text]
-          }
-        </output>
+        <source>${JSON.stringify(source)}</source>
 
-        <constrains>
-          - You should extract the key facts and opinions from the <content> of the <source> in a way that is relevant to the <topic>.
-          - You should not add any information not present in the <content>.
-          - You should not add any information that is not relevant to the <topic>.
-          - You should not add any information that is not relevant to the <source>.
-          - You should not add any information that is not relevant to the <author>.
-          - You should not add any information that is not relevant to the <publicationDate>.
-        </constrains>
+        Your goal is to prepare this source for synthesis into a press review report by extracting key facts and opinions from the content and writing a summary.
+
+        Follow these steps:
+
+        1. Carefully read the content to understand its main arguments, facts, and opinions as they relate to the topic.
+
+        2. Write a concise, objective summary of the article. Focus only on information present in the text that is relevant to the topic.
+
+        3. Identify key facts - these are verifiable pieces of information such as statistics, dates, events, names, locations, or other concrete details that can be proven true or false.
+
+        4. Identify opinions - these are subjective statements that reflect the author's or quoted persons' beliefs, views, judgments, predictions, or interpretations. Look for interpretive language, value judgments, or speculative statements.
+
+        Important constraints:
+        - Extract only information that is present in the source content
+        - Focus only on information relevant to the specified topic
+        - Do not add any external information or your own interpretations
+        - Maintain objectivity in your summary
+        - Distinguish clearly between factual statements and opinion statements
+
+        Structure your response as a single, valid JSON object with no markdown formatting or explanatory text outside the JSON structure. Use this exact format:
+
+        {
+          "summary": "comprehensive summary of the source text focusing on topic-relevant content",
+          "keyFacts": [
+            "first key fact from the source",
+            "second key fact from the source"
+          ],
+          "opinions": [
+            "first opinion from the source", 
+            "second opinion from the source"
+          ]
+        }
+
+        Your final output should contain only the JSON object with no additional text, formatting, or explanations.
       `;
 
 export const contentSynthesis = (topic, researchResults) => `
-        You are a press journalist specialising in the provided <topic>. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
+        You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
 
         <topic>${topic}</topic>
         <research_results>${JSON.stringify(researchResults)}</research_results>
 
-        Your task is to analyse the provided <research_results> and create a structured press review report. You should:
+        Your task is to analyse the provided research results and create a structured press review report. You should:
 
         1. Select the most valuable sources: Review all sources and identify those that provide the most significant, relevant, and substantive information. Discard sources that are redundant, low-quality, or provide minimal value.
 

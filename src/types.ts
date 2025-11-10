@@ -70,15 +70,21 @@ export interface GeneratedPressReviewsListDTO {
 }
 
 /** Expected structure of the 'content' JSONB field */
-export interface ContentSegment {
+export interface PressReviewSource {
   title: string;
   summary: string;
   link: string;
 }
 
+export interface PressReviewSegment {
+  category: string;
+  summary: string;
+  sources: PressReviewSource[];
+}
+
 export interface PressReviewContent {
   general_summary: string;
-  segments: ContentSegment[];
+  segments: PressReviewSegment[];
 }
 
 /** Modified DTO from API to include the topic from press_reviews relation */

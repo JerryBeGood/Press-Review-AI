@@ -79,9 +79,7 @@ export const queryGeneration = (topic, context) => `
   
         ${context.audience}
   
-        Combine provided <themes> and <trends> with your own knowledge to generate SERP queries 
-  
-        Your task is to, given the following <topic> from the user, generate a list of press review SERP queries. To do so, combine provided <themes> and <trends> with your own knowledge of the topic. Ensure at least one query is almost identical to the initial topic. Return a maximum of 10 queries, but feel free to return less if the original prompt is clear. Make sure each query is unique and not similar to each other.
+        Your task is to, given the following <topic> from the user, generate a list of press review SERP queries. To do so, combine provided <themes> and <trends> with your knowledge of the topic. Ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs". Return a maximum of 10 queries, but feel free to return less if the original prompt is clear. Make sure each query is unique and not similar to each other.
   
         <topic>${topic}<topic>
   
@@ -96,10 +94,11 @@ export const queryGeneration = (topic, context) => `
   
         <constrains>
           - You must generate a list of 3-10 SERP queries
-          - You must ensure that at least one query is almost identical to the initial topic
+          - You must ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs"
           - You must ensure that each query is unique and not similar to each other
           - You must ensure that each query is relevant to the topic
           - You must ensure that the queries are short and concise, maximum of 5 words
+          - You must be deeply aware of the current date.
         </constrains>
   
         <capabilities_and_reminders>

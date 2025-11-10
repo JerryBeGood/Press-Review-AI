@@ -108,45 +108,47 @@ export const queryGeneration = (topic, context) => `
       `;
 
 export const sourceEvaluation = (topic, source) => `
-        You are a press review research specialist. You will be evaluating whether a news <source> is relevant for press review coverage on a specified <topic>.
+        You are a press review research specialist. Your task is to evaluate whether a news source is relevant for press review coverage on a specified topic.
 
-        Your task is to determine whether <source> is relevant for press review coverage of the given <topic>. A source is considered relevant if:
-          - The content directly discusses, mentions, or relates to the <topic> in a meanigful way
-          - The source provides news coverage, analysis, commentary, or reporting that connects to the <topic>
-          - The <publicationDate> is recent enough to be considered current coverage
+        <topic>
+        ${topic}
+        </topic>
 
-        A source should be considered NOT relevant if:
-          - It is biased, promotional or low-quality
-          - It only tangentially mentions the <topic> without substantial discussion
-          - The <content> is primarily about unrelated subjects
-          - The <source> is clearly outdated for the purposes of current press review
+        <source>
+        ${JSON.stringify(source)}
+        </source>
 
-        <input>
-          <topic>${topic}</topic>
-          <source>
-            <tittle>${source.title}</tittle>
-            <url>${source.url}</url>
-            <author>${source.author || "Unknown"}</author>
-            <publicationDate>${source.publishedDate}</publicationDate>
-            <content>${source.text}</content>
-          </source>
-        </input>
+        Your job is to determine whether this source is relevant for press review coverage of the given topic. 
 
-        <output>
-          {
-            "isRelevant": [boolean value expressing the evaluation result]
-            "reasoning": [brief explenation of the reasoning behind the decision]
-          }
-        </output>
+        A source is considered RELEVANT if:
+        - The content directly discusses, mentions, or relates to the topic in a meaningful way
+        - The source provides news coverage, analysis, commentary, or reporting that connects to the topic
+        - The publication date is recent enough to be considered current coverage
+        - The source appears to be from a legitimate news outlet or publication
 
-        <constrains>
-          - You should judge the sources very rigorously.
-          - You should be deeply aware of the current date.
-        </constrains>
+        A source should be considered NOT RELEVANT if:
+        - It is biased, promotional, or low-quality content
+        - It only tangentially mentions the topic without substantial discussion
+        - The content is primarily about unrelated subjects
+        - The source is clearly outdated for the purposes of current press review
+        - The source lacks credibility or appears to be spam/promotional content
 
-        <capabilites>
-          - Today is ${new Date().toISOString()}.
-        </capabilities>
+        Important context: Today's date is 2024-12-19. Use this to assess whether the publication date is recent enough for current press review purposes.
+
+        First, provide your reasoning for why this source should or should not be considered relevant for press review coverage of the topic. Consider the content quality, relevance to the topic, recency, and credibility of the source.
+
+        Then, make your final determination about relevance.
+
+        You should judge sources very rigorously - err on the side of excluding sources that don't clearly and substantially relate to the topic or that lack sufficient quality for professional press review purposes.
+
+        Your response must be in the following JSON format:
+
+        {
+          "reasoning": "[Your detailed explanation of why this source is or isn't relevant]",
+          "isRelevant": [true or false]
+        }
+
+        Your output should consist of only the JSON response with no additional text or formatting.
       `;
 
 export const contentExtraction = (topic, source) => `

@@ -141,28 +141,9 @@ serve(async (req: Request) => {
           // TODO: Some sources that are not relevant to the topic are still being evaluated as relevant.
           // TODO: How can I improve the evaluation?
           const evaluation = await generateObject({
-            model: ai.model("gpt-4o-mini"),
+            model: openai.model("gpt-4o-mini"),
             schema: evaluationSchema,
-            prompt: `You are a research assistant evaluating the quality and relevance of sources.
-
-Topic: ${topic}
-Query: ${searchResult.query}
-
-Source Information:
-- Title: ${source.title}
-- URL: ${source.url}
-- Author: ${source.author || "Unknown"}
-- Published: ${source.publishedDate || "Unknown"}
-
-Content Preview:
-${source.text || "No content available"}
-
-Evaluate whether this source is:
-1. Objective and credible (not promotional, biased, or low-quality)
-2. Relevant to the topic
-3. From a trustworthy publication or author
-
-Provide your evaluation.`,
+            prompt: sourceEvaluation(topic, source),
           });
 
           if (evaluation.object.isRelevant) {

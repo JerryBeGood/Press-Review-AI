@@ -19,12 +19,18 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
 
   const statusVariant = {
     pending: "secondary" as const,
+    generating_queries: "generating" as const,
+    researching_sources: "researching" as const,
+    synthesizing_content: "synthesizing" as const,
     success: "default" as const,
     failed: "destructive" as const,
   };
 
   const statusLabel = {
     pending: "Pending",
+    generating_queries: "Generating Queries",
+    researching_sources: "Researching",
+    synthesizing_content: "Synthesizing",
     success: "Success",
     failed: "Failed",
   };

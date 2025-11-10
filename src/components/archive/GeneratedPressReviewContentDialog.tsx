@@ -1,4 +1,6 @@
 import type { ArchiveViewModel, PressReviewContent } from "@/types";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GeneratedPressReviewContentDialogProps {
@@ -9,11 +11,9 @@ interface GeneratedPressReviewContentDialogProps {
 export function GeneratedPressReviewContentDialog({ review, onOpenChange }: GeneratedPressReviewContentDialogProps) {
   const isOpen = review !== null;
 
-  // Handle different statuses
   const renderContent = () => {
     if (!review) return null;
 
-    // Handle pending status
     if (review.status === "pending") {
       return (
         <div className="py-8 text-center text-muted-foreground">
@@ -37,7 +37,6 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
       );
     }
 
-    // Handle failed status
     if (review.status === "failed") {
       return (
         <div className="py-8 text-center text-destructive">
@@ -61,7 +60,6 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
       );
     }
 
-    // Handle successful status - parse and display content
     if (review.status === "success" && review.content) {
       try {
         const content = review.content as unknown as PressReviewContent;
@@ -80,40 +78,51 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
 
             {/* Segments */}
             {content.segments.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-lg mb-4">Articles</h3>
-                <div className="space-y-4">
-                  {content.segments.map((segment, index) => (
-                    <div key={index} className="rounded-lg border border-border p-4 space-y-2">
-                      <h4 className="font-medium text-base">{segment.title}</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{segment.summary}</p>
-                      {segment.link && (
-                        <a
-                          href={segment.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
-                        >
-                          Read full article
-                          <svg
-                            className="h-3 w-3"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                            />
-                          </svg>
-                        </a>
+              <div className="space-y-4">
+                {content.segments.map((segment, index) => (
+                  <Card key={index}>
+                    <CardHeader>
+                      <CardTitle>{segment.category}</CardTitle>
+                      <CardDescription>{segment.summary}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {segment.sources.length > 0 && (
+                        <Accordion type="single" collapsible className="w-full">
+                          {segment.sources.map((source, sourceIndex) => (
+                            <AccordionItem value={`item-${sourceIndex}`} key={sourceIndex}>
+                              <AccordionTrigger>{source.title}</AccordionTrigger>
+                              <AccordionContent className="space-y-3">
+                                <p className="text-sm text-muted-foreground">{source.summary}</p>
+                                <a
+                                  href={source.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                                >
+                                  Read full article
+                                  <svg
+                                    className="h-3 w-3"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                    />
+                                  </svg>
+                                </a>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
                       )}
-                    </div>
-                  ))}
-                </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
           </div>
@@ -130,7 +139,6 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
       }
     }
 
-    // Fallback for successful status without content
     return (
       <div className="py-8 text-center text-muted-foreground">
         <p className="font-medium">No content available</p>

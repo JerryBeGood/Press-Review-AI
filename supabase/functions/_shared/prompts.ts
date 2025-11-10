@@ -1,4 +1,3 @@
-// TODO: Prompt creates contexts that encourage model to focus on queries aimed at hobbists and are not providing real press review coverage.
 export const contextGeneration = (topic: string) => `
   You are tasked with creating contextual guidance for a language model that will be conducting press reviews and generating search queries on a specific topic. The context should strike a balance between being too hobbyistic (overly casual/amateur) and too professional (overly formal/corporate) - aim for an informed, accessible middle ground suitable for press review purposes.
 
@@ -60,31 +59,52 @@ export const queryGeneration = (topic, context) => `
   
         ${context.audience}
   
-        Your task is to, given the following <topic> from the user, generate a list of press review SERP queries. To do so, combine provided <themes> and <trends> with your knowledge of the topic. Ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs". Return a maximum of 7 queries, but feel free to return less if the original prompt is clear. Make sure each query is unique and not similar to each other.
-  
-        <topic>${topic}<topic>
-  
-        <themes>${context.domain.themes}</themes
-        <trends>${context.domain.trends}</trends>
-  
-        <output_format>
-          {
-            "queries": [list of queries]
-          }
-        </output_format>
-  
-        <constrains>
-          - You must generate a list of 3-5 SERP queries
-          - You must ensure that at least one query is almost identical to the initial <topic> and has a following form: "<topic> breakthroughs"
-          - You must ensure that each query is unique and not similar to each other
-          - You must ensure that each query is relevant to the topic
-          - You must ensure that the queries are short and concise, maximum of 5 words
-          - You must be deeply aware of the current date.
-        </constrains>
-  
-        <capabilities_and_reminders>
-          - Today is ${new Date().toISOString()}.
-        </capabilities_and_reminders>
+        You will be generating a list of press review SERP (Search Engine Results Page) queries based on a given topic, themes, and trends. Your goal is to create unique, relevant search queries that would be useful for finding press coverage and reviews.
+
+        Here is the topic you need to work with:
+        <topic>
+        ${topic}
+        </topic>
+
+        Here are the relevant themes to consider:
+        <themes>
+        ${context.domain.themes.join(", ")}
+        </themes>
+
+        Here are the current trends to incorporate:
+        <trends>
+        ${context.domain.trends.join(", ")}
+        </trends>
+
+        Your task is to generate 3-7 unique SERP queries that combine the provided topic with the themes and trends. These queries should be designed to find press reviews and coverage related to the topic.
+
+        Important requirements:
+        - Generate between 3-7 queries total (you may use fewer than 7 if appropriate)
+        - At least one query must be almost identical to the initial topic but in the form: "[topic] breakthroughs"
+        - Each query must be unique and not similar to the others
+        - Each query must be relevant to the topic
+        - Keep queries short and concise (maximum 5 words each)
+        - Focus on queries that would return press coverage, reviews, or news articles
+        - Stick to the provided topic. Do not generate queries that are not strictly related to the topic
+
+        Current context:
+        - Today's date is ${new Date().toISOString()}
+        - Use this date awareness to ensure your queries are timely and relevant
+
+        Before generating your final list, use the scratchpad below to think through your approach:
+
+        <scratchpad>
+        1. What are the key aspects of the topic that press would cover?
+        2. How can you incorporate the provided themes and trends?
+        3. What variations would capture different types of press coverage?
+        4. How can you ensure each query is distinct while staying relevant?
+        </scratchpad>
+
+        After your analysis, provide your final answer in the exact JSON format below. Your response should contain only the JSON output with no additional text or explanation:
+
+        {
+          "queries": [list of queries]
+        }
       `;
 
 export const sourceEvaluation = (topic, source) => `

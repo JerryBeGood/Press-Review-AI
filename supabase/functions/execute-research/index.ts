@@ -8,14 +8,14 @@ import {
   invokeEdgeFunction,
 } from "../_shared/utils.ts";
 import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
-import type { AgentFunctionRequest, ResearchArticle } from "../_shared/types.ts";
+import type { EdgeFunctionRequest, ResearchArticle } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 serve(async (req: Request) => {
   const supabase = createSupabaseClient();
-  const { generated_press_review_id }: AgentFunctionRequest = await req.json();
+  const { generated_press_review_id }: EdgeFunctionRequest = await req.json();
 
   if (!generated_press_review_id) {
     return errorResponse("Missing generated_press_review_id", 400);

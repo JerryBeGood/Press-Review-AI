@@ -39,9 +39,10 @@ export function useArchive(): UseArchiveReturn {
       setReviews(data.data);
       setStatus("success");
 
-      // Check if any reviews are pending to enable polling
-      const hasPending = data.data.some((review) => review.status === "pending");
-      setPollingEnabled(hasPending);
+      // Check if any reviews are in an in-progress state to enable polling
+      const inProgressStatuses = ["pending", "generating_queries", "researching_sources", "synthesizing_content"];
+      const hasInProgress = data.data.some((review) => inProgressStatuses.includes(review.status));
+      setPollingEnabled(hasInProgress);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Error fetching reviews:", error);

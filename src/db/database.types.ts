@@ -22,77 +22,47 @@ export interface Database {
     Tables: {
       generated_press_reviews: {
         Row: {
-          content: Json | null; // TODO: Content is stored as JSON but the Supabase documentation recommends using JSONB (binary format). In general, storing unstructured data as JSON/JSONB is not recommended because it misses the benefits of relational database.
+          analysis: Json | null;
+          content: Json | null;
+          error: string | null;
           generated_at: string | null;
-          generation_log_id: string | null;
+          generated_queries: Json | null;
           id: string;
           press_review_id: string;
-          status: Database["public"]["Enums"]["press_review_status"];
+          research_results: Json | null;
+          status: Database["public"]["Enums"]["generation_status"];
           user_id: string;
         };
         Insert: {
+          analysis?: Json | null;
           content?: Json | null;
+          error?: string | null;
           generated_at?: string | null;
-          generation_log_id?: string | null;
+          generated_queries?: Json | null;
           id?: string;
           press_review_id: string;
-          status?: Database["public"]["Enums"]["press_review_status"];
+          research_results?: Json | null;
+          status?: Database["public"]["Enums"]["generation_status"];
           user_id: string;
         };
         Update: {
+          analysis?: Json | null;
           content?: Json | null;
+          error?: string | null;
           generated_at?: string | null;
-          generation_log_id?: string | null;
+          generated_queries?: Json | null;
           id?: string;
           press_review_id?: string;
-          status?: Database["public"]["Enums"]["press_review_status"];
+          research_results?: Json | null;
+          status?: Database["public"]["Enums"]["generation_status"];
           user_id?: string;
         };
         Relationships: [
-          {
-            foreignKeyName: "fk_generation_log";
-            columns: ["generation_log_id"];
-            isOneToOne: false;
-            referencedRelation: "generation_logs";
-            referencedColumns: ["id"];
-          },
           {
             foreignKeyName: "generated_press_reviews_press_review_id_fkey";
             columns: ["press_review_id"];
             isOneToOne: false;
             referencedRelation: "press_reviews";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      generation_logs: {
-        Row: {
-          created_at: string;
-          generated_press_review_id: string;
-          id: string;
-          log_data: Json;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          generated_press_review_id: string;
-          id?: string;
-          log_data: Json;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          generated_press_review_id?: string;
-          id?: string;
-          log_data?: Json;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "generation_logs_generated_press_review_id_fkey";
-            columns: ["generated_press_review_id"];
-            isOneToOne: false;
-            referencedRelation: "generated_press_reviews";
             referencedColumns: ["id"];
           },
         ];
@@ -128,7 +98,13 @@ export interface Database {
     Views: Record<never, never>;
     Functions: Record<never, never>;
     Enums: {
-      press_review_status: "pending" | "success" | "failed";
+      generation_status:
+        | "pending"
+        | "generating_queries"
+        | "researching_sources"
+        | "synthesizing_content"
+        | "success"
+        | "failed";
     };
     CompositeTypes: Record<never, never>;
   };
@@ -249,7 +225,14 @@ export const Constants = {
   },
   public: {
     Enums: {
-      press_review_status: ["pending", "success", "failed"],
+      generation_status: [
+        "pending",
+        "generating_queries",
+        "researching_sources",
+        "synthesizing_content",
+        "success",
+        "failed",
+      ],
     },
   },
 } as const;

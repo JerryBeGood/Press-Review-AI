@@ -18,7 +18,7 @@ import type { Tables, TablesInsert, Enums } from "./db/database.types";
 /* ------------------------------------------------------------------ *
  *  Shared helpers
  * ------------------------------------------------------------------ */
-export type PressReviewStatus = Enums<"press_review_status">;
+export type GenerationStatus = Enums<"generation_status">;
 export type RatingValue = -1 | 1; // business rule: only -1 or 1
 
 /* ------------------------------------------------------------------ *
@@ -55,7 +55,12 @@ export interface ValidateTopicResultDTO {
 /* ------------------------------------------------------------------ *
  *  Generated Press Reviews
  * ------------------------------------------------------------------ */
-export type GeneratedPressReviewDTO = Omit<Tables<"generated_press_reviews">, "user_id" | "generation_log_id">;
+
+// TODO: Omitted these columns to keep generatedPressReviewService working -> Should they be included in the DTO?
+export type GeneratedPressReviewDTO = Omit<
+  Tables<"generated_press_reviews">,
+  "user_id" | "analysis" | "generated_queries" | "research_results" | "error"
+>;
 
 export type GeneratedPressReviewDetailDTO = Omit<Tables<"generated_press_reviews">, "user_id">;
 
@@ -65,16 +70,12 @@ export interface GeneratedPressReviewsListDTO {
 }
 
 /** Expected structure of the 'content' JSONB field */
-export interface ContentSegment {
-  title: string;
-  summary: string;
-  link: string;
-}
-
-export interface PressReviewContent {
-  general_summary: string;
-  segments: ContentSegment[];
-}
+/** Re-exported from shared types (single source of truth) */
+export type {
+  ContentSegment as PressReviewSource,
+  PressReviewSegment,
+  PressReviewContent,
+} from "../supabase/functions/_shared/types";
 
 /** Modified DTO from API to include the topic from press_reviews relation */
 export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {
@@ -91,8 +92,3 @@ export interface GeneratedPressReviewsListWithTopicDTO {
   data: GeneratedPressReviewWithTopicDTO[];
   count: number;
 }
-
-/* ------------------------------------------------------------------ *
- *  Generation Logs
- * ------------------------------------------------------------------ */
-export type GenerationLogDTO = Omit<Tables<"generation_logs">, "user_id">;

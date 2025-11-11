@@ -8,7 +8,7 @@ export const prerender = false;
 
 /**
  * POST /api/generated_press_reviews
- * Triggers on-demand generation of a press review
+ * Triggers generation of a press review
  * Returns 202 Accepted with a pending generation job
  */
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const service = new GeneratedPressReviewService(locals.supabase);
 
   try {
-    const generationJob = await service.createOnDemandGeneration(press_review_id, DEFAULT_USER_ID);
+    const generationJob = await service.triggerGeneration(press_review_id, DEFAULT_USER_ID);
 
     return new Response(JSON.stringify(generationJob), {
       status: 202,

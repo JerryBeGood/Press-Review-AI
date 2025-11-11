@@ -6,6 +6,7 @@ import {
   successResponse,
   calculateStartPublishedDate,
   invokeEdgeFunction,
+  processConcurrently,
 } from "../_shared/utils.ts";
 import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
 import type { EdgeFunctionRequest, ResearchArticle } from "../_shared/types.ts";
@@ -70,38 +71,46 @@ serve(async (req: Request) => {
       }[];
     }[] = [];
 
-    for (const query of queries) {
-      // eslint-disable-next-line no-console
-      console.log(`Searching for: "${query}"`);
-
-      try {
-        const searchResponse = await exa.searchAndContents(query, {
-          numResults: 5,
-          startPublishedDate,
-          endPublishedDate,
-          type: "auto",
-          moderation: true,
-          text: true,
-        });
-
-        allSearchResults.push({
-          query,
-          results: searchResponse.results.map((result) => ({
-            title: result.title,
-            url: result.url,
-            publishedDate: result.publishedDate,
-            author: result.author,
-            text: result.text,
-          })),
-        });
-
+    await processConcurrently(
+      queries,
+      async (query) => {
         // eslint-disable-next-line no-console
-        console.log(`Found ${searchResponse.results.length} results for query: "${query}"`);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`Error searching for query "${query}":`, error);
-      }
-    }
+        console.log(`Searching for: "${query}"`);
+
+        try {
+          const searchResponse = await exa.searchAndContents(query, {
+            numResults: 5,
+            startPublishedDate,
+            endPublishedDate,
+            type: "auto",
+            moderation: true,
+            text: true,
+          });
+
+          const result = {
+            query,
+            results: searchResponse.results.map((result) => ({
+              title: result.title,
+              url: result.url,
+              publishedDate: result.publishedDate,
+              author: result.author,
+              text: result.text,
+            })),
+          };
+
+          // eslint-disable-next-line no-console
+          console.log(`Found ${searchResponse.results.length} results for query: "${query}"`);
+          return result;
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(`Error searching for query "${query}":`, error);
+          return { query, results: [] };
+        }
+      },
+      3
+    ).then((results) => {
+      allSearchResults.push(...results);
+    });
 
     // eslint-disable-next-line no-console
     console.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
@@ -115,14 +124,13 @@ serve(async (req: Request) => {
       reasoning: z.string().describe("Brief explanation of the evaluation decision"),
     });
 
-    for (const searchResult of allSearchResults) {
-      for (const source of searchResult.results) {
-        if (relevantSources.has(source.url) || irrelevantSources.has(source.url)) {
-          // eslint-disable-next-line no-console
-          console.log(`Skipping already processed source: ${source.url}`);
-          continue;
-        }
+    const sourcesToEvaluate: ContentSegment[] = allSearchResults
+      .flatMap((searchResult) => searchResult.results)
+      .filter((source) => !relevantSources.has(source.url) && !irrelevantSources.has(source.url));
 
+    await processConcurrently(
+      sourcesToEvaluate,
+      async (source) => {
         try {
           // eslint-disable-next-line no-console
           console.log(`Evaluating source: ${source.title}`);
@@ -148,8 +156,12 @@ serve(async (req: Request) => {
           // Mark as irrelevant if evaluation fails
           irrelevantSources.add(source.url);
         }
-      }
-    }
+      },
+      3
+    ).catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error("Error during source evaluation:", error);
+    });
 
     // eslint-disable-next-line no-console
     console.log(`Evaluation complete: ${relevantSources.size} relevant, ${irrelevantSources.size} irrelevant`);
@@ -162,13 +174,14 @@ serve(async (req: Request) => {
       opinions: z.array(z.string()).describe("List of opinions or perspectives expressed in the article"),
     });
 
-    for (const searchResult of allSearchResults) {
-      for (const source of searchResult.results) {
-        // Only process relevant sources
-        if (!relevantSources.has(source.url)) {
-          continue;
-        }
+    const relevantSourcesArray = allSearchResults
+      .flatMap((searchResult) => searchResult.results)
+      .filter((source) => relevantSources.has(source.url));
 
+    // Extract content from relevant sources concurrently with a limit of 2 (to avoid rate limiting)
+    const extractedArticles = await processConcurrently(
+      relevantSourcesArray,
+      async (source) => {
         try {
           // eslint-disable-next-line no-console
           console.log(`Extracting content from: ${source.title}`);
@@ -189,19 +202,26 @@ serve(async (req: Request) => {
             opinions: extraction.object.opinions,
           };
 
-          researchResults.push(article);
-
           // eslint-disable-next-line no-console
           console.log(
             `✓ Extracted from "${source.title}": ${extraction.object.keyFacts.length} facts, ${extraction.object.opinions.length} opinions`
           );
+
+          return article;
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(`Error extracting content from ${source.url}:`, error);
-          // Continue with other sources even if extraction fails
+          return null;
         }
-      }
-    }
+      },
+      2
+    ).catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error("Error during content extraction:", error);
+      return [];
+    });
+
+    researchResults.push(...(extractedArticles.filter((article) => article !== null) as ResearchArticle[]));
 
     // eslint-disable-next-line no-console
     console.log(`Content extraction complete: ${researchResults.length} articles processed`);

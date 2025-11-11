@@ -60,6 +60,18 @@ export class PressReviewService {
       throw new Error("DATABASE_ERROR");
     }
 
+    // Schedule the cron job for this press review
+    const { error: scheduleError } = await this.supabase.rpc("schedule_press_review", {
+      review_id: newPressReview.id,
+      schedule_expression: newPressReview.schedule,
+    });
+
+    if (scheduleError) {
+      // eslint-disable-next-line no-console
+      console.error("Error scheduling press review:", scheduleError);
+      throw new Error("SCHEDULING_ERROR");
+    }
+
     // Return without user_id (as per DTO definition)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user_id, ...pressReviewWithoutUserId } = newPressReview;
@@ -124,6 +136,20 @@ export class PressReviewService {
       throw new Error("NOT_FOUND");
     }
 
+    // If schedule was updated, reschedule the cron job
+    if (cmd.schedule !== undefined) {
+      const { error: scheduleError } = await this.supabase.rpc("schedule_press_review", {
+        review_id: updatedPressReview.id,
+        schedule_expression: updatedPressReview.schedule,
+      });
+
+      if (scheduleError) {
+        // eslint-disable-next-line no-console
+        console.error("Error rescheduling press review:", scheduleError);
+        throw new Error("SCHEDULING_ERROR");
+      }
+    }
+
     // Return without user_id (as per DTO definition)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user_id, ...pressReviewWithoutUserId } = updatedPressReview;
@@ -135,15 +161,27 @@ export class PressReviewService {
    * Deletes a press review by id for a specific user
    *
    * Business logic:
-   * 1. Attempts to delete a press review matching both id and userId
-   * 2. Ensures users can only delete their own resources
-   * 3. Returns success status based on whether a record was deleted
+   * 1. Unschedules the cron job before deletion
+   * 2. Attempts to delete a press review matching both id and userId
+   * 3. Ensures users can only delete their own resources
+   * 4. Returns success status based on whether a record was deleted
    *
    * @param id - UUID of the press review to delete
    * @param userId - UUID of the authenticated user
    * @returns Object with success flag indicating if the resource was deleted
    */
   async deletePressReview(id: string, userId: string): Promise<{ success: boolean }> {
+    // Unschedule the cron job before deleting the press review
+    const { error: unscheduleError } = await this.supabase.rpc("unschedule_press_review", {
+      review_id: id,
+    });
+
+    if (unscheduleError) {
+      // eslint-disable-next-line no-console
+      console.error("Error unscheduling press review:", unscheduleError);
+      throw new Error("UNSCHEDULING_ERROR");
+    }
+
     const { error, count } = await this.supabase
       .from("press_reviews")
       .delete({ count: "exact" })

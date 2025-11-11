@@ -104,6 +104,16 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
               headers: { "Content-Type": "application/json" },
             }
           );
+        case "SCHEDULING_ERROR":
+          return new Response(
+            JSON.stringify({
+              message: "Failed to update press review schedule",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         default:
           // eslint-disable-next-line no-console
           console.error("Unexpected error:", error);
@@ -184,21 +194,47 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     });
   } catch (error) {
     // Step 4: Handle unexpected errors
-    if (error instanceof Error && error.message === "DATABASE_ERROR") {
-      return new Response(
-        JSON.stringify({
-          message: "Database error occurred",
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "DATABASE_ERROR":
+          return new Response(
+            JSON.stringify({
+              message: "Database error occurred",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        case "UNSCHEDULING_ERROR":
+          return new Response(
+            JSON.stringify({
+              message: "Failed to unschedule press review generation",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        default:
+          // Unexpected error
+          // eslint-disable-next-line no-console
+          console.error("Unexpected error:", error);
+          return new Response(
+            JSON.stringify({
+              message: "Internal server error",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+      }
     }
 
     // Unexpected error type
     // eslint-disable-next-line no-console
-    console.error("Unexpected error:", error);
+    console.error("Unexpected error type:", error);
     return new Response(
       JSON.stringify({
         message: "Internal server error",

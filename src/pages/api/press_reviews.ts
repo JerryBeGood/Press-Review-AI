@@ -83,6 +83,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
               headers: { "Content-Type": "application/json" },
             }
           );
+        case "SCHEDULING_ERROR":
+          return new Response(
+            JSON.stringify({
+              message: "Failed to schedule press review generation",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         default:
           // eslint-disable-next-line no-console
           console.error("Unexpected error:", error);

@@ -9,7 +9,7 @@ import type { EdgeFunctionRequest } from "../_shared/types.ts";
 
 const contextSchema = z.object({
   audience: z.string().describe("The audience that the large language models aim for"),
-  persona: z.string().describe("The role to inpersonate to provide audience with matching results"),
+  persona: z.string().describe("The role to impersonate to provide audience with matching results"),
   goal: z.string().describe("The goal to pursue by the persona to provide audience with proper results"),
   domain: z.object({
     themes: z.array(z.string()).min(3).max(5).describe("Important themes within the provided topic"),

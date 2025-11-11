@@ -70,22 +70,12 @@ export interface GeneratedPressReviewsListDTO {
 }
 
 /** Expected structure of the 'content' JSONB field */
-export interface PressReviewSource {
-  title: string;
-  summary: string;
-  link: string;
-}
-
-export interface PressReviewSegment {
-  category: string;
-  summary: string;
-  sources: PressReviewSource[];
-}
-
-export interface PressReviewContent {
-  general_summary: string;
-  segments: PressReviewSegment[];
-}
+/** Re-exported from shared types (single source of truth) */
+export type {
+  ContentSegment as PressReviewSource,
+  PressReviewSegment,
+  PressReviewContent,
+} from "../supabase/functions/_shared/types";
 
 /** Modified DTO from API to include the topic from press_reviews relation */
 export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {
@@ -101,35 +91,4 @@ export type ArchiveViewModel = GeneratedPressReviewWithTopicDTO;
 export interface GeneratedPressReviewsListWithTopicDTO {
   data: GeneratedPressReviewWithTopicDTO[];
   count: number;
-}
-
-// TODO: Seems to ma that this is not necessary, these type already exist in the types file in the edge functions directory
-
-/* ------------------------------------------------------------------ *
- *  Agent Workflow Artifacts
- * ------------------------------------------------------------------ */
-/** Generated search queries for research */
-export type GeneratedQueries = string[];
-
-/** Single research result from Exa search */
-export interface ResearchArticle {
-  title: string;
-  url: string;
-  author?: string;
-  publishedDate?: string;
-  summary: string;
-  keyFacts: string[];
-  opinions: string[];
-}
-
-/** Collection of research results */
-export type ResearchResults = ResearchArticle[];
-
-/** Analysis of the research process and source quality */
-export interface ProcessAnalysis {
-  totalSourcesEvaluated: number;
-  relevantSources: number;
-  irrelevantSources: number;
-  keyThemes: string[];
-  sourceQualityNotes: string;
 }

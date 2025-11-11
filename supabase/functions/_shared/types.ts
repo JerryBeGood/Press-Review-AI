@@ -54,17 +54,29 @@ export interface ProcessAnalysis {
 }
 
 /**
- * Final press review content structure
+ * Single source within a segment of press review content
  */
-export interface PressReviewContent {
-  general_summary: string;
-  segments: ContentSegment[];
-}
-
 export interface ContentSegment {
   title: string;
   summary: string;
   link: string;
+}
+
+/**
+ * Segment of categorized content with sources
+ */
+export interface PressReviewSegment {
+  category: string;
+  summary: string;
+  sources: ContentSegment[];
+}
+
+/**
+ * Final press review content structure
+ */
+export interface PressReviewContent {
+  general_summary: string;
+  segments: PressReviewSegment[];
 }
 
 /**

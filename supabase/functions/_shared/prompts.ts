@@ -250,7 +250,7 @@ export const contentSynthesis = (topic, researchResults) => `
         - Write segment summaries that synthesize information across all sources in that category
         - Use the original summaries from the research data for individual source summaries
         - Include key facts and opinions from the research data in your segment summaries
-        - Make sure the general summary provides a detailedoverview of all segments
+        - Make sure the general summary provides a detailed overview of all segments
         - Write in a professional, journalistic style
 
         Your final response should contain only the JSON output as specified above, without any additional text or explanation.

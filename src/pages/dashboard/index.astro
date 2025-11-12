@@ -1,0 +1,10 @@
+---
+import Layout from "../../layouts/layout.astro";
+import { DashboardView } from "../../components/dashboard/DashboardView";
+---
+
+<Layout>
+  <div class="py-8">
+    <DashboardView client:load />
+  </div>
+</Layout>

@@ -1,0 +1,12 @@
+---
+import Layout from "../../layouts/layout.astro";
+import ArchiveView from "../../components/archive/ArchiveView";
+
+export const prerender = false;
+---
+
+<Layout>
+  <div class="py-8">
+    <ArchiveView client:load />
+  </div>
+</Layout>

@@ -1,6 +1,34 @@
 import type { GenerationStatus } from "./types.ts";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.75.0";
 
+/**
+ * Verifies that the incoming request is authenticated with the service role key
+ * @param request The incoming HTTP request
+ * @returns Response with 401 if unauthorized, null if authorized
+ */
+export function verifyAuth(request: Request): Response | null {
+  const authHeader = request.headers.get("Authorization");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+  if (!serviceRoleKey) {
+    // eslint-disable-next-line no-console
+    console.error("SUPABASE_SERVICE_ROLE_KEY is not configured");
+    return errorResponse("Server configuration error", 500);
+  }
+
+  if (!authHeader) {
+    return errorResponse("Missing Authorization header", 401);
+  }
+
+  const token = authHeader.replace("Bearer ", "");
+
+  if (token !== serviceRoleKey) {
+    return errorResponse("Unauthorized", 401);
+  }
+
+  return null;
+}
+
 export async function updateGenerationStatus(
   supabase: SupabaseClient,
   generatedPressReviewId: string,
@@ -27,9 +55,9 @@ export async function updateGenerationStatus(
 
 export async function invokeEdgeFunction(functionName: string, payload: Record<string, unknown>): Promise<void> {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !serviceRoleKey) {
     throw new Error("Missing Supabase environment variables");
   }
 
@@ -39,7 +67,7 @@ export async function invokeEdgeFunction(functionName: string, payload: Record<s
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${supabaseAnonKey}`,
+      Authorization: `Bearer ${serviceRoleKey}`,
     },
     body: JSON.stringify(payload),
   });

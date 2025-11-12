@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import { createGeneratedPressReviewSchema, getGeneratedPressReviewsQuerySchema } from "../../lib/schemas/api.schemas";
 import { GeneratedPressReviewService } from "../../lib/services/generatedPressReviewService";
 
@@ -12,7 +11,15 @@ export const prerender = false;
  * Returns 202 Accepted with a pending generation job
  */
 export const POST: APIRoute = async ({ request, locals }) => {
-  // Step 1: Parse and validate request body
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Step 2: Parse and validate request body
   let requestBody;
   try {
     requestBody = await request.json();
@@ -39,11 +46,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const { press_review_id } = validationResult.data;
 
-  // Step 2: Call service to create generation job
+  // Step 3: Call service to create generation job
   const service = new GeneratedPressReviewService(locals.supabase);
 
   try {
-    const generationJob = await service.triggerGeneration(press_review_id, DEFAULT_USER_ID);
+    const generationJob = await service.triggerGeneration(press_review_id, locals.user.id);
 
     return new Response(JSON.stringify(generationJob), {
       status: 202,
@@ -121,8 +128,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
  * Returns 200 OK with a list of generated press reviews and count
  */
 export const GET: APIRoute = async ({ request, locals }) => {
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    // Step 1: Parse and validate query parameters
+    // Step 2: Parse and validate query parameters
     const url = new URL(request.url);
     const queryParams = {
       press_review_id: url.searchParams.get("press_review_id") || undefined,
@@ -146,17 +161,17 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
     const { press_review_id, status, include_topic } = validationResult.data;
 
-    // Step 2: Initialize service with Supabase client from middleware
+    // Step 3: Initialize service with Supabase client from middleware
     const service = new GeneratedPressReviewService(locals.supabase);
 
-    // Step 3: Get generated press reviews with optional filters
+    // Step 4: Get generated press reviews with optional filters
     // Use method with topic join if include_topic is true
     const result = include_topic
-      ? await service.getGeneratedPressReviewsWithTopic(DEFAULT_USER_ID, {
+      ? await service.getGeneratedPressReviewsWithTopic(locals.user.id, {
           pressReviewId: press_review_id,
           status,
         })
-      : await service.getGeneratedPressReviews(DEFAULT_USER_ID, {
+      : await service.getGeneratedPressReviews(locals.user.id, {
           pressReviewId: press_review_id,
           status,
         });

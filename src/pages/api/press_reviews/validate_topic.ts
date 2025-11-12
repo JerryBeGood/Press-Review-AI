@@ -1,5 +1,4 @@
 import { PressReviewService } from "../../../lib/services/pressReviewService";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import { validateTopicSchema } from "../../../lib/schemas/api.schemas";
 import type { APIRoute } from "astro";
 import type { ValidateTopicCmd } from "../../../types";
@@ -14,8 +13,16 @@ export const prerender = false;
  * @returns 200 OK with ValidateTopicResultDTO or 400 Bad Request with error message
  */
 export const POST: APIRoute = async ({ request, locals }) => {
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    // Parse request body
+    // Step 2: Parse request body
     const body: ValidateTopicCmd = await request.json();
 
     // Validate input with Zod schema
@@ -27,12 +34,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    // Use a constant user ID in development
-    const userId = DEFAULT_USER_ID;
-
-    // Call service to validate topic
+    // Step 3: Call service to validate topic
     const pressReviewService = new PressReviewService(locals.supabase);
-    const validationResult = await pressReviewService.validateTopic(body.topic, userId);
+    const validationResult = await pressReviewService.validateTopic(body.topic, locals.user.id);
 
     // Return validation result
     return new Response(JSON.stringify(validationResult), {

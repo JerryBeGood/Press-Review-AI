@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import { createPressReviewSchema } from "../../lib/schemas/api.schemas";
 import { PressReviewService } from "../../lib/services/pressReviewService";
 
@@ -12,7 +11,15 @@ export const prerender = false;
  * Returns 201 Created with the newly created press review
  */
 export const POST: APIRoute = async ({ request, locals }) => {
-  // Step 1: Parse and validate request body
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Step 2: Parse and validate request body
   let requestBody;
   try {
     requestBody = await request.json();
@@ -39,11 +46,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const { topic, schedule } = validationResult.data;
 
-  // Step 2: Call service to create press review
+  // Step 3: Call service to create press review
   const service = new PressReviewService(locals.supabase);
 
   try {
-    const pressReview = await service.createPressReview({ topic, schedule }, DEFAULT_USER_ID);
+    const pressReview = await service.createPressReview({ topic, schedule }, locals.user.id);
 
     return new Response(JSON.stringify(pressReview), {
       status: 201,
@@ -119,12 +126,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
  * Returns 200 OK with a list of press reviews and count
  */
 export const GET: APIRoute = async ({ locals }) => {
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    // Step 1: Initialize service with Supabase client from middleware
+    // Step 2: Initialize service with Supabase client from middleware
     const service = new PressReviewService(locals.supabase);
 
-    // Step 2: Get all press reviews for the user (using DEFAULT_USER_ID in development)
-    const result = await service.getPressReviews(DEFAULT_USER_ID);
+    // Step 3: Get all press reviews for the authenticated user
+    const result = await service.getPressReviews(locals.user.id);
 
     // Step 3: Return successful response with data and count
     return new Response(JSON.stringify(result), {

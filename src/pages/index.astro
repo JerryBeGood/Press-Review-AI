@@ -1,10 +1,12 @@
 ---
-import Layout from "../layouts/layout.astro";
-import { DashboardView } from "../components/dashboard/DashboardView";
----
+// This page will check user session and redirect accordingly
+// Backend implementation will be added later
 
-<Layout>
-  <div class="py-8">
-    <DashboardView client:load />
-  </div>
-</Layout>
+// For now, redirect to login page
+// When backend is implemented, this will:
+// - Check if user has valid session
+// - If yes: redirect to /dashboard
+// - If no: redirect to /login
+
+return Astro.redirect("/login");
+---

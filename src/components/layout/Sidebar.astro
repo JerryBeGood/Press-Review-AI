@@ -11,10 +11,10 @@ const currentPath = Astro.url.pathname;
       <ul class="flex flex-col gap-2 list-none">
         <li>
           <a
-            href="/"
+            href="/dashboard"
             class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent"
-            class:list={[currentPath === "/" && "bg-accent text-primary"]}
-            aria-current={currentPath === "/" ? "page" : undefined}
+            class:list={[currentPath === "/dashboard" && "bg-accent text-primary"]}
+            aria-current={currentPath === "/dashboard" ? "page" : undefined}
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path
@@ -29,10 +29,10 @@ const currentPath = Astro.url.pathname;
         </li>
         <li>
           <a
-            href="/archive"
+            href="/dashboard/archive"
             class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent"
-            class:list={[currentPath === "/archive" && "bg-accent text-primary"]}
-            aria-current={currentPath === "/archive" ? "page" : undefined}
+            class:list={[currentPath === "/dashboard/archive" && "bg-accent text-primary"]}
+            aria-current={currentPath === "/dashboard/archive" ? "page" : undefined}
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path

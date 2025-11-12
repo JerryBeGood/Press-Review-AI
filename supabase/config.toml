@@ -40,3 +40,9 @@ backend = "postgres"
 # Edge Functions Settings
 [functions.generate-queries]
 verify_jwt = false
+
+[functions.execute-research]
+verify_jwt = false
+
+[functions.synthesize-content]
+verify_jwt = false

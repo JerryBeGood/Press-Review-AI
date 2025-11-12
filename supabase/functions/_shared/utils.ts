@@ -2,17 +2,17 @@ import type { GenerationStatus } from "./types.ts";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.75.0";
 
 /**
- * Verifies that the incoming request is authenticated with the service role key
+ * Verifies that the incoming request is authenticated with the edge function auth key
  * @param request The incoming HTTP request
  * @returns Response with 401 if unauthorized, null if authorized
  */
 export function verifyAuth(request: Request): Response | null {
   const authHeader = request.headers.get("Authorization");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const edgeFuncAuthKey = Deno.env.get("EDGE_FUNC_AUTH_KEY");
 
-  if (!serviceRoleKey) {
+  if (!edgeFuncAuthKey) {
     // eslint-disable-next-line no-console
-    console.error("SUPABASE_SERVICE_ROLE_KEY is not configured");
+    console.error("EDGE_FUNC_AUTH_KEY is not configured");
     return errorResponse("Server configuration error", 500);
   }
 
@@ -22,7 +22,7 @@ export function verifyAuth(request: Request): Response | null {
 
   const token = authHeader.replace("Bearer ", "");
 
-  if (token !== serviceRoleKey) {
+  if (token !== edgeFuncAuthKey) {
     return errorResponse("Unauthorized", 401);
   }
 
@@ -55,9 +55,9 @@ export async function updateGenerationStatus(
 
 export async function invokeEdgeFunction(functionName: string, payload: Record<string, unknown>): Promise<void> {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const edgeFuncAuthKey = Deno.env.get("EDGE_FUNC_AUTH_KEY");
 
-  if (!supabaseUrl || !serviceRoleKey) {
+  if (!supabaseUrl || !edgeFuncAuthKey) {
     throw new Error("Missing Supabase environment variables");
   }
 
@@ -67,7 +67,7 @@ export async function invokeEdgeFunction(functionName: string, payload: Record<s
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${serviceRoleKey}`,
+      Authorization: `Bearer ${edgeFuncAuthKey}`,
     },
     body: JSON.stringify(payload),
   });

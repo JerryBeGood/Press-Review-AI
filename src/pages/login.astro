@@ -3,8 +3,14 @@ import AuthLayout from "@/layouts/AuthLayout.astro";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const prerender = false;
+
+const showVerificationSuccess = Astro.cookies.has("show-verification-success");
+
+if (showVerificationSuccess) {
+  Astro.cookies.delete("show-verification-success", { path: "/" });
+}
 ---
 
 <AuthLayout>
-  <LoginForm client:load />
+  <LoginForm client:load showVerificationSuccess={showVerificationSuccess} />
 </AuthLayout>

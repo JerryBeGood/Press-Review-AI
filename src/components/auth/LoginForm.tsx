@@ -6,7 +6,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export function LoginForm() {
+interface LoginFormProps {
+  showVerificationSuccess?: boolean;
+}
+
+export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +54,12 @@ export function LoginForm() {
         <h2 className="text-2xl font-bold tracking-tight">Sign in</h2>
         <p className="text-sm text-muted-foreground mt-1">Enter your credentials to access your account</p>
       </div>
+
+      {showVerificationSuccess && (
+        <div className="mb-6 rounded-lg border border-primary/50 bg-primary/10 p-3 text-sm text-primary">
+          Your email has been verified. You can now sign in.
+        </div>
+      )}
 
       {error && (
         <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

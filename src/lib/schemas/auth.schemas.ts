@@ -3,6 +3,7 @@ import { z } from "zod";
 /**
  * Validation schema for login form
  */
+// TODO: Add password validation
 export const loginSchema = z.object({
   email: z.string().email({ message: "Must be a valid email address" }),
   password: z.string().min(1, { message: "Password is required" }),

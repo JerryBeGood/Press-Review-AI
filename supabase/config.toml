@@ -46,3 +46,7 @@ verify_jwt = false
 
 [functions.synthesize-content]
 verify_jwt = false
+
+[auth]
+site_url = "http://localhost:4321/"
+email.enable_confirmations = true

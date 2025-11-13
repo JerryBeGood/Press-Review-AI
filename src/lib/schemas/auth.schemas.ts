@@ -28,6 +28,16 @@ export const registerSchema = z
 export type RegisterInput = z.infer<typeof registerSchema>;
 
 /**
+ * Validation schema for the registration API endpoint
+ */
+export const registerApiSchema = z.object({
+  email: z.string().email({ message: "Must be a valid email address" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+});
+
+export type RegisterApiInput = z.infer<typeof registerApiSchema>;
+
+/**
  * Validation schema for forgot password form
  */
 export const forgotPasswordSchema = z.object({

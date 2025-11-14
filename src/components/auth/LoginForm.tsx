@@ -97,11 +97,11 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
             )}
           />
 
-          <div className="flex items-center justify-end">
+          {/* <div className="flex items-center justify-end">
             <a href="/forgot-password" className="text-sm text-primary hover:underline">
               Forgot password?
             </a>
-          </div>
+          </div> */}
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Signing in..." : "Sign in"}

@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import {
   deletePressReviewParamsSchema,
   updatePressReviewParamsSchema,
@@ -16,7 +15,15 @@ export const prerender = false;
  * Returns 200 OK with the updated press review
  */
 export const PATCH: APIRoute = async ({ params, request, locals }) => {
-  // Step 1: Validate path parameters
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Step 2: Validate path parameters
   const paramsValidationResult = updatePressReviewParamsSchema.safeParse(params);
   if (!paramsValidationResult.success) {
     return new Response(
@@ -60,11 +67,11 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
   const updateData = validationResult.data;
 
-  // Step 3: Call service to update press review
+  // Step 4: Call service to update press review
   const service = new PressReviewService(locals.supabase);
 
   try {
-    const pressReview = await service.updatePressReview(id, updateData, DEFAULT_USER_ID);
+    const pressReview = await service.updatePressReview(id, updateData, locals.user.id);
 
     return new Response(JSON.stringify(pressReview), {
       status: 200,
@@ -150,7 +157,15 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
  * Returns 204 No Content on success, 404 Not Found if resource doesn't exist or doesn't belong to user
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
-  // Step 1: Validate path parameter
+  // Step 1: Verify authentication
+  if (!locals.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Step 2: Validate path parameter
   const validationResult = deletePressReviewParamsSchema.safeParse(params);
 
   if (!validationResult.success) {
@@ -168,11 +183,11 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
   const { id } = validationResult.data;
 
-  // Step 2: Call service to delete press review
+  // Step 3: Call service to delete press review
   const service = new PressReviewService(locals.supabase);
 
   try {
-    const result = await service.deletePressReview(id, DEFAULT_USER_ID);
+    const result = await service.deletePressReview(id, locals.user.id);
 
     // Step 3: Return appropriate response based on result
     if (!result.success) {

@@ -7,6 +7,7 @@ import {
   calculateStartPublishedDate,
   invokeEdgeFunction,
   processConcurrently,
+  verifyAuth,
 } from "../_shared/utils.ts";
 import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
 import type { EdgeFunctionRequest, ResearchArticle } from "../_shared/types.ts";
@@ -15,6 +16,12 @@ import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 serve(async (req: Request) => {
+  // Verify authentication
+  const authError = verifyAuth(req);
+  if (authError) {
+    return authError;
+  }
+
   const supabase = createSupabaseClient();
   const { generated_press_review_id }: EdgeFunctionRequest = await req.json();
 

@@ -89,20 +89,31 @@ In today's world, the sheer volume of information makes it extremely time-consum
   - After successful login, the user is redirected to the main dashboard of the application.
 
 - ID: PRSR-004
+- Title: Password recovery
+- Description: As a user who has forgotten my password, I want to be able to request a password reset using my email address, so I can regain access to my account.
+- Acceptance criteria:
+  - The login page provides a "Forgot password?" link.
+  - Users can enter their registered email address to request a password reset.
+  - The system sends a one-time, secure password reset link to the user's email address.
+  - The reset link takes the user to a form where a new password can be set, subject to security requirements.
+  - After successful reset, the user can log in with the new password.
+  - Appropriate error messages are displayed for expired, invalid, or already-used reset links.
+
+- ID: PRSR-005
 - Title: Change password
 - Description: As a logged-in user, I want to be able to change my password in my account settings to secure my account.
 - Acceptance criteria:
   - The password change form requires the old and new passwords to be entered.
   - The new password must meet security requirements.
 
-- ID: PRSR-005
+- ID: PRSR-006
 - Title: Change of e-mail address
 - Description: As a logged-in user, I want to be able to change my e-mail address in my account settings.
 - Acceptance criteria:
   - The user must confirm the change by clicking on the verification link sent to the new e-mail address.
   - The old email address remains active until the new one is verified.
 
-- ID: PRSR-006
+- ID: PRSR-007
 - Title: Account deletion
 - Description: As a logged-in user, I want to be able to permanently delete my account along with all my data.
 - Acceptance criteria:
@@ -111,16 +122,16 @@ In today's world, the sheer volume of information makes it extremely time-consum
 
 ### 5.2. Press release management
 
-- ID: PRSR-007
+- ID: PRSR-008
 - Title: Creating the first press release
 - Description: As a new, logged-in user, when I enter the empty desktop, I want to see a clear button and message encouraging me to create my first press release.
 - Acceptance criteria:
   - There is a visible CTA (Call To Action) element on the new user's desktop.
   - Clicking on the button takes me to the form for creating a new press release.
 
-- ID: PRSR-008
+- ID: PRSR-009
 - Title: Configuring a new press release
-- Description: As a user, I want to be able to create a new press release by defining its topic and schedule (daily, weekly, monthly with exact time).
+- Description: As a logged-in user, I want to be able to create a new press release by defining its topic and schedule (daily, weekly, monthly with exact time).
 - Acceptance criteria:
   - The form contains a text field for the press release topic.
   - The form contains options for selecting the frequency (daily, weekly, monthly) and the exact time of generation.
@@ -128,48 +139,48 @@ In today's world, the sheer volume of information makes it extremely time-consum
   - The interface displays information about the topic validation status (correct/incorrect/suggestions).
   - The configuration can only be saved after successful topic validation.
 
-- ID: PRSR-009
+- ID: PRSR-010
 - Title: Reaching the press release limit
-- Description: As a user with 5 scheduled press releases, when I try to create another one, I want to receive information about reaching the limit.
+- Description: As a logged-in user with 5 scheduled press releases, when I try to create another one, I want to receive information about reaching the limit.
 - Acceptance criteria:
   - The system prevents the creation of more than 5 scheduled press releases.
   - The user sees a message informing them of the limit.
 
-- ID: PRSR-010
+- ID: PRSR-011
 - Title: Managing the list of scheduled press releases
-- Description: As a user, I want to have access to the list of my scheduled press releases so that I can edit or delete them.
+- Description: As a logged-in user, I want to have access to the list of my scheduled press releases so that I can edit or delete them.
 - Acceptance criteria:
   - A dedicated subpage displays a list of all scheduled press releases.
   - Each item on the list contains information about the topic and schedule.
   - Each item has ‘Edit’ and ‘Delete’ options.
 
-- ID: PRSR-011
+- ID: PRSR-012
 - Title: Editing a scheduled press release
-- Description: As a user, I want to be able to edit the topic and schedule of an existing press release.
+- Description: As a logged-in user, I want to be able to edit the topic and schedule of an existing press release.
 - Acceptance criteria:
   - The edit form is pre-filled with the current press release data.
   - The topic change is subject to re-validation by an AI agent.
   - Changes are saved and applied from the next generation cycle.
 
-- ID: PRSR-012
+- ID: PRSR-013
 - Title: Deleting a scheduled press release
-- Description: As a user, I want to be able to delete a scheduled press release to stop it from being generated.
+- Description: As a logged-in user, I want to be able to delete a scheduled press release to stop it from being generated.
 - Acceptance criteria:
   - The system asks for confirmation of deletion.
   - Upon confirmation, the press release is removed from the scheduled list and is no longer generated.
 
-- ID: PRSR-013
+- ID: PRSR-014
 - Title: Manually generate a press release on demand
-- Description: As a user, I want to be able to manually generate the current press release regardless of the schedule.
+- Description: As a logged-in user, I want to be able to manually generate the current press release regardless of the schedule.
 - Acceptance criteria:
   - There is a ‘Generate now’ button in the press release list and in the press release details view.
   - After clicking, the generation process starts with immediate progress feedback.
   - After generation is complete, the new version of the press release appears in the archive with the current date.
   - Manual generation does not affect future scheduled generations.
 
-- ID: PRSR-014
+- ID: PRSR-015
 - Title: Preventing duplicate press release titles
-- Description: As a user, I want to be informed that I cannot create two press releases with the same title to avoid confusion and duplication of content.
+- Description: As a logged-in user, I want to be informed that I cannot create two press releases with the same title to avoid confusion and duplication of content.
 - Acceptance criteria:
   - The system checks the uniqueness of the press release title within the user's account when creating a new press release.
   - If the user attempts to create a press release with a title that already exists, an error message is displayed.
@@ -179,17 +190,17 @@ In today's world, the sheer volume of information makes it extremely time-consum
 
 ### 5.3. Browsing
 
-- ID: PRSR-015
+- ID: PRSR-016
 - Title: Browsing the press release archive
-- Description: As a user, I want to have access to an archive of all my generated press releases so that I can browse them at any time.
+- Description: As a logged-in user, I want to have access to an archive of all my generated press releases so that I can browse them at any time.
 - Acceptance criteria:
   - The archive is available on a dedicated subpage.
   - Press releases are arranged chronologically (from the most recent).
   - Each item on the list leads to the full content of the press release.
 
-- ID: PRSR-016
+- ID: PRSR-017
 - Title: Reading press releases
-- Description: As a user, after selecting a press release from the archive, I want to see its full content, including a general summary.
+- Description: As a logged-in user, after selecting a press release from the archive, I want to see its full content, including a general summary.
 - Acceptance criteria:
   - The content is legible and well formatted.
   - Each segment contains a title, summary, and clickable link to the original article.

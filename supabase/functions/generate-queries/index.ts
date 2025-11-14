@@ -3,7 +3,13 @@ import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createSupabaseClient } from "../_shared/supabase-client.ts";
 import { createOpenAIClient } from "../_shared/ai-clients.ts";
-import { updateGenerationStatus, invokeEdgeFunction, errorResponse, successResponse } from "../_shared/utils.ts";
+import {
+  updateGenerationStatus,
+  invokeEdgeFunction,
+  errorResponse,
+  successResponse,
+  verifyAuth,
+} from "../_shared/utils.ts";
 import { contextGeneration, queryGeneration } from "../_shared/prompts.ts";
 import type { EdgeFunctionRequest } from "../_shared/types.ts";
 
@@ -22,6 +28,12 @@ const querySchema = z.object({
 });
 
 serve(async (req: Request) => {
+  // Verify authentication
+  const authError = verifyAuth(req);
+  if (authError) {
+    return authError;
+  }
+
   const supabase = createSupabaseClient();
   const openai = createOpenAIClient();
 

@@ -2,6 +2,10 @@
 import "../styles/global.css";
 import { Toaster } from "../components/ui/sonner";
 import Sidebar from "../components/layout/Sidebar.astro";
+import { UserNav } from "../components/auth/UserNav";
+import { Button } from "../components/ui/button";
+
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -12,11 +16,34 @@ import Sidebar from "../components/layout/Sidebar.astro";
     <title>Press Review AI</title>
   </head>
   <body>
-    <div class="flex min-h-screen">
-      <Sidebar />
-      <main class="flex-1 ml-64">
-        <slot />
-      </main>
+    <div class="flex min-h-screen flex-col">
+      <!-- Header -->
+      <header class="fixed top-0 left-0 right-0 z-50 h-16 border-b border-border bg-background">
+        <div class="flex h-full items-center justify-between px-6">
+          <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold">Press Review AI</h1>
+          </div>
+          <div class="flex items-center gap-4">
+            {
+              user ? (
+                <UserNav userEmail={user.email || ""} client:load />
+              ) : (
+                <Button asChild>
+                  <a href="/login">Log in</a>
+                </Button>
+              )
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- Main content with sidebar -->
+      <div class="flex flex-1 pt-16">
+        <Sidebar />
+        <main class="flex-1 ml-64">
+          <slot />
+        </main>
+      </div>
     </div>
     <Toaster client:load />
   </body>

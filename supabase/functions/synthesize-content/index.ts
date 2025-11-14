@@ -3,7 +3,7 @@ import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createSupabaseClient } from "../_shared/supabase-client.ts";
 import { createOpenAIClient } from "../_shared/ai-clients.ts";
-import { updateGenerationStatus, errorResponse, successResponse } from "../_shared/utils.ts";
+import { updateGenerationStatus, errorResponse, successResponse, verifyAuth } from "../_shared/utils.ts";
 import type { EdgeFunctionRequest, ResearchResults } from "../_shared/types.ts";
 import { contentSynthesis } from "../_shared/prompts.ts";
 
@@ -31,6 +31,12 @@ const SynthesisSchema = z.object({
 });
 
 serve(async (req) => {
+  // Verify authentication
+  const authError = verifyAuth(req);
+  if (authError) {
+    return authError;
+  }
+
   const supabase = createSupabaseClient();
   const { generated_press_review_id }: EdgeFunctionRequest = await req.json();
 

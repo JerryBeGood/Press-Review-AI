@@ -26,6 +26,7 @@ export class GeneratedPressReviewService {
    * @returns The newly created generation job with status 'pending'
    * @throws Error with specific message for different failure scenarios
    */
+  // TODO: Weird naming, it should be named triggerPressReviewGenerationJob or maybe addGeneratePressReviewJob or addGeneratedPressReview?
   async triggerGeneration(pressReviewId: string, userId: string): Promise<GeneratedPressReviewDetailDTO> {
     // Step 1: Verify press_review exists and user is the owner
     const { data: pressReview, error: pressReviewError } = await this.supabase

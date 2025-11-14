@@ -62,6 +62,7 @@ export type GeneratedPressReviewDTO = Omit<
   "user_id" | "analysis" | "generated_queries" | "research_results" | "error"
 >;
 
+// TODO: Weird naming, why it is necessary when there already is GeneratedPressReviewDTO?
 export type GeneratedPressReviewDetailDTO = Omit<Tables<"generated_press_reviews">, "user_id">;
 
 export interface GeneratedPressReviewsListDTO {

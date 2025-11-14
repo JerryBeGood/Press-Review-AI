@@ -26,13 +26,19 @@ create or replace function call_generate_queries_edge_function()
 returns trigger as $$
 declare
   request_id bigint;
+  edge_func_auth_key text;
 begin
+  select decrypted_secret into edge_func_auth_key
+  from vault.decrypted_secrets
+  where name = 'EDGE_FUNC_AUTH_KEY'
+  limit 1;
+
   -- Make the authenticated HTTP POST request using pg_net
   select net.http_post(
     url := 'http://host.docker.internal:54321/functions/v1/generate-queries',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer '
+      'Authorization', 'Bearer ' || edge_func_auth_key
     ),
     body := jsonb_build_object(
       'generated_press_review_id', new.id

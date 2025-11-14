@@ -21,3 +21,10 @@ CI/CD and Hosting:
 
 - Github Actions for creating CI/CD pipelines
 - DigitalOcean for hosting applications via a Docker image
+
+Testing:
+
+- Vitest as a test runner
+- Playwright for E2E tests
+- React Testing Library for component tests
+- MSW for API mocking

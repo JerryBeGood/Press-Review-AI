@@ -26,7 +26,7 @@ export function PressReviewList({ pressReviews, isLoading, onEdit, onDelete, onG
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="press-review-list">
       {pressReviews.map((pressReview) => (
         <PressReviewListItem
           key={pressReview.id}

@@ -19,7 +19,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
       className={`p-4 sm:p-5 border rounded-lg transition-all duration-200 hover:shadow-md hover:border-primary/20 ${
         isDeleting ? "opacity-50" : "opacity-100"
       }`}
-      data-test-id={`press-review-list-item-${pressReview.id}`}
+      data-testid={`press-review-list-item-${pressReview.id}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
@@ -50,7 +50,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             disabled={isDeleting || isGenerating}
             aria-label={`Edit press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
-            data-test-id="edit-press-review-button"
+            data-testid="edit-press-review-button"
           >
             Edit
           </Button>
@@ -61,7 +61,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             disabled={isDeleting || isGenerating}
             aria-label={`Delete press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
-            data-test-id="delete-press-review-button"
+            data-testid="delete-press-review-button"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </Button>
@@ -72,7 +72,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             disabled={isDeleting || isGenerating}
             aria-label={`Generate press review: ${pressReview.topic}`}
             className="w-full sm:w-auto"
-            data-test-id="generate-press-review-button"
+            data-testid="generate-press-review-button"
           >
             {isGenerating ? "Generating..." : "Generate now"}
           </Button>

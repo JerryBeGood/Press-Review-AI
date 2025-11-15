@@ -131,7 +131,7 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md sm:max-w-lg" data-test-id="press-review-form-dialog">
+      <DialogContent className="max-w-md sm:max-w-lg" data-testid="press-review-form-dialog">
         <DialogHeader>
           <DialogTitle>{isEditMode ? "Edit press review" : "Create new press review"}</DialogTitle>
           <DialogDescription>
@@ -161,7 +161,7 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                       placeholder="e.g. Artificial intelligence"
                       {...field}
                       aria-invalid={isTopicInvalid}
-                      data-test-id="topic-input"
+                      data-testid="topic-input"
                     />
                   </FormControl>
                   <FormDescription>
@@ -194,18 +194,18 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                       <FormLabel>Schedule</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger data-test-id="schedule-select-trigger">
+                          <SelectTrigger data-testid="schedule-select-trigger">
                             <SelectValue placeholder="Select schedule" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="daily" data-test-id="schedule-select-option-daily">
+                          <SelectItem value="daily" data-testid="schedule-select-option-daily">
                             Daily
                           </SelectItem>
-                          <SelectItem value="weekly" data-test-id="schedule-select-option-weekly">
+                          <SelectItem value="weekly" data-testid="schedule-select-option-weekly">
                             Weekly
                           </SelectItem>
-                          <SelectItem value="monthly" data-test-id="schedule-select-option-monthly">
+                          <SelectItem value="monthly" data-testid="schedule-select-option-monthly">
                             Monthly
                           </SelectItem>
                         </SelectContent>
@@ -227,7 +227,7 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                     render={({ field }) => (
                       <FormItem>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger data-test-id="day-of-week-select-trigger">
+                          <SelectTrigger data-testid="day-of-week-select-trigger">
                             <SelectValue placeholder="Select day of week" />
                           </SelectTrigger>
                           <SelectContent>
@@ -258,7 +258,7 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                     render={({ field }) => (
                       <FormItem>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger data-test-id="day-of-month-select-trigger">
+                          <SelectTrigger data-testid="day-of-month-select-trigger">
                             <SelectValue placeholder="Select day of month" />
                           </SelectTrigger>
                           <SelectContent className="max-h-60 overflow-y-auto">
@@ -286,7 +286,7 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                   render={({ field }) => (
                     <FormItem>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger data-test-id="time-select-trigger">
+                        <SelectTrigger data-testid="time-select-trigger">
                           <SelectValue placeholder="Select time" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60 overflow-y-auto">
@@ -315,11 +315,11 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
                 onClick={onClose}
                 disabled={form.formState.isSubmitting}
                 className="w-full sm:w-auto"
-                data-test-id="cancel-button"
+                data-testid="cancel-button"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto" data-test-id="submit-button">
+              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto" data-testid="submit-button">
                 {form.formState.isSubmitting ? "Saving..." : isEditMode ? "Save changes" : "Create press review"}
               </Button>
             </DialogFooter>

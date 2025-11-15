@@ -26,7 +26,8 @@ export class PressReviewFormDialog {
   async fillTopic(topic: string) {
     await this.topicInput.fill(topic);
     // Wait for validation to complete
-    await this.page.waitForResponse("/api/validate-topic");
+    // TODO: Uncomment this when the API is ready
+    // await this.page.waitForResponse("/api/validate-topic");
   }
 
   async selectSchedule(schedule: "daily" | "weekly" | "monthly") {

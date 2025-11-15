@@ -5,7 +5,7 @@ import { PressReviewListItem } from "./PressReviewListItem.pom";
 
 export class DashboardPage {
   readonly page: Page;
-  readonly createNewReviewButton: Locator;
+  readonly createPressReviewButton: Locator;
   readonly pressReviewList: Locator;
   readonly formDialog: PressReviewFormDialog;
   readonly deleteDialog: DeleteConfirmationDialog;
@@ -14,7 +14,7 @@ export class DashboardPage {
     this.page = page;
 
     // Locators
-    this.createNewReviewButton = page.getByRole("button", { name: "Create new press review" });
+    this.createPressReviewButton = page.getByRole("button", { name: /Create first press review|Add press review/i });
     this.pressReviewList = page.getByTestId("press-review-list");
 
     // Page Objects
@@ -27,7 +27,7 @@ export class DashboardPage {
   }
 
   async clickCreateNewReview() {
-    await this.createNewReviewButton.click();
+    await this.createPressReviewButton.click();
   }
 
   getListItem(topic: string): PressReviewListItem {

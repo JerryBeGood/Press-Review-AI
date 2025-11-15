@@ -19,6 +19,16 @@ async function globalTeardown() {
   // Create a Supabase client with service role key for admin operations
   const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: process.env.E2E_USERNAME!,
+    password: process.env.E2E_PASSWORD!,
+  });
+
+  if (signInError) {
+    console.error("Error signing in:", signInError);
+    throw signInError;
+  }
+
   try {
     // Delete all entries from generated_press_reviews table
     const { error, count } = await supabase
@@ -34,6 +44,15 @@ async function globalTeardown() {
   } catch (error) {
     console.error("❌ Unexpected error during teardown:", error);
   }
+
+  const { error: signOutError } = await supabase.auth.signOut();
+
+  if (signOutError) {
+    console.error("Error signing out:", signOutError);
+    throw signOutError;
+  }
+
+  console.log("✅ Successfully signed out");
 }
 
 export default globalTeardown;

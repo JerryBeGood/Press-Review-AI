@@ -40,22 +40,17 @@ test.describe("Press Review Management (CRUD)", () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await passwordInput.type(process.env.E2E_PASSWORD!);
 
-    await page.screenshot({ path: "tests/e2e/test-results/singin-page-screenshot.png" });
-
     // Click the login button
     await page.getByRole("button", { name: "Sign in" }).click();
 
     // Initialize the Dashboard POM after navigation
     dashboardPage = new DashboardPage(page);
 
-    await dashboardPage.page.screenshot({ path: "tests/e2e/test-results/dashboard-page-screenshot.png" });
     // Wait for a unique element on the dashboard to confirm successful login
     await expect(dashboardPage.createPressReviewButton).toBeVisible();
   });
 
   test("should allow a user to create, read, update, and delete a press review", async ({ page }) => {
-    await dashboardPage.page.screenshot({ path: "tests/e2e/test-results/2-dashboard-page-screenshot.png" });
-
     // At this point, we are already logged in and on the dashboard.
     // In an empty state, we should see the "No scheduled press reviews" heading.
     await expect(page.getByRole("heading", { name: "No scheduled press reviews" })).toBeVisible();

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { PressReviewService } from "../../../src/lib/services/pressReviewService";
-import type { SupabaseClient } from "../../../src/db/supabase.client";
-import type { CreatePressReviewCmd, PressReviewDTO, UpdatePressReviewCmd } from "../../../src/types";
+import { PressReviewService } from "../../../../src/lib/services/pressReviewService";
+import type { SupabaseClient } from "../../../../src/db/supabase.client";
+import type { CreatePressReviewCmd, PressReviewDTO, UpdatePressReviewCmd } from "../../../../src/types";
 
 // This object represents the query builder that is returned by `from()`
 // and is used for chaining methods like `select`, `insert`, etc.

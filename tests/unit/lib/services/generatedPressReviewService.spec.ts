@@ -1,12 +1,12 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import type { SupabaseClient } from "../../../src/db/supabase.client";
+import type { SupabaseClient } from "../../../../src/db/supabase.client";
 import type {
   GeneratedPressReviewDetailDTO,
   GeneratedPressReviewDTO,
   GeneratedPressReviewsListDTO,
   GeneratedPressReviewsListWithTopicDTO,
-} from "../../../src/types";
-import { GeneratedPressReviewService } from "../../../src/lib/services/generatedPressReviewService";
+} from "../../../../src/types";
+import { GeneratedPressReviewService } from "../../../../src/lib/services/generatedPressReviewService";
 
 const mockSupabase = {
   from: vi.fn(),

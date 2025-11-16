@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../../src/db/database.types";
 
@@ -19,6 +21,7 @@ async function globalTeardown() {
   // Create a Supabase client with service role key for admin operations
   const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email: process.env.E2E_USERNAME!,
     password: process.env.E2E_PASSWORD!,

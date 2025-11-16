@@ -58,6 +58,7 @@ export const POST: APIRoute = async ({ request, url, locals }) => {
       );
     }
 
+    /* eslint-disable no-console */
     console.error("Unexpected error during registration:", error);
     return new Response(
       JSON.stringify({

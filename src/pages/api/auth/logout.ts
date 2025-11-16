@@ -32,6 +32,7 @@ export const POST: APIRoute = async ({ locals }) => {
     // Session cookies are automatically cleared by @supabase/ssr
     return new Response(null, { status: 200 });
   } catch (err) {
+    /* eslint-disable no-console */
     console.error("Logout error:", err);
     return new Response(
       JSON.stringify({

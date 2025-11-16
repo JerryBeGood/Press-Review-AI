@@ -76,6 +76,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     );
   } catch (err) {
+    /* eslint-disable no-console */
     console.error("Login error:", err);
     return new Response(
       JSON.stringify({

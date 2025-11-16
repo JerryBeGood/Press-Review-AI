@@ -7,6 +7,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const next = url.searchParams.get("next") || "/";
 
   if (!code) {
+    /* eslint-disable no-console */
     console.error("No code provided for auth callback.");
     return redirect(next);
   }

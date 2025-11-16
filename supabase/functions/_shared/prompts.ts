@@ -52,7 +52,10 @@ export const contextGeneration = (topic: string) => `
   Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries rather than hobbyistic or overly technical content.
 `;
 
-export const queryGeneration = (topic, context) => `
+export const queryGeneration = (
+  topic: string,
+  context: { persona: string; goal: string; audience: string; domain: { themes: string[]; trends: string[] } }
+) => `
         ${context.persona}
   
         ${context.goal}
@@ -107,15 +110,17 @@ export const queryGeneration = (topic, context) => `
         }
       `;
 
-export const sourceEvaluation = (topic, source) => `
+export const sourceEvaluation = (topic: string, source: string) => `
         You are a press review research specialist. Your task is to evaluate whether a news source is relevant for press review coverage on a specified topic.
 
+        Here is the topic:
         <topic>
         ${topic}
         </topic>
 
+        Here is the source:
         <source>
-        ${JSON.stringify(source)}
+        ${source}
         </source>
 
         Your job is to determine whether this source is relevant for press review coverage of the given topic. 
@@ -151,7 +156,7 @@ export const sourceEvaluation = (topic, source) => `
         Your output should consist of only the JSON response with no additional text or formatting.
       `;
 
-export const contentExtraction = (topic, source) => `
+export const contentExtraction = (topic: string, source: string) => `
         You are a press journalist specializing in the following topic:
 
         <topic>
@@ -199,7 +204,7 @@ export const contentExtraction = (topic, source) => `
       `;
 
 // TODO: The general summary does not bring any value to the report. It should combine some information from the segments and provide a high-level overview of the report.
-export const contentSynthesis = (topic, researchResults) => `
+export const contentSynthesis = (topic: string, researchResults: ResearchArticle[]) => `
         You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
 
         <topic>${topic}</topic>

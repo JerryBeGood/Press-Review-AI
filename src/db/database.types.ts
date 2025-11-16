@@ -1,22 +1,10 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
-  graphql_public: {
-    Tables: Record<never, never>;
-    Views: Record<never, never>;
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5";
   };
   public: {
     Tables: {
@@ -96,7 +84,20 @@ export interface Database {
       };
     };
     Views: Record<never, never>;
-    Functions: Record<never, never>;
+    Functions: {
+      create_generation_for_review: {
+        Args: { review_id: string };
+        Returns: undefined;
+      };
+      schedule_press_review: {
+        Args: { review_id: string; schedule_expression: string };
+        Returns: undefined;
+      };
+      unschedule_press_review: {
+        Args: { review_id: string };
+        Returns: undefined;
+      };
+    };
     Enums: {
       generation_status:
         | "pending"
@@ -220,9 +221,6 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       generation_status: [

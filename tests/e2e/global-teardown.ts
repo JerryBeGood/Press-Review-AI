@@ -37,7 +37,7 @@ async function globalTeardown() {
     const { error, count } = await supabase
       .from("generated_press_reviews")
       .delete()
-      .eq("user_id", process.env.E2E_USER_ID);
+      .eq("user_id", process.env.E2E_USER_ID!);
 
     if (error) {
       console.error("❌ Error cleaning generated_press_reviews:", error);

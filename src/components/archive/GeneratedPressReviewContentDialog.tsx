@@ -1,4 +1,4 @@
-import type { ArchiveViewModel, PressReviewContent } from "@/types";
+import type { ArchiveViewModel } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -62,7 +62,7 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
 
     if (review.status === "success" && review.content) {
       try {
-        const content = review.content as unknown as PressReviewContent;
+        const { content } = review;
 
         if (!content.general_summary || !content.segments) {
           throw new Error("Invalid content structure");

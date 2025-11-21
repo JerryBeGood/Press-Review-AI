@@ -1,4 +1,5 @@
 import type { Tables, TablesInsert, Enums } from "../db/database.types";
+import type { PressReviewContent } from "./json-schemas";
 
 /* ------------------------------------------------------------------ *
  *  Shared helpers
@@ -8,7 +9,7 @@ export type GenerationStatus = Enums<"generation_status">;
 /* ------------------------------------------------------------------ *
  *  Press Reviews
  * ------------------------------------------------------------------ */
-export type PressReviewDTO = Omit<Tables<"press_reviews">, "user_id">;
+export type PressReviewDTO = Pick<Tables<"press_reviews">, "id" | "topic" | "schedule" | "created_at" | "updated_at">;
 
 export interface PressReviewsListDTO {
   data: PressReviewDTO[];
@@ -40,27 +41,24 @@ export interface ValidateTopicResultDTO {
  *  Generated Press Reviews
  * ------------------------------------------------------------------ */
 
-// TODO: Omitted these columns to keep generatedPressReviewService working -> Should they be included in the DTO?
-export type GeneratedPressReviewDTO = Omit<
+// Whitelisting fields for list view - safe and clean
+export type GeneratedPressReviewDTO = Pick<
   Tables<"generated_press_reviews">,
-  "user_id" | "analysis" | "generated_queries" | "research_results" | "error"
->;
+  "id" | "press_review_id" | "status" | "generated_at"
+> & {
+  // Overriding content type from Json to specific Zod type
+  // Note: It's nullable in DB, so we keep it nullable here
+  content: PressReviewContent | null;
+  error: string | null;
+};
 
-// TODO: Weird naming, why it is necessary when there already is GeneratedPressReviewDTO?
-export type GeneratedPressReviewDetailDTO = Omit<Tables<"generated_press_reviews">, "user_id">;
+// Full details DTO (currently same as list DTO + potentially more fields in future)
+export type GeneratedPressReviewDetailDTO = GeneratedPressReviewDTO;
 
 export interface GeneratedPressReviewsListDTO {
   data: GeneratedPressReviewDTO[];
   count: number;
 }
-
-/** Expected structure of the 'content' JSONB field */
-/** Re-exported from shared types (single source of truth) */
-export type {
-  ContentSegment as PressReviewSource,
-  PressReviewSegment,
-  PressReviewContent,
-} from "../../supabase/functions/_shared/types";
 
 /** Modified DTO from API to include the topic from press_reviews relation */
 export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {

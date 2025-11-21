@@ -1,8 +1,10 @@
 import type { SupabaseClient } from "../../db/supabase.client";
 import type {
+  GeneratedPressReviewDTO,
   GeneratedPressReviewDetailDTO,
   GeneratedPressReviewsListDTO,
   GeneratedPressReviewsListWithTopicDTO,
+  GeneratedPressReviewWithTopicDTO,
   GenerationStatus,
 } from "../../types";
 
@@ -72,7 +74,7 @@ export class GeneratedPressReviewService {
         content: null,
         generated_at: null,
       })
-      .select()
+      .select("id, press_review_id, generated_at, status, content")
       .single();
 
     if (insertError || !newGeneration) {
@@ -81,11 +83,11 @@ export class GeneratedPressReviewService {
       throw new Error("DATABASE_ERROR");
     }
 
-    // Return without user_id (as per DTO definition)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { user_id, ...generationWithoutUserId } = newGeneration;
-
-    return generationWithoutUserId;
+    // Cast to strict DTO type
+    return {
+      ...newGeneration,
+      error: null,
+    } as unknown as GeneratedPressReviewDetailDTO;
   }
 
   /**
@@ -107,7 +109,7 @@ export class GeneratedPressReviewService {
       // Build query with user filter
       let query = this.supabase
         .from("generated_press_reviews")
-        .select("id, press_review_id, generated_at, status, content", { count: "exact" })
+        .select("id, press_review_id, generated_at, status, content, error", { count: "exact" })
         .eq("user_id", userId)
         .order("generated_at", { ascending: false, nullsFirst: false })
         .order("id", { ascending: false });
@@ -130,9 +132,9 @@ export class GeneratedPressReviewService {
         throw new Error("DATABASE_ERROR");
       }
 
-      // Return data without user_id (as per DTO definition)
+      // Return data cast to strict DTO type
       return {
-        data: data || [],
+        data: (data || []) as unknown as GeneratedPressReviewDTO[],
         count: count || 0,
       };
     } catch (error) {
@@ -168,7 +170,9 @@ export class GeneratedPressReviewService {
       // Build query with user filter and join to press_reviews for topic
       let query = this.supabase
         .from("generated_press_reviews")
-        .select("id, press_review_id, generated_at, status, content, press_reviews!inner(topic)", { count: "exact" })
+        .select("id, press_review_id, generated_at, status, content, error, press_reviews!inner(topic)", {
+          count: "exact",
+        })
         .eq("user_id", userId)
         .order("generated_at", { ascending: false, nullsFirst: false })
         .order("id", { ascending: false });
@@ -191,9 +195,9 @@ export class GeneratedPressReviewService {
         throw new Error("DATABASE_ERROR");
       }
 
-      // Return data without user_id (as per DTO definition)
+      // Return data cast to strict DTO type
       return {
-        data: data || [],
+        data: (data || []) as unknown as GeneratedPressReviewWithTopicDTO[],
         count: count || 0,
       };
     } catch (error) {

@@ -1,30 +1,15 @@
-import type { anthropic } from "@ai-sdk/anthropic";
-import type { openai } from "@ai-sdk/openai";
-
-type OpenAIModel = ReturnType<typeof openai>;
-type AnthropicModel = ReturnType<typeof anthropic>;
-
-type Provider = OpenAIModel | AnthropicModel;
-
-type Models = Record<string, Provider>;
-
-export type { Models, AnthropicModel };
-
-// ----------------------------------------------------------------------------------
-// Domain DTOs & Command Models
-// ----------------------------------------------------------------------------------
-import type { Tables, TablesInsert, Enums } from "./db/database.types";
+import type { Tables, TablesInsert, Enums } from "../db/database.types";
+import type { PressReviewContent } from "./json-schemas";
 
 /* ------------------------------------------------------------------ *
  *  Shared helpers
  * ------------------------------------------------------------------ */
 export type GenerationStatus = Enums<"generation_status">;
-export type RatingValue = -1 | 1; // business rule: only -1 or 1
 
 /* ------------------------------------------------------------------ *
  *  Press Reviews
  * ------------------------------------------------------------------ */
-export type PressReviewDTO = Omit<Tables<"press_reviews">, "user_id">;
+export type PressReviewDTO = Pick<Tables<"press_reviews">, "id" | "topic" | "schedule" | "created_at" | "updated_at">;
 
 export interface PressReviewsListDTO {
   data: PressReviewDTO[];
@@ -53,30 +38,48 @@ export interface ValidateTopicResultDTO {
 }
 
 /* ------------------------------------------------------------------ *
- *  Generated Press Reviews
+ *  Generated Press Reviews - Discriminated Unions
  * ------------------------------------------------------------------ */
 
-// TODO: Omitted these columns to keep generatedPressReviewService working -> Should they be included in the DTO?
-export type GeneratedPressReviewDTO = Omit<
-  Tables<"generated_press_reviews">,
-  "user_id" | "analysis" | "generated_queries" | "research_results" | "error"
->;
+type BaseGeneratedReview = Pick<Tables<"generated_press_reviews">, "id" | "press_review_id" | "generated_at">;
 
-// TODO: Weird naming, why it is necessary when there already is GeneratedPressReviewDTO?
-export type GeneratedPressReviewDetailDTO = Omit<Tables<"generated_press_reviews">, "user_id">;
+// 1. Pending / Processing States
+// In these states, content is null and error is null
+export type GeneratedPressReviewPending = BaseGeneratedReview & {
+  status: "pending" | "generating_queries" | "researching_sources" | "synthesizing_content";
+  content: null;
+  error: null;
+};
+
+// 2. Failed State
+// In this state, error is usually present (but nullable in DB, so string | null), content is null
+export type GeneratedPressReviewFailed = BaseGeneratedReview & {
+  status: "failed";
+  content: null;
+  error: string | null;
+};
+
+// 3. Success State
+// In this state, content MUST be present.
+export type GeneratedPressReviewSuccess = BaseGeneratedReview & {
+  status: "success";
+  content: PressReviewContent;
+  error: null;
+};
+
+// The Discriminated Union
+export type GeneratedPressReviewDTO =
+  | GeneratedPressReviewPending
+  | GeneratedPressReviewFailed
+  | GeneratedPressReviewSuccess;
+
+// Full details DTO
+export type GeneratedPressReviewDetailDTO = GeneratedPressReviewDTO;
 
 export interface GeneratedPressReviewsListDTO {
   data: GeneratedPressReviewDTO[];
   count: number;
 }
-
-/** Expected structure of the 'content' JSONB field */
-/** Re-exported from shared types (single source of truth) */
-export type {
-  ContentSegment as PressReviewSource,
-  PressReviewSegment,
-  PressReviewContent,
-} from "../supabase/functions/_shared/types";
 
 /** Modified DTO from API to include the topic from press_reviews relation */
 export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {

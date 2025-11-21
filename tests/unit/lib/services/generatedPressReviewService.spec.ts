@@ -5,6 +5,7 @@ import type {
   GeneratedPressReviewDTO,
   GeneratedPressReviewsListDTO,
   GeneratedPressReviewsListWithTopicDTO,
+  PressReviewContent,
 } from "../../../../src/types";
 import { GeneratedPressReviewService } from "../../../../src/lib/services/generatedPressReviewService";
 
@@ -112,18 +113,25 @@ describe("GeneratedPressReviewService", () => {
 
     it("should create and return a new generation job on success", async () => {
       const pressReview = { id: pressReviewId, user_id: userId };
-      const newGeneration: GeneratedPressReviewDetailDTO & { user_id: string } = {
+      // Explicitly mock the DB response which is looser than our DTO
+      const dbResponse = {
         id: "new-gen-id",
         press_review_id: pressReviewId,
-        user_id: userId,
         status: "pending",
         content: null,
         generated_at: null,
-        analysis: null,
-        generated_queries: null,
-        research_results: null,
+        // analysis and other fields might be returned by DB but we don't include them in DTO anymore
+      };
+
+      const expectedDTO: GeneratedPressReviewDetailDTO = {
+        id: "new-gen-id",
+        press_review_id: pressReviewId,
+        status: "pending",
+        content: null,
+        generated_at: null,
         error: null,
       };
+
       const pressReviewQuery = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
@@ -138,7 +146,7 @@ describe("GeneratedPressReviewService", () => {
       const insertQuery = {
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: newGeneration, error: null }),
+        single: vi.fn().mockResolvedValue({ data: dbResponse, error: null }),
       };
       mockSupabase.from
         .mockReturnValueOnce(pressReviewQuery)
@@ -147,9 +155,7 @@ describe("GeneratedPressReviewService", () => {
 
       const result = await service.triggerGeneration(pressReviewId, userId);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { user_id, ...expectedResult } = newGeneration;
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(expectedDTO);
       expect(insertQuery.insert).toHaveBeenCalledWith({
         press_review_id: pressReviewId,
         user_id: userId,
@@ -164,27 +170,47 @@ describe("GeneratedPressReviewService", () => {
     const userId = "user-id";
 
     it("should return generated press reviews for a user", async () => {
-      const reviews: GeneratedPressReviewsListDTO["data"] = [
+      const mockContent: PressReviewContent = {
+        general_summary: "Summary",
+        segments: [],
+      };
+
+      // Mock DB response (looser type)
+      const dbReviews = [
         {
           id: "1",
           press_review_id: "pr-1",
           generated_at: new Date().toISOString(),
           status: "success",
-          content: "Review 1",
+          content: mockContent,
+          error: null,
         },
       ];
+
+      // Expected DTO
+      const expectedReviews: GeneratedPressReviewsListDTO["data"] = [
+        {
+          id: "1",
+          press_review_id: "pr-1",
+          generated_at: dbReviews[0].generated_at,
+          status: "success",
+          content: mockContent,
+          error: null,
+        },
+      ];
+
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
-        then: (resolve: (value: { data: GeneratedPressReviewDTO[]; count: number; error: null }) => void) =>
-          resolve({ data: reviews, count: 1, error: null }),
+        then: (resolve: (value: { data: typeof dbReviews; count: number; error: null }) => void) =>
+          resolve({ data: dbReviews, count: 1, error: null }),
       };
       mockSupabase.from.mockReturnValue(mockQuery);
 
       const result = await service.getGeneratedPressReviews(userId);
 
-      expect(result).toEqual({ data: reviews, count: 1 });
+      expect(result).toEqual({ data: expectedReviews, count: 1 });
       expect(mockQuery.eq).toHaveBeenCalledWith("user_id", userId);
     });
 
@@ -223,30 +249,49 @@ describe("GeneratedPressReviewService", () => {
     const userId = "user-id";
 
     it("should return generated press reviews with topic for a user", async () => {
-      const reviews: GeneratedPressReviewsListWithTopicDTO["data"] = [
+      const mockContent: PressReviewContent = {
+        general_summary: "Summary",
+        segments: [],
+      };
+
+      const dbReviews = [
         {
           id: "1",
           press_review_id: "pr-1",
           generated_at: new Date().toISOString(),
           status: "success",
-          content: "Review 1",
+          content: mockContent,
+          error: null,
           press_reviews: { topic: "Test Topic" },
         },
       ];
+
+      const expectedReviews: GeneratedPressReviewsListWithTopicDTO["data"] = [
+        {
+          id: "1",
+          press_review_id: "pr-1",
+          generated_at: dbReviews[0].generated_at,
+          status: "success",
+          content: mockContent,
+          error: null,
+          press_reviews: { topic: "Test Topic" },
+        },
+      ];
+
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
-        then: (resolve: (value: { data: GeneratedPressReviewDTO[]; count: number; error: null }) => void) =>
-          resolve({ data: reviews, count: 1, error: null }),
+        then: (resolve: (value: { data: typeof dbReviews; count: number; error: null }) => void) =>
+          resolve({ data: dbReviews, count: 1, error: null }),
       };
       mockSupabase.from.mockReturnValue(mockQuery);
 
       const result = await service.getGeneratedPressReviewsWithTopic(userId);
 
-      expect(result).toEqual({ data: reviews, count: 1 });
+      expect(result).toEqual({ data: expectedReviews, count: 1 });
       expect(mockQuery.select).toHaveBeenCalledWith(
-        "id, press_review_id, generated_at, status, content, press_reviews!inner(topic)",
+        "id, press_review_id, generated_at, status, content, error, press_reviews!inner(topic)",
         { count: "exact" }
       );
       expect(mockQuery.eq).toHaveBeenCalledWith("user_id", userId);

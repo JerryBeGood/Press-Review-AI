@@ -1,4 +1,4 @@
-# Press Review AI
+# Press Review AI - 10xDevs certification
 
 [![Project Status: In Development](https://img.shields.io/badge/status-in%20development-yellowgreen.svg)](https://github.com/JerryBeGood/Press-Review-AI)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)

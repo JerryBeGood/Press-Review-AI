@@ -63,7 +63,7 @@ export type PressReviewSource = z.infer<typeof PressReviewSourceSchema>;
 export const PressReviewSegmentSchema = z.object({
   category: z.string(),
   summary: z.string(),
-  items: z.array(PressReviewSourceSchema),
+  sources: z.array(PressReviewSourceSchema),
 });
 export type PressReviewSegment = z.infer<typeof PressReviewSegmentSchema>;
 

@@ -1,25 +1,9 @@
-import type { anthropic } from "@ai-sdk/anthropic";
-import type { openai } from "@ai-sdk/openai";
-
-type OpenAIModel = ReturnType<typeof openai>;
-type AnthropicModel = ReturnType<typeof anthropic>;
-
-type Provider = OpenAIModel | AnthropicModel;
-
-type Models = Record<string, Provider>;
-
-export type { Models, AnthropicModel };
-
-// ----------------------------------------------------------------------------------
-// Domain DTOs & Command Models
-// ----------------------------------------------------------------------------------
-import type { Tables, TablesInsert, Enums } from "./db/database.types";
+import type { Tables, TablesInsert, Enums } from "../db/database.types";
 
 /* ------------------------------------------------------------------ *
  *  Shared helpers
  * ------------------------------------------------------------------ */
 export type GenerationStatus = Enums<"generation_status">;
-export type RatingValue = -1 | 1; // business rule: only -1 or 1
 
 /* ------------------------------------------------------------------ *
  *  Press Reviews
@@ -76,7 +60,7 @@ export type {
   ContentSegment as PressReviewSource,
   PressReviewSegment,
   PressReviewContent,
-} from "../supabase/functions/_shared/types";
+} from "../../supabase/functions/_shared/types";
 
 /** Modified DTO from API to include the topic from press_reviews relation */
 export type GeneratedPressReviewWithTopicDTO = GeneratedPressReviewDTO & {

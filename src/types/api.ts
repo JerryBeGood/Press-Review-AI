@@ -38,21 +38,42 @@ export interface ValidateTopicResultDTO {
 }
 
 /* ------------------------------------------------------------------ *
- *  Generated Press Reviews
+ *  Generated Press Reviews - Discriminated Unions
  * ------------------------------------------------------------------ */
 
-// Whitelisting fields for list view - safe and clean
-export type GeneratedPressReviewDTO = Pick<
-  Tables<"generated_press_reviews">,
-  "id" | "press_review_id" | "status" | "generated_at"
-> & {
-  // Overriding content type from Json to specific Zod type
-  // Note: It's nullable in DB, so we keep it nullable here
-  content: PressReviewContent | null;
+type BaseGeneratedReview = Pick<Tables<"generated_press_reviews">, "id" | "press_review_id" | "generated_at">;
+
+// 1. Pending / Processing States
+// In these states, content is null and error is null
+export type GeneratedPressReviewPending = BaseGeneratedReview & {
+  status: "pending" | "generating_queries" | "researching_sources" | "synthesizing_content";
+  content: null;
+  error: null;
+};
+
+// 2. Failed State
+// In this state, error is usually present (but nullable in DB, so string | null), content is null
+export type GeneratedPressReviewFailed = BaseGeneratedReview & {
+  status: "failed";
+  content: null;
   error: string | null;
 };
 
-// Full details DTO (currently same as list DTO + potentially more fields in future)
+// 3. Success State
+// In this state, content MUST be present.
+export type GeneratedPressReviewSuccess = BaseGeneratedReview & {
+  status: "success";
+  content: PressReviewContent;
+  error: null;
+};
+
+// The Discriminated Union
+export type GeneratedPressReviewDTO =
+  | GeneratedPressReviewPending
+  | GeneratedPressReviewFailed
+  | GeneratedPressReviewSuccess;
+
+// Full details DTO
 export type GeneratedPressReviewDetailDTO = GeneratedPressReviewDTO;
 
 export interface GeneratedPressReviewsListDTO {

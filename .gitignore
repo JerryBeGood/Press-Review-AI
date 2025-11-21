@@ -26,3 +26,5 @@ pnpm-debug.log*
 
 *playwright-report*
 *test-results*
+
+.private/*

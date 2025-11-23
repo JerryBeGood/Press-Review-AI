@@ -26,15 +26,19 @@ export type GeneratedQueries = string[];
 
 /**
  * Single research result from Exa search
+ * Schema focuses on specific data extraction rather than generic summarization
  */
 export interface ResearchArticle {
   title: string;
   url: string;
   author?: string;
   publishedDate?: string;
-  summary: string;
-  keyFacts: string[];
-  opinions: string[];
+  main_event: string; // Specific description of what happened
+  quantitative_data?: string[]; // Numbers, dates, prices (optional - do not hallucinate)
+  quotes: string[]; // Direct citations
+  opinions: string[]; // High priority: Interesting perspectives or controversies
+  unique_angle: string; // Value proposition vs. general knowledge
+  relevance_score: number; // Score from Phase 3 evaluation (1-10)
 }
 
 /**

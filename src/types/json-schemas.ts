@@ -44,36 +44,38 @@ export const ProcessAnalysisSchema = z.object({
 export type ProcessAnalysis = z.infer<typeof ProcessAnalysisSchema>;
 
 /**
- * Single source within a segment of press review content
- * Corresponds to ContentSegment in _shared/types.ts
+ * Single source reference within a section of press review content
+ * Sources are now used as citations/footnotes, not as primary content
+ * Corresponds to ContentSource in _shared/types.ts
  * NOTE: Renamed to PressReviewSource to match API types convention
  */
 export const PressReviewSourceSchema = z.object({
-  title: z.string(),
-  summary: z.string(),
-  link: z.string().url(),
+  id: z.string().optional().describe("Optional citation marker (e.g., '1', '2')"),
+  title: z.string().describe("The title of the source article"),
+  url: z.string().url().describe("The URL of the source"),
 });
 
 export type PressReviewSource = z.infer<typeof PressReviewSourceSchema>;
 
 /**
- * Segment of categorized content with sources
- * Corresponds to PressReviewSegment in _shared/types.ts
+ * Thematic section of the press review with narrative text
+ * Corresponds to PressReviewSection in _shared/types.ts
  */
-export const PressReviewSegmentSchema = z.object({
-  category: z.string(),
-  summary: z.string(),
-  sources: z.array(PressReviewSourceSchema),
+export const PressReviewSectionSchema = z.object({
+  title: z.string().describe("The section heading"),
+  text: z.string().describe("The narrative content synthesizing multiple sources"),
+  sources: z.array(PressReviewSourceSchema).describe("Referenced sources for this section"),
 });
-export type PressReviewSegment = z.infer<typeof PressReviewSegmentSchema>;
+export type PressReviewSection = z.infer<typeof PressReviewSectionSchema>;
 
 /**
- * Final press review content structure
+ * Final press review content structure - narrative article format
  * Corresponds to PressReviewContent in _shared/types.ts
  */
 export const PressReviewContentSchema = z.object({
-  general_summary: z.string(),
-  segments: z.array(PressReviewSegmentSchema),
+  headline: z.string().describe("The main headline of the press review"),
+  intro: z.string().describe("The introductory paragraph setting up the narrative"),
+  sections: z.array(PressReviewSectionSchema).describe("Thematic sections with synthesized narratives"),
 });
 
 export type PressReviewContent = z.infer<typeof PressReviewContentSchema>;

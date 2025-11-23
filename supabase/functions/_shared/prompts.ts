@@ -107,94 +107,109 @@ export const queryGeneration = (
         }
       `;
 
-export const sourceEvaluation = (topic: string, source: string) => `
-        You are a press review research specialist. Your task is to evaluate whether a news source is relevant for press review coverage on a specified topic.
+export const sourceEvaluation = (
+  topic: string,
+  source: string,
+  context: { persona: string; goal: string; audience: string }
+) => `
+        You are an intelligent analyst conducting research for a press review. Your task is to score a news source on a scale of 1-10 based on its relevance and quality for the specified audience and goals.
+
+        <context>
+        <persona>${context.persona}</persona>
+        <goal>${context.goal}</goal>
+        <audience>${context.audience}</audience>
+        </context>
 
         Here is the topic:
         <topic>
         ${topic}
         </topic>
 
-        Here is the source:
+        Here is the source to evaluate:
         <source>
         ${source}
         </source>
 
-        Your job is to determine whether this source is relevant for press review coverage of the given topic. 
+        Your job is to assign a score from 1 (completely irrelevant/low quality) to 10 (perfectly aligned, high value) based on THREE criteria:
 
-        A source is considered RELEVANT if:
-        - The content directly discusses, mentions, or relates to the topic in a meaningful way
-        - The source provides news coverage, analysis, commentary, or reporting that connects to the topic
-        - The publication date is recent enough to be considered current coverage
-        - The source appears to be from a legitimate news outlet or publication
+        1. **PERSONA ALIGNMENT (Dominant Factor):**
+           - Does this source match the specific audience, persona, and goals defined in the context above?
+           - Is this content useful for the target audience?
+           - Does it align with the analyst's perspective and objectives?
+           
+        2. **INFORMATION DENSITY (Supporting Factor):**
+           - Does the source contain concrete facts, dates, numbers, or specific details?
+           - Or is it mostly fluff, speculation, or generic statements?
+           
+        3. **NOVELTY (Supporting Factor):**
+           - Is this actual news or new information?
+           - Is the publication date recent enough to be considered current?
+           - Or is it outdated, rehashed, or purely promotional content?
 
-        A source should be considered NOT RELEVANT if:
-        - It is biased, promotional, or low-quality content
-        - It only tangentially mentions the topic without substantial discussion
-        - The content is primarily about unrelated subjects
-        - The source is clearly outdated for the purposes of current press review
-        - The source lacks credibility or appears to be spam/promotional content
+        **CRITICAL RULE:** Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below 6).
 
-        Important context: Today's date is ${new Date().toISOString()}. Use this to assess whether the publication date is recent enough for current press review purposes.
+        **STRICT THRESHOLD:** Only sources scoring 6 or above will be included in the final press review. Be rigorous in your evaluation.
 
-        First, provide your reasoning for why this source should or should not be considered relevant for press review coverage of the topic. Consider the content quality, relevance to the topic, recency, and credibility of the source.
-
-        Then, make your final determination about relevance.
-
-        You should judge sources very rigorously - err on the side of excluding sources that don't clearly and substantially relate to the topic or that lack sufficient quality for professional press review purposes.
+        Important context: Today's date is ${new Date().toISOString()}. Use this to assess recency.
 
         Your response must be in the following JSON format:
 
         {
-          "reasoning": "[Your detailed explanation of why this source is or isn't relevant]",
-          "isRelevant": [boolean value expressing whether the source is relevant or not]
+          "reasoning": "[Your detailed explanation covering all three criteria and how they contribute to the final score]",
+          "score": [integer from 1 to 10]
         }
 
         Your output should consist of only the JSON response with no additional text or formatting.
       `;
 
-export const contentExtraction = (topic: string, source: string) => `
-        You are a press journalist specializing in the following topic:
+export const contentExtraction = (
+  topic: string,
+  source: string,
+  context: { persona: string; goal: string; audience: string }
+) => `
+        You are an intelligent analyst extracting specific, high-value data points for a press review.
+
+        <context>
+        <persona>${context.persona}</persona>
+        <goal>${context.goal}</goal>
+        <audience>${context.audience}</audience>
+        </context>
 
         <topic>
         ${topic}
         </topic>
 
-        You will analyze the following source material:
-
         <source>${JSON.stringify(source)}</source>
 
-        Your goal is to prepare this source for synthesis into a press review report by extracting key facts and opinions from the content and writing a summary.
+        Your task is to extract specific data points that will be valuable for the target audience defined above. Focus on CONCRETE, SPECIFIC information rather than generic summaries.
 
-        Follow these steps:
+        Extract the following fields:
 
-        1. Carefully read the content to understand its main arguments, facts, and opinions as they relate to the topic.
+        1. **main_event** (REQUIRED): What specifically happened? Describe the core event, announcement, or development. Be concrete and specific.
 
-        2. Write a concise, objective summary of the article. Focus only on information present in the text that is relevant to the topic.
+        2. **quantitative_data** (OPTIONAL): Extract any numbers, dates, prices, percentages, or measurable facts. If the article contains ZERO quantitative data, return an empty array. DO NOT HALLUCINATE OR INVENT NUMBERS.
 
-        3. Identify key facts - these are verifiable pieces of information such as statistics, dates, events, names, locations, or other concrete details that can be proven true or false.
+        3. **quotes** (REQUIRED): Direct citations from people mentioned in the article. Include the speaker's name/role with each quote. If no quotes exist, return an empty array.
 
-        4. Identify opinions - these are subjective statements that reflect the author's or quoted persons' beliefs, views, judgments, predictions, or interpretations. Look for interpretive language, value judgments, or speculative statements.
+        4. **opinions** (HIGH PRIORITY): Interesting perspectives, interpretations, controversies, or subjective viewpoints expressed in the article. This includes both author opinions and quoted expert opinions. Focus on what makes this article's perspective unique or valuable.
+
+        5. **unique_angle** (REQUIRED): What does this article offer that goes BEYOND general knowledge about the topic? Why would someone read this specific article? What's the novel insight, exclusive information, or unique framing? Compare to what an informed person would already know, NOT to other articles.
 
         Important constraints:
-        - Extract only information that is present in the source content
-        - Focus only on information relevant to the specified topic
-        - Do not add any external information or your own interpretations
-        - Maintain objectivity in your summary
-        - Distinguish clearly between factual statements and opinion statements
+        - Extract ONLY information present in the source
+        - Be specific and concrete - avoid generic statements
+        - Use the generation context to prioritize information valuable to the target audience
+        - DO NOT invent or hallucinate data that isn't in the source
+        - If a field has no relevant data, use empty array [] or explain briefly why the article still has value
 
-        Structure your response as a single, valid JSON object with no markdown formatting or explanatory text outside the JSON structure. Use this exact format:
+        Structure your response as a single, valid JSON object:
 
         {
-          "summary": "comprehensive summary of the source text focusing on topic-relevant content",
-          "keyFacts": [
-            "first key fact from the source",
-            "second key fact from the source"
-          ],
-          "opinions": [
-            "first opinion from the source", 
-            "second opinion from the source"
-          ]
+          "main_event": "specific description of what happened",
+          "quantitative_data": ["concrete number/date/metric 1", "concrete number/date/metric 2"],
+          "quotes": ["'Quote text' - Person Name, Role", "'Another quote' - Person Name, Role"],
+          "opinions": ["interesting perspective or interpretation 1", "controversial viewpoint 2"],
+          "unique_angle": "what makes this article valuable compared to general knowledge on the topic"
         }
 
         Your final output should contain only the JSON object with no additional text, formatting, or explanations.

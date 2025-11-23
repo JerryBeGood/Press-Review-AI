@@ -10,10 +10,11 @@ import {
   verifyAuth,
 } from "../_shared/utils.ts";
 import { sourceEvaluation, contentExtraction } from "../_shared/prompts.ts";
-import type { EdgeFunctionRequest, ResearchArticle } from "../_shared/types.ts";
+import type { EdgeFunctionRequest, ResearchArticle, GenerationContext } from "../_shared/types.ts";
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { SEARCH_RESULTS_LIMIT } from "../_shared/config.ts";
 
 serve(async (req: Request) => {
   // Verify authentication
@@ -37,6 +38,7 @@ serve(async (req: Request) => {
       .select(
         `
         generated_queries,
+        generation_context,
         press_reviews!inner (
           topic,
           schedule
@@ -51,7 +53,12 @@ serve(async (req: Request) => {
     }
 
     const queries = generatedReview.generated_queries as string[];
+    const generationContext = generatedReview.generation_context as GenerationContext;
     const { topic, schedule } = generatedReview.press_reviews as { topic: string; schedule: string };
+
+    if (!generationContext) {
+      throw new Error("Generation context not found - required for intelligent analysis");
+    }
 
     if (!queries || queries.length === 0) {
       throw new Error("No generated queries found");
@@ -66,6 +73,7 @@ serve(async (req: Request) => {
     // eslint-disable-next-line no-console
     console.log(`Searching for sources published after: ${startPublishedDate}`);
 
+    // TODO: Exa has rate limit of 5 request per second. We need to handle this.
     const exa = createExaClient();
     const allSearchResults: {
       query: string;
@@ -86,7 +94,7 @@ serve(async (req: Request) => {
 
         try {
           const searchResponse = await exa.searchAndContents(query, {
-            numResults: 5,
+            numResults: SEARCH_RESULTS_LIMIT,
             startPublishedDate,
             endPublishedDate,
             type: "auto",
@@ -123,17 +131,21 @@ serve(async (req: Request) => {
     console.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
 
     const openai = createOpenAIClient();
-    const relevantSources = new Set<string>();
-    const irrelevantSources = new Set<string>();
+    const sourceScores = new Map<string, number>(); // Store relevance scores by URL
 
     const evaluationSchema = z.object({
-      isRelevant: z.boolean().describe("Whether the source is objective, credible, and relevant to the topic"),
-      reasoning: z.string().describe("Brief explanation of the evaluation decision"),
+      score: z
+        .number()
+        .int()
+        .min(1)
+        .max(10)
+        .describe("Relevance score from 1-10 based on persona alignment, information density, and novelty"),
+      reasoning: z.string().describe("Detailed explanation covering all three evaluation criteria"),
     });
 
-    const sourcesToEvaluate: ContentSegment[] = allSearchResults
+    const sourcesToEvaluate = allSearchResults
       .flatMap((searchResult) => searchResult.results)
-      .filter((source) => !relevantSources.has(source.url) && !irrelevantSources.has(source.url));
+      .filter((source) => !sourceScores.has(source.url));
 
     await processConcurrently(
       sourcesToEvaluate,
@@ -145,23 +157,29 @@ serve(async (req: Request) => {
           const evaluation = await generateObject({
             model: openai.model("gpt-4o-mini"),
             schema: evaluationSchema,
-            prompt: sourceEvaluation(topic, source),
+            prompt: sourceEvaluation(topic, source, {
+              persona: generationContext.persona,
+              goal: generationContext.goal,
+              audience: generationContext.audience,
+            }),
           });
 
-          if (evaluation.object.isRelevant) {
-            relevantSources.add(source.url);
+          const score = evaluation.object.score;
+          sourceScores.set(source.url, score);
+
+          // Strict threshold: only >= 6 passes
+          if (score >= 6) {
             // eslint-disable-next-line no-console
-            console.log(`✓ Relevant: ${source.title} - ${evaluation.object.reasoning}`);
+            console.log(`✓ Relevant (${score}/10): ${source.title} - ${evaluation.object.reasoning}`);
           } else {
-            irrelevantSources.add(source.url);
             // eslint-disable-next-line no-console
-            console.log(`✗ Irrelevant: ${source.title} - ${evaluation.object.reasoning}`);
+            console.log(`✗ Rejected (${score}/10): ${source.title} - ${evaluation.object.reasoning}`);
           }
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(`Error evaluating source ${source.url}:`, error);
-          // Mark as irrelevant if evaluation fails
-          irrelevantSources.add(source.url);
+          // Mark with score 0 if evaluation fails
+          sourceScores.set(source.url, 0);
         }
       },
       3
@@ -170,20 +188,31 @@ serve(async (req: Request) => {
       console.error("Error during source evaluation:", error);
     });
 
+    const passedSources = Array.from(sourceScores.entries()).filter(([, score]) => score >= 6).length;
+    const rejectedSources = sourceScores.size - passedSources;
+
     // eslint-disable-next-line no-console
-    console.log(`Evaluation complete: ${relevantSources.size} relevant, ${irrelevantSources.size} irrelevant`);
+    console.log(`Evaluation complete: ${passedSources} passed (≥6), ${rejectedSources} rejected (<6)`);
 
     const researchResults: ResearchArticle[] = [];
 
     const extractionSchema = z.object({
-      summary: z.string().describe("Brief summary of the article content"),
-      keyFacts: z.array(z.string()).describe("List of key facts extracted from the article"),
-      opinions: z.array(z.string()).describe("List of opinions or perspectives expressed in the article"),
+      main_event: z.string().describe("Specific description of what happened"),
+      quantitative_data: z
+        .array(z.string())
+        .optional()
+        .describe("Numbers, dates, prices (optional - do not hallucinate)"),
+      quotes: z.array(z.string()).describe("Direct citations with speaker attribution"),
+      opinions: z.array(z.string()).describe("High priority: Interesting perspectives or controversies"),
+      unique_angle: z.string().describe("Value proposition vs. general knowledge"),
     });
 
     const relevantSourcesArray = allSearchResults
       .flatMap((searchResult) => searchResult.results)
-      .filter((source) => relevantSources.has(source.url));
+      .filter((source) => {
+        const score = sourceScores.get(source.url);
+        return score !== undefined && score >= 6;
+      });
 
     // Extract content from relevant sources concurrently with a limit of 2 (to avoid rate limiting)
     const extractedArticles = await processConcurrently(
@@ -196,22 +225,31 @@ serve(async (req: Request) => {
           const extraction = await generateObject({
             model: openai.model("gpt-4o-mini"),
             schema: extractionSchema,
-            prompt: contentExtraction(topic, source),
+            prompt: contentExtraction(topic, source, {
+              persona: generationContext.persona,
+              goal: generationContext.goal,
+              audience: generationContext.audience,
+            }),
           });
+
+          const relevanceScore = sourceScores.get(source.url) || 0;
 
           const article: ResearchArticle = {
             title: source.title,
             url: source.url,
             author: source.author,
             publishedDate: source.publishedDate,
-            summary: extraction.object.summary,
-            keyFacts: extraction.object.keyFacts,
+            main_event: extraction.object.main_event,
+            quantitative_data: extraction.object.quantitative_data || [],
+            quotes: extraction.object.quotes,
             opinions: extraction.object.opinions,
+            unique_angle: extraction.object.unique_angle,
+            relevance_score: relevanceScore,
           };
 
           // eslint-disable-next-line no-console
           console.log(
-            `✓ Extracted from "${source.title}": ${extraction.object.keyFacts.length} facts, ${extraction.object.opinions.length} opinions`
+            `✓ Extracted from "${source.title}" (score: ${relevanceScore}): ${extraction.object.quotes.length} quotes, ${extraction.object.opinions.length} opinions`
           );
 
           return article;

@@ -11,20 +11,32 @@ import {
   verifyAuth,
 } from "../_shared/utils.ts";
 import { contextGeneration, queryGeneration } from "../_shared/prompts.ts";
-import type { EdgeFunctionRequest } from "../_shared/types.ts";
+import { MIN_NEWS_ANGLES, MAX_NEWS_ANGLES, QUERIES_PER_ANGLE } from "../_shared/config.ts";
+import type { EdgeFunctionRequest, GenerationContext } from "../_shared/types.ts";
 
 const contextSchema = z.object({
   audience: z.string().describe("The audience that the large language models aim for"),
   persona: z.string().describe("The role to impersonate to provide audience with matching results"),
   goal: z.string().describe("The goal to pursue by the persona to provide audience with proper results"),
-  domain: z.object({
-    themes: z.array(z.string()).min(3).max(5).describe("Important themes within the provided topic"),
-    trends: z.array(z.string()).min(3).max(5).describe("Topic related trends that are happening right now"),
-  }),
+  news_angles: z
+    .array(
+      z.object({
+        name: z.string().describe("Name of the news angle"),
+        description: z.string().describe("Description of the news angle"),
+        keywords: z.array(z.string()).describe("List of keywords acting as triggers"),
+      })
+    )
+    .min(MIN_NEWS_ANGLES)
+    .max(MAX_NEWS_ANGLES)
+    .describe("List of news angles to investigate"),
 });
 
 const querySchema = z.object({
-  queries: z.array(z.string()).min(3).max(10).describe("A list of search queries to research the topic"),
+  queries: z
+    .array(z.string())
+    .min(QUERIES_PER_ANGLE * MIN_NEWS_ANGLES)
+    .max(QUERIES_PER_ANGLE * MAX_NEWS_ANGLES)
+    .describe("A list of search queries to research the topic"),
 });
 
 serve(async (req: Request) => {
@@ -68,12 +80,23 @@ serve(async (req: Request) => {
       prompt: contextGeneration(topic),
     });
 
+    const { error: contextUpdateError } = await supabase
+      .from("generated_press_reviews")
+      .update({
+        generation_context: context,
+      })
+      .eq("id", generated_press_review_id);
+
+    if (contextUpdateError) {
+      throw new Error(`Failed to save generation context: ${contextUpdateError.message}`);
+    }
+
     const {
       object: { queries },
     } = await generateObject({
       model: openai.model("gpt-4o-mini"),
       schema: querySchema,
-      prompt: queryGeneration(topic, context),
+      prompt: queryGeneration(topic, context as GenerationContext),
     });
 
     const { error: updateError } = await supabase

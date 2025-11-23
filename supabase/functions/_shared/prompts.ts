@@ -1,3 +1,6 @@
+import { NewsAngle, ResearchResults } from "./types.ts";
+import { QUERIES_PER_ANGLE } from "./config.ts";
+
 export const contextGeneration = (topic: string) => `
   You are tasked with creating contextual guidance for a language model that will be conducting press reviews and generating search queries on a specific topic. The context should strike a balance between being too hobbyistic (overly casual/amateur) and too professional (overly formal/corporate) - aim for an informed, accessible middle ground suitable for press review purposes.
 
@@ -10,51 +13,48 @@ export const contextGeneration = (topic: string) => `
   1. Audience: Define the target readership that would be interested in press coverage of this topic - these should be informed individuals who seek current developments and news
   2. Persona: Create a persona for the language model to adopt - someone knowledgeable but accessible, suitable for press review work
   3. Goal: Establish what the language model should aim to achieve when covering this topic from a press review perspective
-  4. Domain Context: Identify important themes and current trends within the topic that would be relevant for press coverage
+  4. News Angles: Identify distinct "angles of attack" for researching this topic. These replace generic themes and must be actionable search directions.
 
   Key Requirements:
   - Focus on press review context - the output should guide toward newsworthy, current developments rather than hobbyistic content
-  - Maintain an informed but accessible tone - avoid being too casual or too corporate
-  - The audience should consist of professionals and informed individuals seeking current information about developments in the topic domain
-  - Themes should represent core areas of coverage within the topic (3-5 items)
-  - Trends should reflect what's happening right now that would be newsworthy (3-5 items)
-  - Keep themes and trends concise and specific
-  - Avoid overly emotional language
+  - Maintain an informed but accessible tone
+  - The audience should consist of professionals and informed individuals seeking current information
+  - News Angles must be specific and actionable, not broad topics
+  - For each News Angle, provide a list of "keywords" that serve as TRIGGER WORDS for finding relevant news.
 
   Examples:
 
   For topic "Renewable Energy Technology":
 
   {
-    "audience": "Policy makers, industry professionals, investors, and informed citizens who follow developments in clean energy solutions and their market impact. Readers seeking to understand how renewable technologies are reshaping energy markets and policy landscapes.",
-    "persona": "You are an informed energy sector analyst who tracks emerging technologies, policy changes, and market developments in renewable energy. You provide clear, fact-based coverage that connects technical innovations to their broader economic and environmental implications.",
-    "goal": "Your goal is to identify and analyze significant developments in renewable energy technology, policy changes, market shifts, and breakthrough innovations that impact the energy transition and have broader societal implications.",
-    "domain": {
-      "themes": ["solar and wind technology advances", "energy storage solutions", "grid integration challenges", "policy and regulatory changes", "market economics and financing"],
-      "trends": ["floating solar installations", "green hydrogen production scaling", "battery recycling innovations", "corporate renewable energy procurement", "offshore wind expansion"]
-    }
+    "audience": "Policy makers, industry professionals, investors, and informed citizens who follow developments in clean energy solutions and their market impact.",
+    "persona": "You are an informed energy sector analyst who tracks emerging technologies, policy changes, and market developments in renewable energy.",
+    "goal": "Your goal is to identify and analyze significant developments in renewable energy technology, policy changes, and market shifts.",
+    "news_angles": [
+      {
+        "name": "Technological Breakthroughs",
+        "description": "New efficiency records and material science discoveries",
+        "keywords": ["efficiency record", "perovskite", "breakthrough", "lab results", "commercialization"]
+      },
+      {
+        "name": "Policy & Regulation",
+        "description": "Government incentives, bans, and international agreements",
+        "keywords": ["subsidy", "tax credit", "ban", "mandate", "COP summit", "legislation"]
+      },
+      {
+        "name": "Market Movements",
+        "description": "Major investments, mergers, and bankruptcies",
+        "keywords": ["acquisition", "merger", "IPO", "bankruptcy", "investment round", "quarterly earnings"]
+      }
+    ]
   }
 
-
-  For topic "Artificial Intelligence in Healthcare":
-
-  {
-    "audience": "Healthcare professionals, technology leaders, regulatory officials, and informed patients who need to understand how AI is transforming medical practice, patient care, and healthcare systems.",
-    "persona": "You are a healthcare technology correspondent who covers the intersection of AI innovation and medical practice. You translate complex technical developments into clear insights about their practical impact on patient care and healthcare delivery.",
-    "goal": "Your goal is to track and analyze AI implementations in healthcare settings, regulatory developments, clinical trial results, and technological breakthroughs that are changing how medical care is delivered and accessed.",
-    "domain": {
-      "themes": ["diagnostic AI applications", "drug discovery and development", "clinical decision support systems", "regulatory approval processes", "patient data privacy and ethics"],
-      "trends": ["AI-powered medical imaging", "personalized treatment algorithms", "remote patient monitoring", "clinical trial optimization", "healthcare AI regulation frameworks"]
-    }
-  }
-
-
-  Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries rather than hobbyistic or overly technical content.
+  Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries.
 `;
 
 export const queryGeneration = (
   topic: string,
-  context: { persona: string; goal: string; audience: string; domain: { themes: string[]; trends: string[] } }
+  context: { persona: string; goal: string; audience: string; news_angles: NewsAngle[] }
 ) => `
         ${context.persona}
   
@@ -62,48 +62,45 @@ export const queryGeneration = (
   
         ${context.audience}
   
-        You will be generating a list of press review SERP (Search Engine Results Page) queries based on a given topic, themes, and trends. Your goal is to create unique, relevant search queries that would be useful for finding press coverage and reviews.
+        You will be generating a list of press review SERP (Search Engine Results Page) queries based on a given topic and specific news angles. Your goal is to create unique, relevant search queries that would be useful for finding press coverage and reviews.
 
         Here is the topic you need to work with:
         <topic>
         ${topic}
         </topic>
 
-        Here are the relevant themes to consider:
-        <themes>
-        ${context.domain.themes.join(", ")}
-        </themes>
+        Here are the specific News Angles to investigate:
+        <news_angles>
+        ${JSON.stringify(context.news_angles, null, 2)}
+        </news_angles>
 
-        Here are the current trends to incorporate:
-        <trends>
-        ${context.domain.trends.join(", ")}
-        </trends>
-
-        Your task is to generate 3-7 unique SERP queries that combine the provided topic with the themes and trends. These queries should be designed to find press reviews and coverage related to the topic.
+        Your task is to generate search queries for EACH provided News Angle.
+        
+        Methodology:
+        1. Iterate through each News Angle provided above.
+        2. For each angle, use its defined "keywords" to construct precise search queries.
+        3. Combine the main topic with the angle's keywords to create targeted searches.
 
         Important requirements:
-        - Generate between 3-7 queries total (you may use fewer than 7 if appropriate)
-        - At least one query must be almost identical to the initial topic but in the form: "[topic] breakthroughs"
-        - Each query must be unique and not similar to the others
-        - Each query must be relevant to the topic
-        - Keep queries short and concise (maximum 5 words each)
-        - Focus on queries that would return press coverage, reviews, or news articles
-        - Stick to the provided topic. Do not generate queries that are not strictly related to the topic
+        - Generate ${QUERIES_PER_ANGLE} queries per News Angle.
+        - Ensure queries are distinct and cover different aspects of the angle.
+        - Keep queries short and concise (maximum 5-7 words each).
+        - Focus on queries that would return press coverage, reviews, or news articles.
+        - Do not generate queries that are not strictly related to the topic.
 
         Current context:
         - Today's date is ${new Date().toISOString()}
-        - Use this date awareness to ensure your queries are timely and relevant
+        - Use this date awareness to ensure your queries are timely (e.g. include year if relevant).
 
         Before generating your final list, use the scratchpad below to think through your approach:
 
         <scratchpad>
         1. What are the key aspects of the topic that press would cover?
-        2. How can you incorporate the provided themes and trends?
-        3. What variations would capture different types of press coverage?
-        4. How can you ensure each query is distinct while staying relevant?
+        2. How can you incorporate the provided angles and keywords?
+        3. How can you ensure each query is distinct while staying relevant?
         </scratchpad>
 
-        After your analysis, provide your final answer in the exact JSON format below. Your response should contain only the JSON output with no additional text or explanation:
+        After your analysis, provide your final answer in the exact JSON format below. Return a flat list of all queries combined. Your response should contain only the JSON output with no additional text or explanation:
 
         {
           "queries": [list of queries]
@@ -204,7 +201,7 @@ export const contentExtraction = (topic: string, source: string) => `
       `;
 
 // TODO: The general summary does not bring any value to the report. It should combine some information from the segments and provide a high-level overview of the report.
-export const contentSynthesis = (topic: string, researchResults: ResearchArticle[]) => `
+export const contentSynthesis = (topic: string, researchResults: ResearchResults) => `
         You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
 
         <topic>${topic}</topic>

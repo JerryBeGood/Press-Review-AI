@@ -43,17 +43,6 @@ export interface ResearchArticle {
 export type ResearchResults = ResearchArticle[];
 
 /**
- * Analysis of the research process and source quality
- */
-export interface ProcessAnalysis {
-  totalSourcesEvaluated: number;
-  relevantSources: number;
-  irrelevantSources: number;
-  keyThemes: string[];
-  sourceQualityNotes: string;
-}
-
-/**
  * Single source within a segment of press review content
  */
 export interface ContentSegment {
@@ -89,3 +78,22 @@ export type GenerationStatus =
   | "synthesizing_content"
   | "success"
   | "failed";
+
+/**
+ * Single News Angle for targeted research
+ */
+export interface NewsAngle {
+  name: string; // e.g. "Legal Regulations"
+  description: string; // e.g. "New laws and directives"
+  keywords: string[]; // e.g. ["act", "voting", "veto", "directive"] - triggers for Phase 2
+}
+
+/**
+ * Full generation context persisted to database
+ */
+export interface GenerationContext {
+  audience: string;
+  persona: string;
+  goal: string;
+  news_angles: NewsAngle[];
+}

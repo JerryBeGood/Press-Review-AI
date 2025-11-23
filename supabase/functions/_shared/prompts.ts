@@ -215,44 +215,55 @@ export const contentExtraction = (
         Your final output should contain only the JSON object with no additional text, formatting, or explanations.
       `;
 
-// TODO: The general summary does not bring any value to the report. It should combine some information from the segments and provide a high-level overview of the report.
-export const contentSynthesis = (topic: string, researchResults: ResearchResults) => `
-        You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
+export const contentSynthesis = (
+  topic: string,
+  researchResults: ResearchResults,
+  generationContext: { persona: string; goal: string; audience: string }
+) => `
+        You are an expert analyst writing a cohesive narrative press review. Your task is to synthesize research from multiple sources into a unified, story-driven article.
+
+        <context>
+        <persona>${generationContext.persona}</persona>
+        <goal>${generationContext.goal}</goal>
+        <audience>${generationContext.audience}</audience>
+        </context>
 
         <topic>${topic}</topic>
         <research_results>${JSON.stringify(researchResults)}</research_results>
 
-        Your task is to analyse the provided research results and create a structured press review report. You should:
+        CRITICAL INSTRUCTIONS:
 
-        1. Select the most valuable sources: Review all sources and identify those that provide the most significant, relevant, and substantive information. Discard sources that are redundant, low-quality, or provide minimal value.
+        1. **Write a Narrative, NOT a List**: You are creating a cohesive article, not summarizing individual sources. Sources are evidence to support your narrative.
 
-        2. Categorize sources: Group the selected sources into logical categories based on their subject matter, industry, or theme (e.g., "Technology & AI", "Healthcare", "Business & Finance", "Politics", etc.).
+        2. **Use Specific Data**: The research contains quantitative_data (numbers, dates, metrics) and quotes. You MUST incorporate these concrete facts into your narrative. Do not write generic statements.
 
-        3. Create summaries: For each category, write a concise summary that synthesizes the key information from all sources in that group, incorporating both facts and opinions from the source data.
+        3. **Structure as an Article**:
+           - headline: A compelling title for the entire review
+           - intro: A lead paragraph that sets up the story
+           - sections: Thematic sections (NOT categories of sources)
+             - title: The theme/topic of this section
+             - text: Your narrative synthesizing insights (use specific data and quotes)
+             - sources: List of sources used as evidence (title, url, optional id)
 
-        4. Structure the output: Format your response as a JSON object following the exact structure specified below.
+        4. **Tone & Style**: Write according to the persona and audience defined above. Match the formality, perspective, and priorities of that context.
 
-        Before providing your final answer, work through your analysis:
-        - First, list all sources and briefly evaluate their value/relevance
-        - Identify which sources to keep and which to discard
-        - Group the selected sources into categories
-        - Plan the summaries for each category
-        - Draft the general summary for the overall report
+        5. **Source Selection**: Only include sources that contribute meaningful information. Discard redundant or low-value sources.
 
         Your final output must follow this exact JSON structure:
 
         {
           "content": {
-            "general_summary": "[a general summary about what can be found in the current press review report]",
-            "segments": [
+            "headline": "[compelling headline for the press review]",
+            "intro": "[lead paragraph introducing the narrative]",
+            "sections": [
               {
-                "category": "[the category of the sources in the given segment]",
-                "summary": "[a concise summary of this specific segment's contribution to the topic]",
+                "title": "[thematic section heading]",
+                "text": "[narrative text synthesizing multiple sources with specific data and quotes]",
                 "sources": [
                   {
-                    "title": "[the title of the article or source]",
-                    "summary": "[original summary of the source from the research data]",
-                    "link": "[the URL of the source]"
+                    "id": "[optional citation number]",
+                    "title": "[source title]",
+                    "url": "[source URL]"
                   }
                 ]
               }
@@ -260,15 +271,12 @@ export const contentSynthesis = (topic: string, researchResults: ResearchResults
           }
         }
 
+        Guidelines:
+        - Each section should tell part of the story, not just list facts
+        - Weave quantitative data and quotes naturally into the narrative
+        - Sources are references/footnotes, not the main content
+        - Write in a professional, journalistic style matching the persona
+        - Aim for 3-5 well-developed sections
 
-        Important guidelines:
-        - Only include sources that add meaningful value to the report
-        - Ensure categories are logical and mutually exclusive
-        - Write segment summaries that synthesize information across all sources in that category
-        - Use the original summaries from the research data for individual source summaries
-        - Include key facts and opinions from the research data in your segment summaries
-        - Make sure the general summary provides a detailed overview of all segments
-        - Write in a professional, journalistic style
-
-        Your final response should contain only the JSON output as specified above, without any additional text or explanation.
+        Your final response should contain only the JSON output with no additional text or explanation.
       `;

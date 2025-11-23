@@ -1,6 +1,4 @@
 import type { ArchiveViewModel } from "@/types";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GeneratedPressReviewContentDialogProps {
@@ -64,68 +62,73 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
       try {
         const { content } = review;
 
-        if (!content.general_summary || !content.segments) {
+        if (!content.headline || !content.intro || !content.sections) {
           throw new Error("Invalid content structure");
         }
 
         return (
-          <div className="space-y-6">
-            {/* General Summary */}
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Summary</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{content.general_summary}</p>
-            </div>
+          <article className="prose prose-sm md:prose-base max-w-none">
+            {/* Headline */}
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">{content.headline}</h1>
 
-            {/* Segments */}
-            {content.segments.length > 0 && (
-              <div className="space-y-4">
-                {content.segments.map((segment, index) => (
-                  <Card key={index}>
-                    <CardHeader>
-                      <CardTitle>{segment.category}</CardTitle>
-                      <CardDescription>{segment.summary}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {segment.sources.length > 0 && (
-                        <Accordion type="single" collapsible className="w-full">
-                          {segment.sources.map((source, sourceIndex) => (
-                            <AccordionItem value={`item-${sourceIndex}`} key={sourceIndex}>
-                              <AccordionTrigger>{source.title}</AccordionTrigger>
-                              <AccordionContent className="space-y-3">
-                                <p className="text-sm text-muted-foreground">{source.summary}</p>
-                                <a
-                                  href={source.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+            {/* Intro */}
+            <p className="text-base md:text-lg italic text-muted-foreground leading-relaxed mb-8 border-l-4 border-primary/20 pl-4">
+              {content.intro}
+            </p>
+
+            {/* Sections */}
+            {content.sections.length > 0 && (
+              <div className="space-y-8">
+                {content.sections.map((section, index) => (
+                  <section key={index} className="space-y-4">
+                    {/* Section Title */}
+                    <h2 className="text-xl md:text-2xl font-semibold mt-6 mb-3">{section.title}</h2>
+
+                    {/* Section Narrative Text */}
+                    <div className="text-sm md:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                      {section.text}
+                    </div>
+
+                    {/* Sources */}
+                    {section.sources.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Sources:</p>
+                        <ul className="space-y-1">
+                          {section.sources.map((source, sourceIndex) => (
+                            <li key={sourceIndex} className="text-xs md:text-sm">
+                              <a
+                                href={source.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                              >
+                                {source.id && <span className="font-medium">[{source.id}]</span>}
+                                <span>{source.title}</span>
+                                <svg
+                                  className="h-3 w-3 flex-shrink-0"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  aria-hidden="true"
                                 >
-                                  Read full article
-                                  <svg
-                                    className="h-3 w-3"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    aria-hidden="true"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                    />
-                                  </svg>
-                                </a>
-                              </AccordionContent>
-                            </AccordionItem>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                  />
+                                </svg>
+                              </a>
+                            </li>
                           ))}
-                        </Accordion>
-                      )}
-                    </CardContent>
-                  </Card>
+                        </ul>
+                      </div>
+                    )}
+                  </section>
                 ))}
               </div>
             )}
-          </div>
+          </article>
         );
       } catch (error) {
         // eslint-disable-next-line no-console

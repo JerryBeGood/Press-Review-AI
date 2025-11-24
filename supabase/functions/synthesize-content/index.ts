@@ -9,24 +9,25 @@ import { contentSynthesis } from "../_shared/prompts.ts";
 
 const SynthesisSchema = z.object({
   content: z.object({
-    general_summary: z.string().describe("A general summary about what can be find in the current press review raport"),
-    segments: z
+    headline: z.string().describe("The main headline of the press review"),
+    intro: z.string().describe("The introductory paragraph setting up the narrative"),
+    sections: z
       .array(
         z.object({
-          category: z.string().describe("The category of the sources in the given segment"),
-          summary: z.string().describe("A concise summary of this specific segment's contribution to the topic"),
+          title: z.string().describe("The thematic section heading"),
+          text: z.string().describe("The narrative content synthesizing multiple sources"),
           sources: z
             .array(
               z.object({
-                title: z.string().describe("The title of the article or source"),
-                summary: z.string().describe("A concise summary of this specific source's contribution to the topic"),
-                link: z.string().describe("The URL of the source"),
+                id: z.string().optional().describe("Optional citation marker"),
+                title: z.string().describe("The title of the source article"),
+                url: z.string().describe("The URL of the source"),
               })
             )
-            .describe("List of sources in the given segment"),
+            .describe("Referenced sources for this section"),
         })
       )
-      .describe("Individual segments representing each relevant source with their summaries"),
+      .describe("Thematic sections with synthesized narratives"),
   }),
 });
 
@@ -49,7 +50,7 @@ serve(async (req) => {
 
     const { data: generatedReview, error: fetchError } = await supabase
       .from("generated_press_reviews")
-      .select("research_results, press_reviews(topic)")
+      .select("research_results, generation_context, press_reviews(topic)")
       .eq("id", generated_press_review_id)
       .single();
 
@@ -61,9 +62,15 @@ serve(async (req) => {
       throw new Error("No research results found for this press review");
     }
 
+    if (!generatedReview?.generation_context) {
+      throw new Error("No generation context found for this press review");
+    }
+
     const researchResults = generatedReview.research_results as ResearchResults;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const topic = (generatedReview.press_reviews as any)?.topic || "Unknown Topic";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const generationContext = generatedReview.generation_context as any;
 
     const openai = createOpenAIClient();
 
@@ -73,7 +80,11 @@ serve(async (req) => {
     const synthesis = await generateObject({
       model: openai.model("gpt-4o"),
       schema: SynthesisSchema,
-      prompt: contentSynthesis(topic, researchResults),
+      prompt: contentSynthesis(topic, researchResults, {
+        persona: generationContext.persona,
+        goal: generationContext.goal,
+        audience: generationContext.audience,
+      }),
     });
 
     // eslint-disable-next-line no-console

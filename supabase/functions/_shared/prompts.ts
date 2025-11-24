@@ -1,5 +1,5 @@
 import { NewsAngle, ResearchResults } from "./types.ts";
-import { QUERIES_PER_ANGLE } from "./config.ts";
+import { MIN_NEWS_ANGLES, MAX_NEWS_ANGLES, QUERIES_PER_ANGLE, EVALUATION_THRESHOLD } from "./config.ts";
 
 export const contextGeneration = (topic: string) => `
   You are tasked with creating contextual guidance for a language model that will be conducting press reviews and generating search queries on a specific topic. The context should strike a balance between being too hobbyistic (overly casual/amateur) and too professional (overly formal/corporate) - aim for an informed, accessible middle ground suitable for press review purposes.
@@ -15,15 +15,16 @@ export const contextGeneration = (topic: string) => `
   3. Goal: Establish what the language model should aim to achieve when covering this topic from a press review perspective
   4. News Angles: Identify distinct "angles of attack" for researching this topic. These replace generic themes and must be actionable search directions.
 
-  Key Requirements:
+  Strictly follow these key requirements:
   - Focus on press review context - the output should guide toward newsworthy, current developments rather than hobbyistic content
   - Maintain an informed but accessible tone
   - The audience should consist of professionals and informed individuals seeking current information
   - News Angles must be specific and actionable, not broad topics
   - For each News Angle, provide a list of "keywords" that serve as TRIGGER WORDS for finding relevant news.
+  - Generate at least ${MIN_NEWS_ANGLES} and at most ${MAX_NEWS_ANGLES} News Angles.
 
-  Examples:
-
+  
+  <examples>
   For topic "Renewable Energy Technology":
 
   {
@@ -48,6 +49,88 @@ export const contextGeneration = (topic: string) => `
       }
     ]
   }
+  
+  For topic "Cybersecurity Threats":
+
+  {
+    input: "Cybersecurity Threats",
+    output: {
+      audience: "IT security professionals, CISOs, compliance officers, and business leaders responsible for protecting organizational assets from digital threats.",
+      persona: "You are a cybersecurity journalist tracking major breaches, vulnerability disclosures, threat actor activities, and security product developments.",
+      goal: "Your goal is to report on significant data breaches, zero-day vulnerabilities, ransomware campaigns, state-sponsored attacks, and major security updates from software vendors.",
+      news_angles: [
+        {
+          name: "Data Breaches & Incidents",
+          description: "Major security incidents and their impact",
+          keywords: ["data breach", "compromised", "exposed records", "credential leak", "incident response", "notification"]
+        },
+        {
+          name: "Vulnerability Disclosures",
+          description: "Critical CVEs and patch releases",
+          keywords: ["zero-day", "CVE", "critical vulnerability", "patch Tuesday", "exploit", "PoC"]
+        },
+        {
+          name: "Ransomware Operations",
+          description: "New ransomware groups and major attacks",
+          keywords: ["ransomware", "encryption", "ransom payment", "data leak site", "decryptor", "gang"]
+        },
+        {
+          name: "Threat Actor Attribution",
+          description: "APT groups and state-sponsored campaigns",
+          keywords: ["APT", "nation-state", "attribution", "cyber espionage", "supply chain attack", "campaign"]
+        },
+        {
+          name: "Security M&A",
+          description: "Acquisitions and funding in security sector",
+          keywords: ["acquisition", "funding round", "IPO", "merger", "valuation", "Series"]
+        }
+      ]
+    }
+  }
+
+  For topic "Space Exploration":
+
+  {
+    input: "Space Exploration",
+    output: {
+      audience: "Aerospace engineers, space industry investors, science enthusiasts, and policy makers following commercial space ventures, scientific missions, and international space programs.",
+      persona: "You are a space industry correspondent monitoring rocket launches, satellite deployments, mission milestones, and commercial space developments.",
+      goal: "Your goal is to cover launch activities, mission updates, contract awards, technological demonstrations, and space policy decisions from agencies and private companies.",
+      news_angles: [
+        {
+          name: "Launch Activities",
+          description: "Successful launches, failures, and upcoming missions",
+          keywords: ["launch", "liftoff", "mission success", "launch failure", "scrub", "T-0"]
+        },
+        {
+          name: "Mission Milestones",
+          description: "Orbital insertions, landings, and scientific discoveries",
+          keywords: ["orbit", "landing", "docking", "deployment", "discovery", "milestone"]
+        },
+        {
+          name: "Contract Awards",
+          description: "Government and commercial contracts for space services",
+          keywords: ["NASA contract", "ESA", "awarded", "bid", "procurement", "solicitation"]
+        },
+        {
+          name: "Satellite Constellations",
+          description: "Megaconstellation deployments and regulatory issues",
+          keywords: ["Starlink", "constellation", "satellite deployment", "frequency allocation", "orbital debris"]
+        },
+        {
+          name: "Commercial Partnerships",
+          description: "Private sector collaborations and space tourism",
+          keywords: ["partnership", "space tourism", "commercial crew", "private astronaut", "payload customer"]
+        },
+        {
+          name: "Planetary Science",
+          description: "Robotic missions and astronomical observations",
+          keywords: ["rover", "probe", "telescope", "exoplanet", "Mars", "asteroid"]
+        }
+      ]
+    }
+  }
+  </examples>
 
   Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries.
 `;
@@ -81,12 +164,13 @@ export const queryGeneration = (
         2. For each angle, use its defined "keywords" to construct precise search queries.
         3. Combine the main topic with the angle's keywords to create targeted searches.
 
-        Important requirements:
-        - Generate ${QUERIES_PER_ANGLE} queries per News Angle.
+        Follow these requirements STRICTLY:
+        - Generate ${QUERIES_PER_ANGLE} queries per News Angle and no more.
         - Ensure queries are distinct and cover different aspects of the angle.
         - Keep queries short and concise (maximum 5-7 words each).
         - Focus on queries that would return press coverage, reviews, or news articles.
         - Do not generate queries that are not strictly related to the topic.
+        - Do not generate queries that are cross-referencing other other domains than the one specified in the topic.
 
         Current context:
         - Today's date is ${new Date().toISOString()}
@@ -146,9 +230,11 @@ export const sourceEvaluation = (
            - Is the publication date recent enough to be considered current?
            - Or is it outdated, rehashed, or purely promotional content?
 
-        **CRITICAL RULE:** Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below 6).
+        **CRITICAL RULES:**
+        - Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below ${EVALUATION_THRESHOLD}).
+        - Every source that resembles a ranking or a top list should receive a score of 1.
 
-        **STRICT THRESHOLD:** Only sources scoring 6 or above will be included in the final press review. Be rigorous in your evaluation.
+        **STRICT THRESHOLD:** Only sources scoring ${EVALUATION_THRESHOLD} or above will be included in the final press review. Be rigorous in your evaluation.
 
         Important context: Today's date is ${new Date().toISOString()}. Use this to assess recency.
 
@@ -215,44 +301,55 @@ export const contentExtraction = (
         Your final output should contain only the JSON object with no additional text, formatting, or explanations.
       `;
 
-// TODO: The general summary does not bring any value to the report. It should combine some information from the segments and provide a high-level overview of the report.
-export const contentSynthesis = (topic: string, researchResults: ResearchResults) => `
-        You are a press journalist specialising in the provided topic. You will be creating a press review report based on research results provided to you. The research results contains multiple sources with summaries, key facts, opinions, and other metadata.
+export const contentSynthesis = (
+  topic: string,
+  researchResults: ResearchResults,
+  generationContext: { persona: string; goal: string; audience: string }
+) => `
+        You are an expert analyst writing a cohesive narrative press review. Your task is to synthesize research from multiple sources into a unified, story-driven article.
+
+        <context>
+        <persona>${generationContext.persona}</persona>
+        <goal>${generationContext.goal}</goal>
+        <audience>${generationContext.audience}</audience>
+        </context>
 
         <topic>${topic}</topic>
         <research_results>${JSON.stringify(researchResults)}</research_results>
 
-        Your task is to analyse the provided research results and create a structured press review report. You should:
+        CRITICAL INSTRUCTIONS:
 
-        1. Select the most valuable sources: Review all sources and identify those that provide the most significant, relevant, and substantive information. Discard sources that are redundant, low-quality, or provide minimal value.
+        1. **Write a Narrative, NOT a List**: You are creating a cohesive article, not summarizing individual sources. Sources are evidence to support your narrative.
 
-        2. Categorize sources: Group the selected sources into logical categories based on their subject matter, industry, or theme (e.g., "Technology & AI", "Healthcare", "Business & Finance", "Politics", etc.).
+        2. **Use Specific Data**: The research contains quantitative_data (numbers, dates, metrics) and quotes. You MUST incorporate these concrete facts into your narrative. Do not write generic statements.
 
-        3. Create summaries: For each category, write a concise summary that synthesizes the key information from all sources in that group, incorporating both facts and opinions from the source data.
+        3. **Structure as an Article**:
+           - headline: A compelling title for the entire review
+           - intro: A lead paragraph that sets up the story
+           - sections: Thematic sections (NOT categories of sources)
+             - title: The theme/topic of this section
+             - text: Your narrative synthesizing insights (use specific data and quotes)
+             - sources: List of sources used as evidence (title, url, optional id)
 
-        4. Structure the output: Format your response as a JSON object following the exact structure specified below.
+        4. **Tone & Style**: Write according to the persona and audience defined above. Match the formality, perspective, and priorities of that context.
 
-        Before providing your final answer, work through your analysis:
-        - First, list all sources and briefly evaluate their value/relevance
-        - Identify which sources to keep and which to discard
-        - Group the selected sources into categories
-        - Plan the summaries for each category
-        - Draft the general summary for the overall report
+        5. **Source Selection**: Only include sources that contribute meaningful information. Discard redundant or low-value sources.
 
         Your final output must follow this exact JSON structure:
 
         {
           "content": {
-            "general_summary": "[a general summary about what can be found in the current press review report]",
-            "segments": [
+            "headline": "[compelling headline for the press review]",
+            "intro": "[lead paragraph introducing the narrative]",
+            "sections": [
               {
-                "category": "[the category of the sources in the given segment]",
-                "summary": "[a concise summary of this specific segment's contribution to the topic]",
+                "title": "[thematic section heading]",
+                "text": "[narrative text synthesizing multiple sources with specific data and quotes]",
                 "sources": [
                   {
-                    "title": "[the title of the article or source]",
-                    "summary": "[original summary of the source from the research data]",
-                    "link": "[the URL of the source]"
+                    "id": "[optional citation number]",
+                    "title": "[source title]",
+                    "url": "[source URL]"
                   }
                 ]
               }
@@ -260,15 +357,12 @@ export const contentSynthesis = (topic: string, researchResults: ResearchResults
           }
         }
 
+        Guidelines:
+        - Each section should tell part of the story, not just list facts
+        - Weave quantitative data and quotes naturally into the narrative
+        - Sources are references/footnotes, not the main content
+        - Write in a professional, journalistic style matching the persona
+        - Aim for 3-5 well-developed sections
 
-        Important guidelines:
-        - Only include sources that add meaningful value to the report
-        - Ensure categories are logical and mutually exclusive
-        - Write segment summaries that synthesize information across all sources in that category
-        - Use the original summaries from the research data for individual source summaries
-        - Include key facts and opinions from the research data in your segment summaries
-        - Make sure the general summary provides a detailed overview of all segments
-        - Write in a professional, journalistic style
-
-        Your final response should contain only the JSON output as specified above, without any additional text or explanation.
+        Your final response should contain only the JSON output with no additional text or explanation.
       `;

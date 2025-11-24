@@ -126,29 +126,14 @@ export function calculateStartPublishedDate(cronSchedule: string): string {
   return startDate.toISOString();
 }
 
-export async function processConcurrently<T, R>(
-  items: T[],
-  processor: (item: T) => Promise<R>,
-  concurrency = 3
-): Promise<R[]> {
+export async function processConcurrently<T, R>(items: T[], fn: (item: T) => Promise<R>, limit: number): Promise<R[]> {
   const results: R[] = [];
-  const executing: Promise<void>[] = [];
 
-  for (const item of items) {
-    const promise = processor(item).then((result) => {
-      results.push(result);
-    });
-    executing.push(promise);
-
-    if (executing.length >= concurrency) {
-      await Promise.race(executing);
-      executing.splice(
-        executing.findIndex((p) => p === promise),
-        1
-      );
-    }
+  for (let start = 0; start < items.length; start += limit) {
+    const chunk = items.slice(start, start + limit);
+    const chunkResults = await Promise.all(chunk.map(fn));
+    results.push(...chunkResults);
   }
 
-  await Promise.all(executing);
   return results;
 }

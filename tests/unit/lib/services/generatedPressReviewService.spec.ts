@@ -171,8 +171,21 @@ describe("GeneratedPressReviewService", () => {
 
     it("should return generated press reviews for a user", async () => {
       const mockContent: PressReviewContent = {
-        general_summary: "Summary",
-        segments: [],
+        headline: "Test Headline",
+        intro: "This is a test introduction paragraph.",
+        sections: [
+          {
+            title: "Test Section",
+            text: "This is the narrative content for the test section.",
+            sources: [
+              {
+                id: "1",
+                title: "Test Source",
+                url: "https://example.com/article",
+              },
+            ],
+          },
+        ],
       };
 
       // Mock DB response (looser type)
@@ -250,8 +263,26 @@ describe("GeneratedPressReviewService", () => {
 
     it("should return generated press reviews with topic for a user", async () => {
       const mockContent: PressReviewContent = {
-        general_summary: "Summary",
-        segments: [],
+        headline: "Test Headline for Topic Review",
+        intro: "This is a test introduction for a press review with topic.",
+        sections: [
+          {
+            title: "Main Topic Section",
+            text: "Narrative content discussing the main topic with synthesized information from sources.",
+            sources: [
+              {
+                id: "1",
+                title: "Primary Source",
+                url: "https://example.com/source1",
+              },
+              {
+                id: "2",
+                title: "Secondary Source",
+                url: "https://example.com/source2",
+              },
+            ],
+          },
+        ],
       };
 
       const dbReviews = [

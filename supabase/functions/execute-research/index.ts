@@ -14,7 +14,7 @@ import type { EdgeFunctionRequest, ResearchArticle, GenerationContext } from "..
 import { createExaClient, createOpenAIClient } from "../_shared/ai-clients.ts";
 import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { SEARCH_RESULTS_LIMIT } from "../_shared/config.ts";
+import { SEARCH_RESULTS_LIMIT, EVALUATION_THRESHOLD } from "../_shared/config.ts";
 
 serve(async (req: Request) => {
   // Verify authentication
@@ -122,7 +122,7 @@ serve(async (req: Request) => {
           return { query, results: [] };
         }
       },
-      3
+      1
     ).then((results) => {
       allSearchResults.push(...results);
     });
@@ -137,7 +137,7 @@ serve(async (req: Request) => {
       score: z
         .number()
         .int()
-        .min(1)
+        .min(0)
         .max(10)
         .describe("Relevance score from 1-10 based on persona alignment, information density, and novelty"),
       reasoning: z.string().describe("Detailed explanation covering all three evaluation criteria"),
@@ -167,10 +167,9 @@ serve(async (req: Request) => {
           const score = evaluation.object.score;
           sourceScores.set(source.url, score);
 
-          // Strict threshold: only >= 6 passes
-          if (score >= 6) {
-            // eslint-disable-next-line no-console
-            console.log(`✓ Relevant (${score}/10): ${source.title} - ${evaluation.object.reasoning}`);
+          // Threshold for passing the evaluation
+          if (score >= EVALUATION_THRESHOLD) {
+            // console.log(`✓ Relevant (${score}/10): ${source.title} - ${evaluation.object.reasoning}`);
           } else {
             // eslint-disable-next-line no-console
             console.log(`✗ Rejected (${score}/10): ${source.title} - ${evaluation.object.reasoning}`);
@@ -188,11 +187,13 @@ serve(async (req: Request) => {
       console.error("Error during source evaluation:", error);
     });
 
-    const passedSources = Array.from(sourceScores.entries()).filter(([, score]) => score >= 6).length;
+    const passedSources = Array.from(sourceScores.entries()).filter(
+      ([, score]) => score >= EVALUATION_THRESHOLD
+    ).length;
     const rejectedSources = sourceScores.size - passedSources;
 
     // eslint-disable-next-line no-console
-    console.log(`Evaluation complete: ${passedSources} passed (≥6), ${rejectedSources} rejected (<6)`);
+    console.log(`Evaluation complete: ${passedSources} passed, ${rejectedSources} rejected`);
 
     const researchResults: ResearchArticle[] = [];
 
@@ -211,7 +212,7 @@ serve(async (req: Request) => {
       .flatMap((searchResult) => searchResult.results)
       .filter((source) => {
         const score = sourceScores.get(source.url);
-        return score !== undefined && score >= 6;
+        return score !== undefined && score >= EVALUATION_THRESHOLD;
       });
 
     // Extract content from relevant sources concurrently with a limit of 2 (to avoid rate limiting)

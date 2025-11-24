@@ -47,29 +47,31 @@ export interface ResearchArticle {
 export type ResearchResults = ResearchArticle[];
 
 /**
- * Single source within a segment of press review content
+ * Single source reference within a section of press review content
+ * Sources are now used as citations/footnotes, not as primary content
  */
-export interface ContentSegment {
-  title: string;
-  summary: string;
-  link: string;
+export interface ContentSource {
+  id?: string; // Optional citation marker (e.g., '1', '2')
+  title: string; // The title of the source article
+  url: string; // The URL of the source
 }
 
 /**
- * Segment of categorized content with sources
+ * Thematic section of the press review with narrative text
  */
-export interface PressReviewSegment {
-  category: string;
-  summary: string;
-  sources: ContentSegment[];
+export interface PressReviewSection {
+  title: string; // The section heading
+  text: string; // The narrative content synthesizing multiple sources
+  sources: ContentSource[]; // Referenced sources for this section
 }
 
 /**
- * Final press review content structure
+ * Final press review content structure - narrative article format
  */
 export interface PressReviewContent {
-  general_summary: string;
-  segments: PressReviewSegment[];
+  headline: string; // The main headline of the press review
+  intro: string; // The introductory paragraph setting up the narrative
+  sections: PressReviewSection[]; // Thematic sections with synthesized narratives
 }
 
 /**

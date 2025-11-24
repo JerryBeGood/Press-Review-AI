@@ -1,5 +1,5 @@
 import { NewsAngle, ResearchResults } from "./types.ts";
-import { QUERIES_PER_ANGLE } from "./config.ts";
+import { MIN_NEWS_ANGLES, MAX_NEWS_ANGLES, QUERIES_PER_ANGLE, EVALUATION_THRESHOLD } from "./config.ts";
 
 export const contextGeneration = (topic: string) => `
   You are tasked with creating contextual guidance for a language model that will be conducting press reviews and generating search queries on a specific topic. The context should strike a balance between being too hobbyistic (overly casual/amateur) and too professional (overly formal/corporate) - aim for an informed, accessible middle ground suitable for press review purposes.
@@ -15,15 +15,16 @@ export const contextGeneration = (topic: string) => `
   3. Goal: Establish what the language model should aim to achieve when covering this topic from a press review perspective
   4. News Angles: Identify distinct "angles of attack" for researching this topic. These replace generic themes and must be actionable search directions.
 
-  Key Requirements:
+  Strictly follow these key requirements:
   - Focus on press review context - the output should guide toward newsworthy, current developments rather than hobbyistic content
   - Maintain an informed but accessible tone
   - The audience should consist of professionals and informed individuals seeking current information
   - News Angles must be specific and actionable, not broad topics
   - For each News Angle, provide a list of "keywords" that serve as TRIGGER WORDS for finding relevant news.
+  - Generate at least ${MIN_NEWS_ANGLES} and at most ${MAX_NEWS_ANGLES} News Angles.
 
-  Examples:
-
+  
+  <examples>
   For topic "Renewable Energy Technology":
 
   {
@@ -48,6 +49,88 @@ export const contextGeneration = (topic: string) => `
       }
     ]
   }
+  
+  For topic "Cybersecurity Threats":
+
+  {
+    input: "Cybersecurity Threats",
+    output: {
+      audience: "IT security professionals, CISOs, compliance officers, and business leaders responsible for protecting organizational assets from digital threats.",
+      persona: "You are a cybersecurity journalist tracking major breaches, vulnerability disclosures, threat actor activities, and security product developments.",
+      goal: "Your goal is to report on significant data breaches, zero-day vulnerabilities, ransomware campaigns, state-sponsored attacks, and major security updates from software vendors.",
+      news_angles: [
+        {
+          name: "Data Breaches & Incidents",
+          description: "Major security incidents and their impact",
+          keywords: ["data breach", "compromised", "exposed records", "credential leak", "incident response", "notification"]
+        },
+        {
+          name: "Vulnerability Disclosures",
+          description: "Critical CVEs and patch releases",
+          keywords: ["zero-day", "CVE", "critical vulnerability", "patch Tuesday", "exploit", "PoC"]
+        },
+        {
+          name: "Ransomware Operations",
+          description: "New ransomware groups and major attacks",
+          keywords: ["ransomware", "encryption", "ransom payment", "data leak site", "decryptor", "gang"]
+        },
+        {
+          name: "Threat Actor Attribution",
+          description: "APT groups and state-sponsored campaigns",
+          keywords: ["APT", "nation-state", "attribution", "cyber espionage", "supply chain attack", "campaign"]
+        },
+        {
+          name: "Security M&A",
+          description: "Acquisitions and funding in security sector",
+          keywords: ["acquisition", "funding round", "IPO", "merger", "valuation", "Series"]
+        }
+      ]
+    }
+  }
+
+  For topic "Space Exploration":
+
+  {
+    input: "Space Exploration",
+    output: {
+      audience: "Aerospace engineers, space industry investors, science enthusiasts, and policy makers following commercial space ventures, scientific missions, and international space programs.",
+      persona: "You are a space industry correspondent monitoring rocket launches, satellite deployments, mission milestones, and commercial space developments.",
+      goal: "Your goal is to cover launch activities, mission updates, contract awards, technological demonstrations, and space policy decisions from agencies and private companies.",
+      news_angles: [
+        {
+          name: "Launch Activities",
+          description: "Successful launches, failures, and upcoming missions",
+          keywords: ["launch", "liftoff", "mission success", "launch failure", "scrub", "T-0"]
+        },
+        {
+          name: "Mission Milestones",
+          description: "Orbital insertions, landings, and scientific discoveries",
+          keywords: ["orbit", "landing", "docking", "deployment", "discovery", "milestone"]
+        },
+        {
+          name: "Contract Awards",
+          description: "Government and commercial contracts for space services",
+          keywords: ["NASA contract", "ESA", "awarded", "bid", "procurement", "solicitation"]
+        },
+        {
+          name: "Satellite Constellations",
+          description: "Megaconstellation deployments and regulatory issues",
+          keywords: ["Starlink", "constellation", "satellite deployment", "frequency allocation", "orbital debris"]
+        },
+        {
+          name: "Commercial Partnerships",
+          description: "Private sector collaborations and space tourism",
+          keywords: ["partnership", "space tourism", "commercial crew", "private astronaut", "payload customer"]
+        },
+        {
+          name: "Planetary Science",
+          description: "Robotic missions and astronomical observations",
+          keywords: ["rover", "probe", "telescope", "exoplanet", "Mars", "asteroid"]
+        }
+      ]
+    }
+  }
+  </examples>
 
   Generate your response as a JSON object with the exact structure shown in the examples above. Your output should focus on creating context that will lead to relevant, newsworthy search queries.
 `;
@@ -81,12 +164,13 @@ export const queryGeneration = (
         2. For each angle, use its defined "keywords" to construct precise search queries.
         3. Combine the main topic with the angle's keywords to create targeted searches.
 
-        Important requirements:
-        - Generate ${QUERIES_PER_ANGLE} queries per News Angle.
+        Follow these requirements STRICTLY:
+        - Generate ${QUERIES_PER_ANGLE} queries per News Angle and no more.
         - Ensure queries are distinct and cover different aspects of the angle.
         - Keep queries short and concise (maximum 5-7 words each).
         - Focus on queries that would return press coverage, reviews, or news articles.
         - Do not generate queries that are not strictly related to the topic.
+        - Do not generate queries that are cross-referencing other other domains than the one specified in the topic.
 
         Current context:
         - Today's date is ${new Date().toISOString()}
@@ -146,9 +230,11 @@ export const sourceEvaluation = (
            - Is the publication date recent enough to be considered current?
            - Or is it outdated, rehashed, or purely promotional content?
 
-        **CRITICAL RULE:** Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below 6).
+        **CRITICAL RULES:**
+        - Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below ${EVALUATION_THRESHOLD}).
+        - Every source that resembles a ranking or a top list should receive a score of 1.
 
-        **STRICT THRESHOLD:** Only sources scoring 6 or above will be included in the final press review. Be rigorous in your evaluation.
+        **STRICT THRESHOLD:** Only sources scoring ${EVALUATION_THRESHOLD} or above will be included in the final press review. Be rigorous in your evaluation.
 
         Important context: Today's date is ${new Date().toISOString()}. Use this to assess recency.
 

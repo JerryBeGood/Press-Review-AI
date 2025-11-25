@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
+import type { Tables } from "../../db/database.types";
 import type {
   CreatePressReviewCmd,
   PressReviewDTO,
@@ -6,6 +7,10 @@ import type {
   UpdatePressReviewCmd,
   ValidateTopicResultDTO,
 } from "../../types";
+import { ServiceError } from "../errors";
+
+// Type alias for database row
+type PressReviewRow = Tables<"press_reviews">;
 
 /**
  * Service for managing press reviews
@@ -13,6 +18,36 @@ import type {
  */
 export class PressReviewService {
   constructor(private supabase: SupabaseClient) {}
+
+  /**
+   * Maps a database row to a PressReviewDTO
+   * Removes user_id and returns only the fields defined in the DTO
+   */
+  private mapToDTO(row: Omit<PressReviewRow, "user_id">): PressReviewDTO {
+    return {
+      id: row.id,
+      topic: row.topic,
+      schedule: row.schedule,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
+  }
+
+  /**
+   * Checks if a database error is due to the limit constraint
+   * Database returns error code "LIMIT_EXCEEDED" from trigger
+   */
+  private isLimitError(error: { code?: string }): boolean {
+    return error.code === "LIMIT_EXCEEDED";
+  }
+
+  /**
+   * Checks if a database error is due to duplicate topic constraint
+   * Database returns error code "DUPLICATE_TOPIC" from trigger
+   */
+  private isDuplicateTopicError(error: { code?: string }): boolean {
+    return error.code === "DUPLICATE_TOPIC";
+  }
 
   /**
    * Creates a new press review for a user
@@ -28,7 +63,7 @@ export class PressReviewService {
    * @throws Error with specific message for different failure scenarios
    */
   async createPressReview(cmd: CreatePressReviewCmd, userId: string): Promise<PressReviewDTO> {
-    // Insert new press review
+    // Insert new press review - select only the fields we need
     const { data: newPressReview, error: insertError } = await this.supabase
       .from("press_reviews")
       .insert({
@@ -36,28 +71,28 @@ export class PressReviewService {
         topic: cmd.topic,
         schedule: cmd.schedule,
       })
-      .select()
+      .select("id, topic, schedule, created_at, updated_at")
       .single();
 
     if (insertError) {
       // Check if error is due to the trigger enforcing the limit
-      if (insertError.message.includes("cannot have more than 5 press reviews")) {
-        throw new Error("LIMIT_EXCEEDED");
+      if (this.isLimitError(insertError)) {
+        throw new ServiceError("LIMIT_EXCEEDED", "Cannot have more than 5 press reviews", insertError);
       }
 
       // Check if error is due to duplicate topic for the same user (trigger)
-      if (insertError.message.includes("already has a press review with topic")) {
-        throw new Error("DUPLICATE_TOPIC");
+      if (this.isDuplicateTopicError(insertError)) {
+        throw new ServiceError("DUPLICATE_TOPIC", "A press review with this topic already exists", insertError);
       }
 
       // Log unexpected database errors
       // eslint-disable-next-line no-console
       console.error("Error creating press review:", insertError);
-      throw new Error("DATABASE_ERROR");
+      throw new ServiceError("DATABASE_ERROR", "Failed to create press review", insertError);
     }
 
     if (!newPressReview) {
-      throw new Error("DATABASE_ERROR");
+      throw new ServiceError("DATABASE_ERROR", "Failed to create press review: no data returned");
     }
 
     // Schedule the cron job for this press review
@@ -69,14 +104,11 @@ export class PressReviewService {
     if (scheduleError) {
       // eslint-disable-next-line no-console
       console.error("Error scheduling press review:", scheduleError);
-      throw new Error("SCHEDULING_ERROR");
+      throw new ServiceError("SCHEDULING_ERROR", "Failed to schedule press review generation", scheduleError);
     }
 
-    // Return without user_id (as per DTO definition)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { user_id, ...pressReviewWithoutUserId } = newPressReview;
-
-    return pressReviewWithoutUserId;
+    // Map to DTO using the helper method
+    return this.mapToDTO(newPressReview);
   }
 
   /**
@@ -96,7 +128,7 @@ export class PressReviewService {
    */
   async updatePressReview(id: string, cmd: UpdatePressReviewCmd, userId: string): Promise<PressReviewDTO> {
     // Build update object with only provided fields
-    const updateData: Partial<{ topic: string; schedule: string; updated_at: string }> = {};
+    const updateData: Partial<{ topic: string; schedule: string }> = {};
 
     if (cmd.topic !== undefined) {
       updateData.topic = cmd.topic;
@@ -106,34 +138,34 @@ export class PressReviewService {
       updateData.schedule = cmd.schedule;
     }
 
-    // Update press review
+    // Update press review - select only the fields we need
     const { data: updatedPressReview, error: updateError } = await this.supabase
       .from("press_reviews")
       .update(updateData)
       .eq("id", id)
       .eq("user_id", userId)
-      .select()
+      .select("id, topic, schedule, created_at, updated_at")
       .single();
 
     if (updateError) {
       // Check if error is due to duplicate topic for the same user (trigger)
-      if (updateError.message.includes("already has a press review with topic")) {
-        throw new Error("DUPLICATE_TOPIC");
+      if (this.isDuplicateTopicError(updateError)) {
+        throw new ServiceError("DUPLICATE_TOPIC", "A press review with this topic already exists", updateError);
       }
 
-      // Check if error is due to record not found
+      // Check if error is due to record not found (PostgREST error code)
       if (updateError.code === "PGRST116") {
-        throw new Error("NOT_FOUND");
+        throw new ServiceError("NOT_FOUND", "Press review not found or access denied", updateError);
       }
 
       // Log unexpected database errors
       // eslint-disable-next-line no-console
       console.error("Error updating press review:", updateError);
-      throw new Error("DATABASE_ERROR");
+      throw new ServiceError("DATABASE_ERROR", "Failed to update press review", updateError);
     }
 
     if (!updatedPressReview) {
-      throw new Error("NOT_FOUND");
+      throw new ServiceError("NOT_FOUND", "Press review not found or access denied");
     }
 
     // If schedule was updated, reschedule the cron job
@@ -146,15 +178,12 @@ export class PressReviewService {
       if (scheduleError) {
         // eslint-disable-next-line no-console
         console.error("Error rescheduling press review:", scheduleError);
-        throw new Error("SCHEDULING_ERROR");
+        throw new ServiceError("SCHEDULING_ERROR", "Failed to reschedule press review generation", scheduleError);
       }
     }
 
-    // Return without user_id (as per DTO definition)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { user_id, ...pressReviewWithoutUserId } = updatedPressReview;
-
-    return pressReviewWithoutUserId;
+    // Map to DTO using the helper method
+    return this.mapToDTO(updatedPressReview);
   }
 
   /**
@@ -179,7 +208,7 @@ export class PressReviewService {
     if (unscheduleError) {
       // eslint-disable-next-line no-console
       console.error("Error unscheduling press review:", unscheduleError);
-      throw new Error("UNSCHEDULING_ERROR");
+      throw new ServiceError("UNSCHEDULING_ERROR", "Failed to unschedule press review generation", unscheduleError);
     }
 
     const { error, count } = await this.supabase
@@ -191,7 +220,7 @@ export class PressReviewService {
     if (error) {
       // eslint-disable-next-line no-console
       console.error("Error deleting press review:", error);
-      throw new Error("DATABASE_ERROR");
+      throw new ServiceError("DATABASE_ERROR", "Failed to delete press review", error);
     }
 
     // If count is 0 or null, no record was deleted
@@ -211,20 +240,20 @@ export class PressReviewService {
    * @throws Error with specific message for database failures
    */
   async getPressReviews(userId: string): Promise<PressReviewsListDTO> {
+    // Select only the fields we need for the DTO (no user_id)
     const { data, error, count } = await this.supabase
       .from("press_reviews")
-      .select("*", { count: "exact" })
+      .select("id, topic, schedule, created_at, updated_at", { count: "exact" })
       .eq("user_id", userId);
 
     if (error) {
       // eslint-disable-next-line no-console
       console.error("Error fetching press reviews:", error);
-      throw new Error("DATABASE_ERROR");
+      throw new ServiceError("DATABASE_ERROR", "Failed to fetch press reviews", error);
     }
 
-    // Remove user_id from results to match PressReviewDTO
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const pressReviews: PressReviewDTO[] = (data || []).map(({ user_id, ...rest }) => rest);
+    // Map rows to DTOs
+    const pressReviews: PressReviewDTO[] = (data || []).map((row) => this.mapToDTO(row));
 
     return {
       data: pressReviews,

@@ -1,5 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { PressReviewService } from "../../../../src/lib/services/pressReviewService";
+import { ServiceError } from "../../../../src/lib/errors";
 import type { SupabaseClient } from "../../../../src/db/supabase.client";
 import type { CreatePressReviewCmd, PressReviewDTO, UpdatePressReviewCmd } from "../../../../src/types";
 
@@ -79,19 +80,31 @@ describe("PressReviewService", () => {
     it("should throw LIMIT_EXCEEDED error if user has too many press reviews", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { message: "cannot have more than 5 press reviews" },
+        error: { code: "LIMIT_EXCEEDED", message: "Cannot have more than 5 press reviews" },
       });
 
-      await expect(service.createPressReview(cmd, userId)).rejects.toThrow("LIMIT_EXCEEDED");
+      try {
+        await service.createPressReview(cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "LIMIT_EXCEEDED" });
+      }
     });
 
     it("should throw DUPLICATE_TOPIC error if topic already exists", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { message: "already has a press review with topic" },
+        error: { code: "DUPLICATE_TOPIC", message: "A press review with this topic already exists" },
       });
 
-      await expect(service.createPressReview(cmd, userId)).rejects.toThrow("DUPLICATE_TOPIC");
+      try {
+        await service.createPressReview(cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DUPLICATE_TOPIC" });
+      }
     });
 
     it("should throw DATABASE_ERROR on unexpected insert error", async () => {
@@ -100,20 +113,38 @@ describe("PressReviewService", () => {
         error: { message: "Some other error" },
       });
 
-      await expect(service.createPressReview(cmd, userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.createPressReview(cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
 
     it("should throw DATABASE_ERROR if insert returns no data", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({ data: null, error: null });
 
-      await expect(service.createPressReview(cmd, userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.createPressReview(cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
 
     it("should throw SCHEDULING_ERROR if scheduling fails", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({ data: newPressReviewRecord, error: null });
       vi.mocked(mockSupabase.rpc).mockResolvedValueOnce({ error: { message: "Scheduling failed" } });
 
-      await expect(service.createPressReview(cmd, userId)).rejects.toThrow("SCHEDULING_ERROR");
+      try {
+        await service.createPressReview(cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "SCHEDULING_ERROR" });
+      }
     });
   });
 
@@ -161,20 +192,41 @@ describe("PressReviewService", () => {
         data: null,
         error: { code: "PGRST116", message: "Not found" },
       });
-      await expect(service.updatePressReview(reviewId, cmd, userId)).rejects.toThrow("NOT_FOUND");
+
+      try {
+        await service.updatePressReview(reviewId, cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "NOT_FOUND" });
+      }
     });
 
     it("should throw NOT_FOUND if update returns no data", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({ data: null, error: null });
-      await expect(service.updatePressReview(reviewId, cmd, userId)).rejects.toThrow("NOT_FOUND");
+
+      try {
+        await service.updatePressReview(reviewId, cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "NOT_FOUND" });
+      }
     });
 
     it("should throw DUPLICATE_TOPIC on duplicate topic error", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { message: "already has a press review with topic" },
+        error: { code: "DUPLICATE_TOPIC", message: "A press review with this topic already exists" },
       });
-      await expect(service.updatePressReview(reviewId, cmd, userId)).rejects.toThrow("DUPLICATE_TOPIC");
+
+      try {
+        await service.updatePressReview(reviewId, cmd, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DUPLICATE_TOPIC" });
+      }
     });
   });
 
@@ -206,7 +258,13 @@ describe("PressReviewService", () => {
     it("should throw UNSCHEDULING_ERROR if unscheduling fails", async () => {
       vi.mocked(mockSupabase.rpc).mockResolvedValueOnce({ error: { message: "Unscheduling failed" } });
 
-      await expect(service.deletePressReview(reviewId, userId)).rejects.toThrow("UNSCHEDULING_ERROR");
+      try {
+        await service.deletePressReview(reviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "UNSCHEDULING_ERROR" });
+      }
     });
 
     it("should throw DATABASE_ERROR on delete failure", async () => {
@@ -215,7 +273,13 @@ describe("PressReviewService", () => {
         resolve({ error: { message: "Delete failed" }, count: null })
       );
 
-      await expect(service.deletePressReview(reviewId, userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.deletePressReview(reviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
   });
 
@@ -234,7 +298,9 @@ describe("PressReviewService", () => {
       const result = await service.getPressReviews(userId);
 
       expect(mockSupabase.from).toHaveBeenCalledWith("press_reviews");
-      expect(queryBuilderMock.select).toHaveBeenCalledWith("*", { count: "exact" });
+      expect(queryBuilderMock.select).toHaveBeenCalledWith("id, topic, schedule, created_at, updated_at", {
+        count: "exact",
+      });
       expect(queryBuilderMock.eq).toHaveBeenCalledWith("user_id", userId);
       expect(result.data).toEqual(pressReviews);
       expect(result.count).toBe(2);
@@ -253,7 +319,13 @@ describe("PressReviewService", () => {
         resolve({ data: null, error: { message: "Fetch failed" }, count: null })
       );
 
-      await expect(service.getPressReviews(userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.getPressReviews(userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
   });
 

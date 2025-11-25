@@ -35,7 +35,7 @@ begin
     and id != coalesce(old.id, '00000000-0000-0000-0000-000000000000'::uuid);
 
   if reviews_count >= 5 then
-    raise exception 'User cannot have more than 5 press reviews';
+    raise exception 'LIMIT_EXCEEDED';
   end if;
 
   return new;

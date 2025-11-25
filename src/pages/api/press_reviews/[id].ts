@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 
+import { handleServiceError } from "../../../lib/apiErrorHandler";
 import {
   deletePressReviewParamsSchema,
   updatePressReviewParamsSchema,
@@ -79,75 +80,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     });
   } catch (error) {
     // Step 4: Map service errors to HTTP responses
-    if (error instanceof Error) {
-      switch (error.message) {
-        case "NOT_FOUND":
-          return new Response(
-            JSON.stringify({
-              message: "Press review not found or you do not have permission to update it",
-            }),
-            {
-              status: 404,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "DUPLICATE_TOPIC":
-          return new Response(
-            JSON.stringify({
-              message: "Press review with the same topic already exists",
-            }),
-            {
-              status: 409,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "DATABASE_ERROR":
-          return new Response(
-            JSON.stringify({
-              message: "Database error occurred",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "SCHEDULING_ERROR":
-          return new Response(
-            JSON.stringify({
-              message: "Failed to update press review schedule",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        default:
-          // eslint-disable-next-line no-console
-          console.error("Unexpected error:", error);
-          return new Response(
-            JSON.stringify({
-              message: "Internal server error",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-      }
-    }
-
-    // Unexpected error type
-    // eslint-disable-next-line no-console
-    console.error("Unexpected error type:", error);
-    return new Response(
-      JSON.stringify({
-        message: "Internal server error",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return handleServiceError(error);
   }
 };
 
@@ -209,55 +142,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     });
   } catch (error) {
     // Step 4: Handle unexpected errors
-    if (error instanceof Error) {
-      switch (error.message) {
-        case "DATABASE_ERROR":
-          return new Response(
-            JSON.stringify({
-              message: "Database error occurred",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "UNSCHEDULING_ERROR":
-          return new Response(
-            JSON.stringify({
-              message: "Failed to unschedule press review generation",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        default:
-          // Unexpected error
-          // eslint-disable-next-line no-console
-          console.error("Unexpected error:", error);
-          return new Response(
-            JSON.stringify({
-              message: "Internal server error",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-      }
-    }
-
-    // Unexpected error type
-    // eslint-disable-next-line no-console
-    console.error("Unexpected error type:", error);
-    return new Response(
-      JSON.stringify({
-        message: "Internal server error",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return handleServiceError(error);
   }
 };

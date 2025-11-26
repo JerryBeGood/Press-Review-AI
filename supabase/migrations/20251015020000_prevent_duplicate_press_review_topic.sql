@@ -22,7 +22,7 @@ begin
     and id != coalesce(old.id, '00000000-0000-0000-0000-000000000000'::uuid);
 
   if existing_count > 0 then
-    raise exception 'User already has a press review with topic "%"', new.topic;
+    raise exception 'DUPLICATE_TOPIC';
   end if;
 
   return new;

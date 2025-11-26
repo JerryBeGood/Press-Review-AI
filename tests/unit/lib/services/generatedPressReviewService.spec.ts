@@ -7,6 +7,7 @@ import type {
   GeneratedPressReviewsListWithTopicDTO,
   PressReviewContent,
 } from "../../../../src/types";
+import { ServiceError } from "../../../../src/lib/errors";
 import { GeneratedPressReviewService } from "../../../../src/lib/services/generatedPressReviewService";
 
 const mockSupabase = {
@@ -21,7 +22,7 @@ describe("GeneratedPressReviewService", () => {
     service = new GeneratedPressReviewService(mockSupabase as unknown as SupabaseClient);
   });
 
-  describe("triggerGeneration", () => {
+  describe("requestGenerationJob", () => {
     const pressReviewId = "press-review-id";
     const userId = "user-id";
 
@@ -33,7 +34,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValue(pressReviewQuery);
 
-      await expect(service.triggerGeneration(pressReviewId, userId)).rejects.toThrow("NOT_FOUND");
+      try {
+        await service.requestGenerationJob(pressReviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "NOT_FOUND" });
+      }
     });
 
     it("should throw NOT_FOUND if user is not the owner of the press review", async () => {
@@ -45,7 +52,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValue(pressReviewQuery);
 
-      await expect(service.triggerGeneration(pressReviewId, userId)).rejects.toThrow("NOT_FOUND");
+      try {
+        await service.requestGenerationJob(pressReviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "NOT_FOUND" });
+      }
     });
 
     it("should throw CONFLICT if there is an existing pending generation", async () => {
@@ -64,7 +77,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValueOnce(pressReviewQuery).mockReturnValueOnce(pendingQuery);
 
-      await expect(service.triggerGeneration(pressReviewId, userId)).rejects.toThrow("CONFLICT");
+      try {
+        await service.requestGenerationJob(pressReviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "CONFLICT" });
+      }
     });
 
     it("should throw DATABASE_ERROR if checking for pending generations fails", async () => {
@@ -82,7 +101,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValueOnce(pressReviewQuery).mockReturnValueOnce(pendingQuery);
 
-      await expect(service.triggerGeneration(pressReviewId, userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.requestGenerationJob(pressReviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
 
     it("should throw DATABASE_ERROR if creating a new generation record fails", async () => {
@@ -108,19 +133,25 @@ describe("GeneratedPressReviewService", () => {
         .mockReturnValueOnce(pendingQuery)
         .mockReturnValueOnce(insertQuery);
 
-      await expect(service.triggerGeneration(pressReviewId, userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.requestGenerationJob(pressReviewId, userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
 
     it("should create and return a new generation job on success", async () => {
       const pressReview = { id: pressReviewId, user_id: userId };
-      // Explicitly mock the DB response which is looser than our DTO
+      // Mock the DB response - now includes error field since we select it
       const dbResponse = {
         id: "new-gen-id",
         press_review_id: pressReviewId,
         status: "pending",
         content: null,
         generated_at: null,
-        // analysis and other fields might be returned by DB but we don't include them in DTO anymore
+        error: null,
       };
 
       const expectedDTO: GeneratedPressReviewDetailDTO = {
@@ -153,7 +184,7 @@ describe("GeneratedPressReviewService", () => {
         .mockReturnValueOnce(pendingQuery)
         .mockReturnValueOnce(insertQuery);
 
-      const result = await service.triggerGeneration(pressReviewId, userId);
+      const result = await service.requestGenerationJob(pressReviewId, userId);
 
       expect(result).toEqual(expectedDTO);
       expect(insertQuery.insert).toHaveBeenCalledWith({
@@ -254,7 +285,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValue(mockQuery);
 
-      await expect(service.getGeneratedPressReviews(userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.getGeneratedPressReviews(userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
   });
 
@@ -355,7 +392,13 @@ describe("GeneratedPressReviewService", () => {
       };
       mockSupabase.from.mockReturnValue(mockQuery);
 
-      await expect(service.getGeneratedPressReviewsWithTopic(userId)).rejects.toThrow("DATABASE_ERROR");
+      try {
+        await service.getGeneratedPressReviewsWithTopic(userId);
+        expect.fail("Should have thrown ServiceError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServiceError);
+        expect(error).toMatchObject({ code: "DATABASE_ERROR" });
+      }
     });
   });
 });

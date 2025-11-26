@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 
+import { handleServiceError } from "../../lib/apiErrorHandler";
 import { createGeneratedPressReviewSchema, getGeneratedPressReviewsQuerySchema } from "../../lib/schemas/api.schemas";
 import { GeneratedPressReviewService } from "../../lib/services/generatedPressReviewService";
 
@@ -50,7 +51,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const service = new GeneratedPressReviewService(locals.supabase);
 
   try {
-    const generationJob = await service.triggerGeneration(press_review_id, locals.user.id);
+    const generationJob = await service.requestGenerationJob(press_review_id, locals.user.id);
 
     return new Response(JSON.stringify(generationJob), {
       status: 202,
@@ -58,65 +59,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     // Step 3: Map service errors to HTTP responses
-    if (error instanceof Error) {
-      switch (error.message) {
-        case "NOT_FOUND":
-          return new Response(
-            JSON.stringify({
-              message: "Press review not found or inactive",
-            }),
-            {
-              status: 404,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "CONFLICT":
-          return new Response(
-            JSON.stringify({
-              message: "A generation for this press review is already in progress",
-            }),
-            {
-              status: 409,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        case "DATABASE_ERROR":
-          return new Response(
-            JSON.stringify({
-              message: "Database error occurred",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        default:
-          // eslint-disable-next-line no-console
-          console.error("Unexpected error:", error);
-          return new Response(
-            JSON.stringify({
-              message: "Internal server error",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-      }
-    }
-
-    // Unexpected error type
-    // eslint-disable-next-line no-console
-    console.error("Unexpected error type:", error);
-    return new Response(
-      JSON.stringify({
-        message: "Internal server error",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return handleServiceError(error);
   }
 };
 
@@ -185,30 +128,6 @@ export const GET: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     // Step 5: Handle errors
-    // eslint-disable-next-line no-console
-    console.error("[GET /api/generated_press_reviews] Error:", error);
-
-    if (error instanceof Error && error.message === "DATABASE_ERROR") {
-      return new Response(
-        JSON.stringify({
-          message: "Database error occurred",
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // Unexpected error
-    return new Response(
-      JSON.stringify({
-        message: "Internal server error",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return handleServiceError(error);
   }
 };

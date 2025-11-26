@@ -3,15 +3,18 @@ description:
 globs: 
 alwaysApply: true
 ---
-# AI Rules for {app-name}
+# AI Rules for Press Review AI
 
-{project-description}
+Press Review AI is a web application designed to automate the process of creating regular press reviews on topics selected by the user. The main purpose of the product is to provide users with condensed, accurate and high-quality information from various sources, allowing them to save time and stay up to date with the latest trends in their areas of interest. The application uses an AI agent to autonomously search, analyse and synthesise content.
+
+The project is educational in nature and forms part of a portfolio.
 
 ## Tech Stack
 
 - Astro 5
 - TypeScript 5
 - React 19
+- Supabase
 - Tailwind 4
 - Shadcn/ui
 

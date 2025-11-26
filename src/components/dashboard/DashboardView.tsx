@@ -54,14 +54,7 @@ export function DashboardView() {
       handleCloseFormDialog();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-
-      if (errorMessage.includes("409") || errorMessage.includes("duplicate")) {
-        toast.error("A press review with this topic already exists");
-      } else if (errorMessage.includes("limit")) {
-        toast.error("Limit of 5 press reviews reached");
-      } else {
-        toast.error("Failed to save press review. Please try again.");
-      }
+      toast.error(errorMessage);
       throw error;
     }
   };

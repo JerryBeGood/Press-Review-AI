@@ -32,7 +32,7 @@ function getUserMessage(code: ServiceErrorCode, serviceMessage?: string): string
   };
 
   // Use the service message if available, otherwise use the default
-  return serviceMessage || messageMap[code];
+  return messageMap[code] ?? serviceMessage ?? "Unknown error";
 }
 
 /**

@@ -57,7 +57,7 @@ export function usePressReviews(): UsePressReviewsReturn {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const { message: errorText } = await response.json();
       throw new Error(errorText || `Failed to create press review: ${response.statusText}`);
     }
 
@@ -75,7 +75,7 @@ export function usePressReviews(): UsePressReviewsReturn {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const { message: errorText } = await response.json();
       throw new Error(errorText || `Failed to update press review: ${response.statusText}`);
     }
 

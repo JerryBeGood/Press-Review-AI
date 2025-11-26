@@ -37,16 +37,16 @@ export class PressReviewService {
    * Checks if a database error is due to the limit constraint
    * Database returns error code "LIMIT_EXCEEDED" from trigger
    */
-  private isLimitError(error: { code?: string }): boolean {
-    return error.code === "LIMIT_EXCEEDED";
+  private isLimitError(error: { message?: string }): boolean {
+    return error.message === "LIMIT_EXCEEDED";
   }
 
   /**
    * Checks if a database error is due to duplicate topic constraint
    * Database returns error code "DUPLICATE_TOPIC" from trigger
    */
-  private isDuplicateTopicError(error: { code?: string }): boolean {
-    return error.code === "DUPLICATE_TOPIC";
+  private isDuplicateTopicError(error: { message?: string }): boolean {
+    return error.message === "DUPLICATE_TOPIC";
   }
 
   /**

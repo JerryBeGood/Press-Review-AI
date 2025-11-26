@@ -80,7 +80,7 @@ describe("PressReviewService", () => {
     it("should throw LIMIT_EXCEEDED error if user has too many press reviews", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { code: "LIMIT_EXCEEDED", message: "Cannot have more than 5 press reviews" },
+        error: { message: "LIMIT_EXCEEDED" },
       });
 
       try {
@@ -95,7 +95,7 @@ describe("PressReviewService", () => {
     it("should throw DUPLICATE_TOPIC error if topic already exists", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { code: "DUPLICATE_TOPIC", message: "A press review with this topic already exists" },
+        error: { message: "DUPLICATE_TOPIC" },
       });
 
       try {
@@ -217,7 +217,7 @@ describe("PressReviewService", () => {
     it("should throw DUPLICATE_TOPIC on duplicate topic error", async () => {
       queryBuilderMock.single.mockResolvedValueOnce({
         data: null,
-        error: { code: "DUPLICATE_TOPIC", message: "A press review with this topic already exists" },
+        error: { message: "DUPLICATE_TOPIC" },
       });
 
       try {

@@ -33,16 +33,32 @@ interface FormValues {
 
 export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }: PressReviewFormDialogProps) {
   const isEditMode = !!initialData;
-  const { isValidating, validationResult, validateTopic, reset } = useTopicValidation();
+  const { isValidating, validationResult, validateTopic } = useTopicValidation();
+
+  // Calculate default values synchronously
+  let defaultValues: FormValues = {
+    topic: initialData?.topic || "",
+    schedule: "daily",
+    dayOfWeek: "",
+    dayOfMonth: "",
+    time: "9",
+  };
+
+  if (initialData?.schedule) {
+    const parsed = parseCronExpression(initialData.schedule);
+    if (parsed) {
+      defaultValues = {
+        ...defaultValues,
+        schedule: parsed.schedule,
+        dayOfWeek: parsed.dayOfWeek || "",
+        dayOfMonth: parsed.dayOfMonth || "",
+        time: parsed.time,
+      };
+    }
+  }
 
   const form = useForm<FormValues>({
-    defaultValues: {
-      topic: initialData?.topic || "",
-      schedule: "daily",
-      dayOfWeek: "",
-      dayOfMonth: "",
-      time: "9",
-    },
+    defaultValues,
   });
 
   const scheduleValue = form.watch("schedule");
@@ -56,42 +72,6 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
       validateTopic(topicValue);
     }
   }, [topicValue, validateTopic]);
-
-  // Reset form when dialog closes or opens with new data
-  useEffect(() => {
-    if (isOpen) {
-      let scheduleConfig: {
-        schedule: "daily" | "weekly" | "monthly";
-        dayOfWeek: string;
-        dayOfMonth: string;
-        time: string;
-      } = {
-        schedule: "daily",
-        dayOfWeek: "",
-        dayOfMonth: "",
-        time: "9",
-      };
-
-      // Parse CRON expression if editing existing review
-      if (initialData?.schedule) {
-        const parsed = parseCronExpression(initialData.schedule);
-        if (parsed) {
-          scheduleConfig = {
-            schedule: parsed.schedule,
-            dayOfWeek: parsed.dayOfWeek || "",
-            dayOfMonth: parsed.dayOfMonth || "",
-            time: parsed.time,
-          };
-        }
-      }
-
-      form.reset({
-        topic: initialData?.topic || "",
-        ...scheduleConfig,
-      });
-      reset();
-    }
-  }, [isOpen, initialData, form, reset]);
 
   const handleSubmit = async (values: FormValues) => {
     try {

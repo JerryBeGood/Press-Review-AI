@@ -24,6 +24,7 @@ export function DashboardView() {
   } = usePressReviews();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [createTimestamp, setCreateTimestamp] = useState<number>(Date.now());
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingPressReview, setEditingPressReview] = useState<PressReviewViewModel | null>(null);
   const [deletingPressReviewId, setDeletingPressReviewId] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export function DashboardView() {
 
   const handleOpenCreateDialog = () => {
     setEditingPressReview(null);
+    setCreateTimestamp(Date.now());
     setIsFormOpen(true);
   };
 
@@ -166,6 +168,7 @@ export function DashboardView() {
         />
       )}
       <PressReviewFormDialog
+        key={editingPressReview ? editingPressReview.id : `create-${createTimestamp}`}
         isOpen={isFormOpen}
         onClose={handleCloseFormDialog}
         onSubmit={handleFormSubmit}

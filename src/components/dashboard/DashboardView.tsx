@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { Newspaper } from "lucide-react";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
 import { PressReviewList } from "./PressReviewList";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
@@ -19,7 +20,7 @@ export function DashboardView() {
     updatePressReview,
     deletePressReview,
     generatePressReview,
-    refetch,
+    retry,
   } = usePressReviews();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -105,7 +106,7 @@ export function DashboardView() {
         <ErrorState
           title="An error occurred while loading"
           description="Failed to load press reviews list."
-          onRetry={refetch}
+          onRetry={retry}
         />
       </div>
     );
@@ -162,6 +163,7 @@ export function DashboardView() {
         <EmptyState
           title="No scheduled press reviews"
           description="Start by creating your first press review. Define the topic and schedule and we'll automatically generate recurring summaries for you."
+          icon={Newspaper}
           action={
             <Button onClick={handleOpenCreateDialog} size="lg" className="w-full sm:w-auto">
               Create first press review

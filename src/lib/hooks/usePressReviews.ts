@@ -15,7 +15,7 @@ interface UsePressReviewsReturn {
   updatePressReview: (id: string, data: UpdatePressReviewCmd) => Promise<void>;
   deletePressReview: (id: string) => Promise<void>;
   generatePressReview: (id: string) => Promise<void>;
-  refetch: () => Promise<void>;
+  retry: () => void;
 }
 
 export function usePressReviews(): UsePressReviewsReturn {
@@ -134,6 +134,15 @@ export function usePressReviews(): UsePressReviewsReturn {
     }
   }, []);
 
+  /**
+   * Retry function for error state
+   */
+  const retry = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+    fetchPressReviews();
+  }, [fetchPressReviews]);
+
   return {
     pressReviews,
     isLoading,
@@ -142,6 +151,6 @@ export function usePressReviews(): UsePressReviewsReturn {
     updatePressReview,
     deletePressReview,
     generatePressReview,
-    refetch: fetchPressReviews,
+    retry,
   };
 }

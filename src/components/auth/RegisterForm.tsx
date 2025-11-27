@@ -5,6 +5,7 @@ import { registerSchema, type RegisterInput } from "@/lib/schemas/auth.schemas";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 
 export function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,20 +55,7 @@ export function RegisterForm() {
       <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
         <div className="text-center space-y-4">
           <div className="mx-auto w-fit p-4 rounded-full bg-primary/10">
-            <svg
-              className="h-12 w-12 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
+            <Mail className="h-12 w-12 text-primary" strokeWidth={1.5} />
           </div>
           <div>
             <h3 className="text-xl font-semibold">Check your email</h3>

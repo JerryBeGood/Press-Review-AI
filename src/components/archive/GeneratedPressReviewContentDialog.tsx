@@ -1,5 +1,6 @@
 import type { ArchiveViewModel } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, AlertTriangle, ExternalLink } from "lucide-react";
 
 interface GeneratedPressReviewContentDialogProps {
   review: ArchiveViewModel | null;
@@ -12,23 +13,10 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
   const renderContent = () => {
     if (!review) return null;
 
-    if (review.status === "pending") {
+    if (["pending", "generating_queries", "researching_sources", "synthesizing_content"].includes(review.status)) {
       return (
         <div className="py-8 text-center text-muted-foreground">
-          <svg
-            className="mx-auto h-12 w-12 mb-4 animate-spin"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
+          <Loader2 className="mx-auto h-12 w-12 mb-4 animate-spin" />
           <p className="font-medium">Generation in progress</p>
           <p className="text-sm mt-2">This press review is currently being generated. Please check back later.</p>
         </div>
@@ -38,20 +26,7 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
     if (review.status === "failed") {
       return (
         <div className="py-8 text-center text-destructive">
-          <svg
-            className="mx-auto h-12 w-12 mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
+          <AlertTriangle className="mx-auto h-12 w-12 mb-4" />
           <p className="font-medium">Generation failed</p>
           <p className="text-sm mt-2 text-muted-foreground">An error occurred while generating this press review.</p>
         </div>
@@ -104,20 +79,7 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
                               >
                                 {source.id && <span className="font-medium">[{source.id}]</span>}
                                 <span>{source.title}</span>
-                                <svg
-                                  className="h-3 w-3 flex-shrink-0"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  aria-hidden="true"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                  />
-                                </svg>
+                                <ExternalLink className="h-3 w-3 flex-shrink-0" />
                               </a>
                             </li>
                           ))}

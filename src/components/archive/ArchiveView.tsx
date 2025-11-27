@@ -1,3 +1,4 @@
+import { Archive } from "lucide-react";
 import { useArchive } from "@/lib/hooks/useArchive";
 import { GeneratedPressReviewList } from "./GeneratedPressReviewList";
 import { GeneratedPressReviewContentDialog } from "./GeneratedPressReviewContentDialog";
@@ -33,6 +34,7 @@ export default function ArchiveView() {
         <EmptyState
           title="No generated reviews yet"
           description="Your generated press reviews will appear here once they are created."
+          icon={Archive}
         />
       </div>
     );

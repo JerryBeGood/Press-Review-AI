@@ -2,10 +2,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
 import { PressReviewList } from "./PressReviewList";
-import { EmptyState } from "./EmptyState";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/shared/ErrorState";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingList } from "@/components/shared/LoadingList";
 import type { PressReviewViewModel, CreatePressReviewCmd, UpdatePressReviewCmd } from "@/types";
 
 export function DashboardView() {
@@ -100,27 +102,11 @@ export function DashboardView() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="flex flex-col items-center justify-center py-12 sm:py-16 text-center">
-          <div className="text-destructive mb-4">
-            <svg
-              className="mx-auto h-12 w-12 sm:h-16 sm:w-16"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold mb-2">An error occurred while loading</h3>
-          <p className="text-sm text-muted-foreground mb-6">Failed to load press reviews list.</p>
-          <Button onClick={refetch}>Try again</Button>
-        </div>
+        <ErrorState
+          title="An error occurred while loading"
+          description="Failed to load press reviews list."
+          onRetry={refetch}
+        />
       </div>
     );
   }
@@ -170,12 +156,21 @@ export function DashboardView() {
         </div>
       )}
 
-      {!isLoading && pressReviews.length === 0 ? (
-        <EmptyState onCreateFirst={handleOpenCreateDialog} />
+      {isLoading ? (
+        <LoadingList count={5} />
+      ) : pressReviews.length === 0 ? (
+        <EmptyState
+          title="No scheduled press reviews"
+          description="Start by creating your first press review. Define the topic and schedule and we'll automatically generate recurring summaries for you."
+          action={
+            <Button onClick={handleOpenCreateDialog} size="lg" className="w-full sm:w-auto">
+              Create first press review
+            </Button>
+          }
+        />
       ) : (
         <PressReviewList
           pressReviews={pressReviews}
-          isLoading={isLoading}
           onEdit={handleOpenEditDialog}
           onDelete={handleOpenDeleteDialog}
           onGenerate={handleGenerate}

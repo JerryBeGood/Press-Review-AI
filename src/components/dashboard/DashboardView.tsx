@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Newspaper, AlertTriangle } from "lucide-react";
+import { Newspaper } from "lucide-react";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
 import { useDialog } from "@/lib/hooks/useDialog";
 import { PressReviewList } from "./PressReviewList";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
+import { LimitWarning } from "./LimitWarning";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -126,19 +127,7 @@ export function DashboardView() {
         <></>
       )}
 
-      {hasReachedLimit && pressReviews.length > 0 && (
-        <div className="mb-6 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-3 sm:p-4 text-sm">
-          <div className="flex gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-yellow-700 dark:text-yellow-400">Press review limit reached</p>
-              <p className="mt-1 text-yellow-600 dark:text-yellow-500">
-                You can have up to 5 active press reviews. Delete one of the existing ones to add a new one.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {hasReachedLimit && pressReviews.length > 0 && <LimitWarning />}
 
       {isLoading ? (
         <LoadingList count={5} />

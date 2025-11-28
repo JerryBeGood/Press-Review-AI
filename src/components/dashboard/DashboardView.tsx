@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Newspaper, AlertTriangle } from "lucide-react";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
+import { useDialog } from "@/lib/hooks/useDialog";
 import { PressReviewList } from "./PressReviewList";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
@@ -23,28 +24,31 @@ export function DashboardView() {
     retry,
   } = usePressReviews();
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [createTimestamp, setCreateTimestamp] = useState<number>(Date.now());
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingPressReview, setEditingPressReview] = useState<PressReviewViewModel | null>(null);
-  const [deletingPressReviewId, setDeletingPressReviewId] = useState<string | null>(null);
+  const {
+    isOpen: isFormOpen,
+    data: editingPressReview,
+    open: openForm,
+    close: closeForm,
+  } = useDialog<PressReviewViewModel>();
+
+  const {
+    isOpen: isDeleteDialogOpen,
+    data: deletingPressReviewId,
+    open: openDeleteDialog,
+    close: closeDeleteDialog,
+  } = useDialog<string>();
+
+  const [formResetKey, setFormResetKey] = useState(0);
 
   const hasReachedLimit = pressReviews.length >= 5;
 
   const handleOpenCreateDialog = () => {
-    setEditingPressReview(null);
-    setCreateTimestamp(Date.now());
-    setIsFormOpen(true);
+    setFormResetKey((prev) => prev + 1);
+    openForm(null);
   };
 
   const handleOpenEditDialog = (pressReview: PressReviewViewModel) => {
-    setEditingPressReview(pressReview);
-    setIsFormOpen(true);
-  };
-
-  const handleCloseFormDialog = () => {
-    setIsFormOpen(false);
-    setEditingPressReview(null);
+    openForm(pressReview);
   };
 
   const handleFormSubmit = async (data: CreatePressReviewCmd | UpdatePressReviewCmd) => {
@@ -56,22 +60,12 @@ export function DashboardView() {
         await addPressReview(data as CreatePressReviewCmd);
         toast.success("Press review created");
       }
-      handleCloseFormDialog();
+      closeForm();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       toast.error(errorMessage);
       throw error;
     }
-  };
-
-  const handleOpenDeleteDialog = (id: string) => {
-    setDeletingPressReviewId(id);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-    setDeletingPressReviewId(null);
   };
 
   const handleConfirmDelete = async () => {
@@ -83,7 +77,7 @@ export function DashboardView() {
     } catch {
       toast.error("Failed to delete press review. Please try again.");
     } finally {
-      handleCloseDeleteDialog();
+      closeDeleteDialog();
     }
   };
 
@@ -163,20 +157,20 @@ export function DashboardView() {
         <PressReviewList
           pressReviews={pressReviews}
           onEdit={handleOpenEditDialog}
-          onDelete={handleOpenDeleteDialog}
+          onDelete={openDeleteDialog}
           onGenerate={handleGenerate}
         />
       )}
       <PressReviewFormDialog
-        key={editingPressReview ? editingPressReview.id : `create-${createTimestamp}`}
+        key={editingPressReview ? editingPressReview.id : `create-${formResetKey}`}
         isOpen={isFormOpen}
-        onClose={handleCloseFormDialog}
+        onClose={closeForm}
         onSubmit={handleFormSubmit}
         initialData={editingPressReview || undefined}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
+        onClose={closeDeleteDialog}
         onConfirm={handleConfirmDelete}
         pressReviewTopic={deletingPressReview?.topic}
       />

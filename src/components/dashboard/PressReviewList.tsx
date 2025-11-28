@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PressReviewListItem } from "./PressReviewListItem";
 import type { PressReviewViewModel } from "@/types";
 
@@ -8,7 +9,12 @@ interface PressReviewListProps {
   onGenerate: (id: string) => void;
 }
 
-export function PressReviewList({ pressReviews, onEdit, onDelete, onGenerate }: PressReviewListProps) {
+export const PressReviewList = memo(function PressReviewList({
+  pressReviews,
+  onEdit,
+  onDelete,
+  onGenerate,
+}: PressReviewListProps) {
   return (
     <div className="space-y-4" data-testid="press-review-list">
       {pressReviews.map((pressReview) => (
@@ -22,4 +28,4 @@ export function PressReviewList({ pressReviews, onEdit, onDelete, onGenerate }: 
       ))}
     </div>
   );
-}
+});

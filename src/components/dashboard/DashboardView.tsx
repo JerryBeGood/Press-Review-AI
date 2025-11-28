@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Newspaper } from "lucide-react";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
@@ -43,33 +43,39 @@ export function DashboardView() {
 
   const hasReachedLimit = pressReviews.length >= 5;
 
-  const handleOpenCreateDialog = () => {
+  const handleOpenCreateDialog = useCallback(() => {
     setFormResetKey((prev) => prev + 1);
     openForm(null);
-  };
+  }, [openForm]);
 
-  const handleOpenEditDialog = (pressReview: PressReviewViewModel) => {
-    openForm(pressReview);
-  };
+  const handleOpenEditDialog = useCallback(
+    (pressReview: PressReviewViewModel) => {
+      openForm(pressReview);
+    },
+    [openForm]
+  );
 
-  const handleFormSubmit = async (data: CreatePressReviewCmd | UpdatePressReviewCmd) => {
-    try {
-      if (editingPressReview) {
-        await updatePressReview(editingPressReview.id, data);
-        toast.success("Press review updated");
-      } else {
-        await addPressReview(data as CreatePressReviewCmd);
-        toast.success("Press review created");
+  const handleFormSubmit = useCallback(
+    async (data: CreatePressReviewCmd | UpdatePressReviewCmd) => {
+      try {
+        if (editingPressReview) {
+          await updatePressReview(editingPressReview.id, data);
+          toast.success("Press review updated");
+        } else {
+          await addPressReview(data as CreatePressReviewCmd);
+          toast.success("Press review created");
+        }
+        closeForm();
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        toast.error(errorMessage);
+        throw error;
       }
-      closeForm();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(errorMessage);
-      throw error;
-    }
-  };
+    },
+    [editingPressReview, updatePressReview, addPressReview, closeForm]
+  );
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (!deletingPressReviewId) return;
 
     try {
@@ -80,20 +86,23 @@ export function DashboardView() {
     } finally {
       closeDeleteDialog();
     }
-  };
+  }, [deletingPressReviewId, deletePressReview, closeDeleteDialog]);
 
-  const handleGenerate = async (id: string) => {
-    try {
-      await generatePressReview(id);
-      toast.success("Press review generation started");
-    } catch (error) {
-      if ((error as { status?: number }).status === 409) {
-        toast.error("Generation of this press review is already in progress.");
-      } else {
-        toast.error("Failed to start generation. Please try again.");
+  const handleGenerate = useCallback(
+    async (id: string) => {
+      try {
+        await generatePressReview(id);
+        toast.success("Press review generation started");
+      } catch (error) {
+        if ((error as { status?: number }).status === 409) {
+          toast.error("Generation of this press review is already in progress.");
+        } else {
+          toast.error("Failed to start generation. Please try again.");
+        }
       }
-    }
-  };
+    },
+    [generatePressReview]
+  );
 
   const deletingPressReview = pressReviews.find((pr) => pr.id === deletingPressReviewId);
 

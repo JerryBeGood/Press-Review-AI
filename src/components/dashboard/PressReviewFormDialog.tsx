@@ -10,16 +10,16 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { ScheduleFields } from "./ScheduleFields";
 import { useTopicValidation } from "@/lib/hooks/useTopicValidation";
 import { buildCronExpression, parseCronExpression } from "@/lib/cronUtils";
-import type { CreatePressReviewCmd, UpdatePressReviewCmd, PressReviewDTO } from "@/types";
+import type { UpdatePressReviewCmd, PressReviewDTO } from "@/types";
 
 interface PressReviewFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CreatePressReviewCmd | UpdatePressReviewCmd) => Promise<void>;
+  onSubmit: (data: UpdatePressReviewCmd) => Promise<void>;
   initialData?: PressReviewDTO;
 }
 
@@ -32,7 +32,6 @@ interface FormValues {
 }
 
 export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }: PressReviewFormDialogProps) {
-  const isEditMode = !!initialData;
   const { isValidating, validationResult, validateTopic } = useTopicValidation();
 
   // Calculate default values synchronously
@@ -113,12 +112,8 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md sm:max-w-lg" data-testid="press-review-form-dialog">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? "Edit press review" : "Create new press review"}</DialogTitle>
-          <DialogDescription>
-            {isEditMode
-              ? "Update the topic or schedule of the press review."
-              : "Define the topic and schedule for your new press review."}
-          </DialogDescription>
+          <DialogTitle>Edit press review</DialogTitle>
+          <DialogDescription>Update the topic or schedule of the press review.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -135,23 +130,26 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
               }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Press review topic</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g. Artificial intelligence"
-                      {...field}
-                      aria-invalid={isTopicInvalid}
-                      data-testid="topic-input"
-                    />
-                  </FormControl>
-                  <FormDescription>
+                  <FormLabel className="font-mono font-bold uppercase text-sm">Press review topic</FormLabel>
+                  <div className="brutalist-input-wrapper">
+                    <FormControl>
+                      <Input
+                        placeholder="e.g. Artificial intelligence"
+                        {...field}
+                        aria-invalid={isTopicInvalid}
+                        data-testid="topic-input"
+                        className="brutalist-input"
+                      />
+                    </FormControl>
+                  </div>
+                  <FormDescription className="font-mono text-xs">
                     {isValidating && "Checking topic..."}
-                    {!isValidating && validationResult && validationResult.is_valid && "Topic looks good!"}
+                    {!isValidating && validationResult && validationResult.is_valid && "✓ Topic looks good!"}
                   </FormDescription>
                   <FormMessage />
                   {isTopicInvalid && validationResult.suggestions.length > 0 && (
-                    <div className="text-sm text-destructive space-y-1">
-                      <p className="font-medium">Suggestions:</p>
+                    <div className="text-sm text-destructive space-y-1 font-mono">
+                      <p className="font-bold">Suggestions:</p>
                       <ul className="list-disc list-inside space-y-1">
                         {validationResult.suggestions.map((suggestion, idx) => (
                           <li key={idx}>{suggestion}</li>
@@ -163,144 +161,27 @@ export function PressReviewFormDialog({ isOpen, onClose, onSubmit, initialData }
               )}
             />
 
-            <div className="flex w-full items-end gap-4">
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="schedule"
-                  rules={{ required: "Schedule is required" }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Schedule</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="schedule-select-trigger">
-                            <SelectValue placeholder="Select schedule" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="daily" data-testid="schedule-select-option-daily">
-                            Daily
-                          </SelectItem>
-                          <SelectItem value="weekly" data-testid="schedule-select-option-weekly">
-                            Weekly
-                          </SelectItem>
-                          <SelectItem value="monthly" data-testid="schedule-select-option-monthly">
-                            Monthly
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <ScheduleFields control={form.control} scheduleValue={scheduleValue} />
 
-              {scheduleValue === "weekly" && (
-                <div className="flex-1">
-                  <FormField
-                    control={form.control}
-                    name="dayOfWeek"
-                    rules={{
-                      required: scheduleValue === "weekly" ? "Day of week is required" : false,
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger data-testid="day-of-week-select-trigger">
-                            <SelectValue placeholder="Select day of week" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="monday">Monday</SelectItem>
-                            <SelectItem value="tuesday">Tuesday</SelectItem>
-                            <SelectItem value="wednesday">Wednesday</SelectItem>
-                            <SelectItem value="thursday">Thursday</SelectItem>
-                            <SelectItem value="friday">Friday</SelectItem>
-                            <SelectItem value="saturday">Saturday</SelectItem>
-                            <SelectItem value="sunday">Sunday</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              {scheduleValue === "monthly" && (
-                <div className="flex-1">
-                  <FormField
-                    control={form.control}
-                    name="dayOfMonth"
-                    rules={{
-                      required: scheduleValue === "monthly" ? "Day of month is required" : false,
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger data-testid="day-of-month-select-trigger">
-                            <SelectValue placeholder="Select day of month" />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-60 overflow-y-auto">
-                            {Array.from({ length: 31 }, (_, index) => (
-                              <SelectItem key={index} value={(index + 1).toString()}>
-                                {index + 1}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="time"
-                  rules={{
-                    required: "Time is required",
-                  }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger data-testid="time-select-trigger">
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-60 overflow-y-auto">
-                          {Array.from({ length: 24 }, (_, index) => {
-                            const hour = String(index).padStart(2, "0");
-
-                            return (
-                              <SelectItem key={index} value={index.toString()}>
-                                {`${hour}:00`}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            <DialogFooter className="gap-2 sm:gap-0">
+            <DialogFooter className="gap-3">
               <Button
                 type="button"
-                variant="outline"
+                variant="brutalist-outline"
                 onClick={onClose}
                 disabled={form.formState.isSubmitting}
                 className="w-full sm:w-auto"
                 data-testid="cancel-button"
               >
-                Cancel
+                CANCEL
               </Button>
-              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto" data-testid="submit-button">
-                {form.formState.isSubmitting ? "Saving..." : isEditMode ? "Save changes" : "Create press review"}
+              <Button
+                type="submit"
+                variant="brutalist"
+                disabled={!canSubmit}
+                className="w-full sm:w-auto"
+                data-testid="submit-button"
+              >
+                {form.formState.isSubmitting ? "SAVING..." : "SAVE CHANGES"}
               </Button>
             </DialogFooter>
           </form>

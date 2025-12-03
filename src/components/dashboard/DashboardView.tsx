@@ -5,9 +5,9 @@ import { usePressReviews } from "@/lib/hooks/usePressReviews";
 import { useDialog } from "@/lib/hooks/useDialog";
 import { PressReviewList } from "./PressReviewList";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
+import { PressReviewCreationForm } from "./PressReviewCreationForm";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { LimitWarning } from "./LimitWarning";
-import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingList } from "@/components/shared/LoadingList";
@@ -39,14 +39,9 @@ export function DashboardView() {
     close: closeDeleteDialog,
   } = useDialog<string>();
 
-  const [formResetKey, setFormResetKey] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
 
   const hasReachedLimit = pressReviews.length >= 5;
-
-  const handleOpenCreateDialog = useCallback(() => {
-    setFormResetKey((prev) => prev + 1);
-    openForm(null);
-  }, [openForm]);
 
   const handleOpenEditDialog = useCallback(
     (pressReview: PressReviewViewModel) => {
@@ -55,16 +50,30 @@ export function DashboardView() {
     [openForm]
   );
 
-  const handleFormSubmit = useCallback(
-    async (data: CreatePressReviewCmd | UpdatePressReviewCmd) => {
+  const handleCreateSubmit = useCallback(
+    async (data: CreatePressReviewCmd) => {
+      setIsCreating(true);
       try {
-        if (editingPressReview) {
-          await updatePressReview(editingPressReview.id, data);
-          toast.success("Press review updated");
-        } else {
-          await addPressReview(data as CreatePressReviewCmd);
-          toast.success("Press review created");
-        }
+        await addPressReview(data);
+        toast.success("Press review created");
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        toast.error(errorMessage);
+        throw error;
+      } finally {
+        setIsCreating(false);
+      }
+    },
+    [addPressReview]
+  );
+
+  const handleEditSubmit = useCallback(
+    async (data: UpdatePressReviewCmd) => {
+      if (!editingPressReview) return;
+
+      try {
+        await updatePressReview(editingPressReview.id, data);
+        toast.success("Press review updated");
         closeForm();
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -72,7 +81,7 @@ export function DashboardView() {
         throw error;
       }
     },
-    [editingPressReview, updatePressReview, addPressReview, closeForm]
+    [editingPressReview, updatePressReview, closeForm]
   );
 
   const handleConfirmDelete = useCallback(async () => {
@@ -119,22 +128,20 @@ export function DashboardView() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-5xl">
-      {!isLoading && pressReviews.length > 0 ? (
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage your recurring press reviews</p>
-          </div>
-          {!isLoading && pressReviews.length > 0 && (
-            <Button onClick={handleOpenCreateDialog} disabled={hasReachedLimit} size="lg" className="w-full sm:w-auto">
-              Add press review
-            </Button>
-          )}
-        </div>
-      ) : (
-        <></>
-      )}
+    <div className="container mx-auto py-1">
+      {/* Top Section: Add New Press Review */}
+      <div className="mb-12">
+        <PressReviewCreationForm
+          onSubmit={handleCreateSubmit}
+          isSubmitting={isCreating}
+          hasReachedLimit={hasReachedLimit}
+        />
+      </div>
+
+      {/* List Section */}
+      <div className="mb-6">
+        <h2 className="text-xl font-bold uppercase tracking-tight">SCHEDULED PRESS REVIEWS</h2>
+      </div>
 
       {hasReachedLimit && pressReviews.length > 0 && <LimitWarning />}
 
@@ -143,12 +150,11 @@ export function DashboardView() {
       ) : pressReviews.length === 0 ? (
         <EmptyState
           title="No scheduled press reviews"
-          description="Start by creating your first press review. Define the topic and schedule and we'll automatically generate recurring summaries for you."
+          description="Start by creating your first press review above."
           icon={Newspaper}
           action={
-            <Button onClick={handleOpenCreateDialog} size="lg" className="w-full sm:w-auto">
-              Create first press review
-            </Button>
+            null
+            // Hide default action button as we have the top input
           }
         />
       ) : (
@@ -160,10 +166,10 @@ export function DashboardView() {
         />
       )}
       <PressReviewFormDialog
-        key={editingPressReview ? editingPressReview.id : `create-${formResetKey}`}
+        key={editingPressReview?.id}
         isOpen={isFormOpen}
         onClose={closeForm}
-        onSubmit={handleFormSubmit}
+        onSubmit={handleEditSubmit}
         initialData={editingPressReview || undefined}
       />
       <DeleteConfirmationDialog

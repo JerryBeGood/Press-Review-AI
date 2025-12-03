@@ -1,5 +1,5 @@
 ---
-import AuthLayout from "@/layouts/AuthLayout.astro";
+import BrutalistAuthLayout from "@/layouts/BrutalistAuthLayout.astro";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const prerender = false;
@@ -11,6 +11,6 @@ if (showVerificationSuccess) {
 }
 ---
 
-<AuthLayout>
+<BrutalistAuthLayout>
   <LoginForm client:load showVerificationSuccess={showVerificationSuccess} />
-</AuthLayout>
+</BrutalistAuthLayout>

@@ -19,41 +19,37 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
 
   const statusVariant = {
     pending: "secondary" as const,
-    generating_queries: "generating" as const,
-    researching_sources: "researching" as const,
-    synthesizing_content: "synthesizing" as const,
+    generating_queries: "secondary" as const,
+    researching_sources: "secondary" as const,
+    synthesizing_content: "secondary" as const,
     success: "default" as const,
     failed: "destructive" as const,
   };
 
   const statusLabel = {
-    pending: "Pending",
-    generating_queries: "Generating Queries",
-    researching_sources: "Researching",
-    synthesizing_content: "Synthesizing",
-    success: "Success",
-    failed: "Failed",
+    pending: "PENDING",
+    generating_queries: "GENERATING",
+    researching_sources: "RESEARCHING",
+    synthesizing_content: "SYNTHESIZING",
+    success: "SUCCESS",
+    failed: "FAILED",
   };
 
   return (
     <button
       type="button"
       onClick={() => onSelectReview(review)}
-      className="w-full text-left rounded-lg border border-border p-4 sm:p-5 transition-all duration-200 hover:shadow-md hover:border-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-z-10 hover:shadow-[6px_6px_0px_0px_#000] w-full text-left bg-white brutalist-box-interactive brutalist-pressed p-6 mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
       aria-label={`View generated press review: ${review.press_reviews?.topic || "Unknown topic"}`}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0 space-y-1">
-          <h3 className="font-semibold text-base sm:text-lg truncate">
+        <div className="flex-1 min-w-0 space-y-2">
+          <h3 className="font-bold text-xl font-mono uppercase tracking-tight truncate">
             {review.press_reviews?.topic || "Unknown topic"}
           </h3>
-          <p className="text-sm text-muted-foreground">{formattedDate}</p>
+          <p className="text-sm font-mono">{formattedDate}</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:flex-shrink-0">
-          <Badge variant={statusVariant[review.status]} className="h-8 px-3">
-            {statusLabel[review.status]}
-          </Badge>
-        </div>
+        <Badge variant={statusVariant[review.status]}>{statusLabel[review.status]}</Badge>
       </div>
     </button>
   );

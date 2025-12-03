@@ -1,4 +1,6 @@
 ---
+description: Guide for using shadcn/ui components - installation, imports, and styling
+globs: **/components/ui/**
 alwaysApply: false
 ---
 # Shadcn UI Components

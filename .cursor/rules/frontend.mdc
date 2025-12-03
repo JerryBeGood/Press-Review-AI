@@ -1,5 +1,5 @@
 ---
-description: 
+description: Frontend guidelines for Astro/React components, Tailwind styling, and accessibility
 globs: *.tsx,*.astro
 alwaysApply: false
 ---

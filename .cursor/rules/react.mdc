@@ -1,5 +1,5 @@
 ---
-description: 
+description: React 19 patterns - hooks, performance optimization, and Astro integration
 globs: *.tsx
 alwaysApply: false
 ---

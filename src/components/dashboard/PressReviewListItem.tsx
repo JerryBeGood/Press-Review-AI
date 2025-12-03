@@ -10,29 +10,28 @@ interface PressReviewListItemProps {
   onGenerate: (id: string) => void;
 }
 
-// TODO: pressReview.status is never set and does not take any effect on the component
 export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate }: PressReviewListItemProps) {
   const isDeleting = pressReview.status === "deleting";
   const isGenerating = pressReview.status === "generating";
 
   return (
     <div
-      className={`p-4 sm:p-5 border rounded-lg transition-all duration-200 hover:shadow-md hover:border-primary/20 ${
+      className={`bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] p-6 mb-6 transition-all hover:translate-z-10 hover:shadow-[6px_6px_0px_0px_#000] ${
         isDeleting ? "opacity-50" : "opacity-100"
       }`}
       data-testid={`press-review-list-item-${pressReview.id}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base sm:text-lg mb-1 truncate">{pressReview.topic}</h3>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <h3 className="font-bold text-xl uppercase mb-2 truncate font-mono tracking-tight">{pressReview.topic}</h3>
+          <div className="flex items-center gap-2 text-sm font-mono">
             <Clock className="h-4 w-4 flex-shrink-0" />
             <span>{formatCronToReadable(pressReview.schedule)}</span>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:flex-shrink-0">
+        <div className="flex flex-col sm:flex-row gap-3 sm:flex-shrink-0">
           <Button
-            variant="outline"
+            variant="brutalist-ghost"
             size="sm"
             onClick={() => onEdit(pressReview)}
             disabled={isDeleting || isGenerating}
@@ -40,10 +39,10 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             className="w-full sm:w-auto"
             data-testid="edit-press-review-button"
           >
-            Edit
+            EDIT
           </Button>
           <Button
-            variant="destructive"
+            variant="brutalist-destructive"
             size="sm"
             onClick={() => onDelete(pressReview.id)}
             disabled={isDeleting || isGenerating}
@@ -51,10 +50,10 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             className="w-full sm:w-auto"
             data-testid="delete-press-review-button"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? "DELETING..." : "DELETE"}
           </Button>
           <Button
-            variant="default"
+            variant="brutalist"
             size="sm"
             onClick={() => onGenerate(pressReview.id)}
             disabled={isDeleting || isGenerating}
@@ -62,7 +61,7 @@ export function PressReviewListItem({ pressReview, onEdit, onDelete, onGenerate 
             className="w-full sm:w-auto"
             data-testid="generate-press-review-button"
           >
-            {isGenerating ? "Generating..." : "Generate now"}
+            {isGenerating ? "GENERATING..." : "GENERATE"}
           </Button>
         </div>
       </div>

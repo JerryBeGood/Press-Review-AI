@@ -1,12 +1,12 @@
 ---
-import Layout from "../../layouts/layout.astro";
+import BrutalistLayout from "../../layouts/BrutalistLayout.astro";
 import ArchiveView from "../../components/archive/ArchiveView";
 
 export const prerender = false;
 ---
 
-<Layout>
-  <div class="py-8">
+<BrutalistLayout>
+  <div class="py-6">
     <ArchiveView client:load />
   </div>
-</Layout>
+</BrutalistLayout>

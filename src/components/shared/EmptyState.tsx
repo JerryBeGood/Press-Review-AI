@@ -11,7 +11,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, icon: Icon = Inbox, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
+    <div className="flex flex-col items-center justify-center py-12 sm:py-10 px-4">
       <div className="w-full max-w-md bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] p-6 sm:p-8 transition-all hover:shadow-[6px_6px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]">
         <div className="flex flex-col items-center space-y-6">
           {/* Icon */}

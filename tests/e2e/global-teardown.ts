@@ -2,6 +2,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../../src/db/database.types";
+import fs from "fs";
+import path from "path";
 
 /**
  * Global teardown function that runs after all tests
@@ -34,15 +36,27 @@ async function globalTeardown() {
 
   try {
     // Delete all entries from generated_press_reviews table
-    const { error, count } = await supabase
+    const { error: generatedError } = await supabase
       .from("generated_press_reviews")
       .delete()
       .eq("user_id", process.env.E2E_USER_ID!);
 
-    if (error) {
-      console.error("❌ Error cleaning generated_press_reviews:", error);
+    if (generatedError) {
+      console.error("❌ Error cleaning generated_press_reviews:", generatedError);
     } else {
-      console.log(`✅ Successfully cleaned generated_press_reviews table (${count || 0} rows deleted)`);
+      console.log(`✅ Successfully cleaned generated_press_reviews table`);
+    }
+
+    // Delete all E2E test press reviews
+    const { error: pressReviewError } = await supabase
+      .from("press_reviews")
+      .delete()
+      .eq("user_id", process.env.E2E_USER_ID!);
+
+    if (pressReviewError) {
+      console.error("❌ Error cleaning press_reviews:", pressReviewError);
+    } else {
+      console.log(`✅ Successfully cleaned press_reviews table`);
     }
   } catch (error) {
     console.error("❌ Unexpected error during teardown:", error);
@@ -56,6 +70,19 @@ async function globalTeardown() {
   }
 
   console.log("✅ Successfully signed out");
+
+  const AUTH_FILE = path.join(process.cwd(), "tests/e2e/.auth/user.json");
+
+  try {
+    if (fs.existsSync(AUTH_FILE)) {
+      fs.unlinkSync(AUTH_FILE);
+      console.log(`✅ Deleted ${AUTH_FILE}`);
+    } else {
+      console.log(`ℹ️ ${AUTH_FILE} does not exist, skipping deletion`);
+    }
+  } catch (err) {
+    console.error(`❌ Error deleting ${AUTH_FILE}:`, err);
+  }
 }
 
 export default globalTeardown;

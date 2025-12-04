@@ -2,7 +2,7 @@ import { AlertTriangle } from "lucide-react";
 
 export function LimitWarning() {
   return (
-    <div className="mb-6 brutalist-box bg-[var(--yellow-banner)] p-4" role="alert">
+    <div className="mb-6 brutalist-box bg-[var(--yellow-banner)] p-4" role="alert" data-testid="limit-warning">
       <div className="flex gap-3">
         <AlertTriangle className="h-5 w-5 text-black flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div className="font-mono">

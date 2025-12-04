@@ -86,6 +86,7 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
                       placeholder="you@example.com"
                       autoComplete="email"
                       className="brutalist-input"
+                      data-testid="login-email-input"
                       {...field}
                     />
                   </div>
@@ -108,6 +109,7 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
                       placeholder="••••••••"
                       autoComplete="current-password"
                       className="brutalist-input"
+                      data-testid="login-password-input"
                       {...field}
                     />
                   </div>

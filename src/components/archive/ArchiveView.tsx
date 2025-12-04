@@ -12,7 +12,7 @@ export default function ArchiveView() {
   // Loading state
   if (status === "loading") {
     return (
-      <div className="container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
+      <div className="py-6">
         <LoadingList count={5} />
       </div>
     );
@@ -21,47 +21,39 @@ export default function ArchiveView() {
   // Error state
   if (status === "error") {
     return (
-      <div className="container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
+      <div className="py-6">
         <ErrorState title="An error occurred while loading" description="Failed to load archive." onRetry={retry} />
-      </div>
-    );
-  }
-
-  // Empty state
-  if (reviews.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-5xl">
-        <EmptyState
-          title="No generated reviews yet"
-          description="Your generated press reviews will appear here once they are created."
-          icon={Archive}
-        />
       </div>
     );
   }
 
   // Success state with data
   return (
-    <>
-      <div className="container mx-auto px-4 py-8 sm:py-8 max-w-5xl">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Archive</h1>
-            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-              Browse your generated press reviews history
-            </p>
-          </div>
-        </div>
-        <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
-        <GeneratedPressReviewContentDialog
-          review={selectedReview}
-          onOpenChange={(isOpen: boolean) => {
-            if (!isOpen) {
-              clearSelection();
-            }
-          }}
-        />
+    <div className="py-1">
+      <div className="mb-6">
+        <h2 className="text-xl font-bold font-mono uppercase tracking-tight">GENERATED PRESS REVIEWS</h2>
       </div>
-    </>
+      {reviews.length === 0 ? (
+        <div className="py-6">
+          <EmptyState
+            title="No generated reviews yet"
+            description="Your generated press reviews will appear here once they are created."
+            icon={Archive}
+          />
+        </div>
+      ) : (
+        <>
+          <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
+          <GeneratedPressReviewContentDialog
+            review={selectedReview}
+            onOpenChange={(isOpen: boolean) => {
+              if (!isOpen) {
+                clearSelection();
+              }
+            }}
+          />
+        </>
+      )}
+    </div>
   );
 }

@@ -1,10 +1,10 @@
 ---
-import Layout from "../../layouts/layout.astro";
+import BrutalistLayout from "../../layouts/BrutalistLayout.astro";
 import { DashboardView } from "../../components/dashboard/DashboardView";
 ---
 
-<Layout>
-  <div class="py-8">
+<BrutalistLayout>
+  <div class="py-6">
     <DashboardView client:load />
   </div>
-</Layout>
+</BrutalistLayout>

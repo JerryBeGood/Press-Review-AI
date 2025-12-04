@@ -1,10 +1,10 @@
 ---
-import AuthLayout from "@/layouts/AuthLayout.astro";
+import BrutalistAuthLayout from "@/layouts/BrutalistAuthLayout.astro";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
 export const prerender = false;
 ---
 
-<AuthLayout>
+<BrutalistAuthLayout>
   <RegisterForm client:load />
-</AuthLayout>
+</BrutalistAuthLayout>

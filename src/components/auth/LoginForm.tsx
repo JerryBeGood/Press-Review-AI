@@ -49,20 +49,24 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
+    <div className="brutalist-box bg-white p-6 sm:p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Sign in</h2>
-        <p className="text-sm text-muted-foreground mt-1">Enter your credentials to access your account</p>
+        <h2 className="text-2xl font-bold font-mono uppercase tracking-tight">SIGN IN</h2>
+        <p className="text-sm font-mono mt-1">Enter your credentials to access your account</p>
       </div>
 
       {showVerificationSuccess && (
-        <div className="mb-6 rounded-lg border border-primary/50 bg-primary/10 p-3 text-sm text-primary">
+        <div
+          className="mb-6 brutalist-box bg-[var(--yellow-banner)] p-3 text-sm font-mono font-bold"
+          role="status"
+          aria-live="polite"
+        >
           Your email has been verified. You can now sign in.
         </div>
       )}
 
       {error && (
-        <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="mb-6 brutalist-box bg-red-100 p-3 text-sm font-mono" role="alert" aria-live="polite">
           {error}
         </div>
       )}
@@ -74,11 +78,19 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
@@ -88,30 +100,32 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
 
-          {/* <div className="flex items-center justify-end">
-            <a href="/forgot-password" className="text-sm text-primary hover:underline">
-              Forgot password?
-            </a>
-          </div> */}
-
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Signing in..." : "Sign in"}
+          <Button type="submit" disabled={isSubmitting} variant="brutalist" className="w-full">
+            {isSubmitting ? "SIGNING IN..." : "SIGN IN"}
           </Button>
         </form>
       </Form>
 
-      <div className="mt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-6 text-center text-sm font-mono">
         Don&apos;t have an account?{" "}
-        <a href="/register" className="text-primary hover:underline">
+        <a href="/register" className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">
           Sign up
         </a>
       </div>

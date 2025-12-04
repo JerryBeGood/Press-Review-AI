@@ -104,11 +104,23 @@ jobs:
           path: coverage/
           retention-days: 30
 
+  ci-status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.unit-test.result }}" != "success" || "${{ needs.e2e-test.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+
   status-comment:
     name: Post Status Comment
     runs-on: ubuntu-latest
-    needs: [lint, unit-test, e2e-test]
-    if: always() && needs.lint.result == 'success' && needs.unit-test.result == 'success' && needs.e2e-test.result == 'success'
+    needs: [ci-status]
     permissions:
       pull-requests: write
     steps:

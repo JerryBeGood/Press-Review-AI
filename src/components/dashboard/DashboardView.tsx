@@ -128,7 +128,7 @@ export function DashboardView() {
   }
 
   return (
-    <div className="container mx-auto py-1">
+    <div className="container mx-auto py-1" data-testid="dashboard-view">
       {/* Top Section: Add New Press Review */}
       <div className="mb-12">
         <PressReviewCreationForm

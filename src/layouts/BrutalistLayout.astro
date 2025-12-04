@@ -1,0 +1,70 @@
+---
+import "../styles/global.css";
+import "@fontsource/space-mono";
+import { Toaster } from "../components/ui/sonner";
+import { BrutalistUserNav } from "../components/auth/BrutalistUserNav";
+
+const user = Astro.locals.user;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Press Review AI</title>
+  </head>
+  <body class="bg-[var(--bg-color)] text-[var(--text-color)] font-mono min-h-screen flex flex-col">
+    <!-- Top Banner -->
+    <div class="w-full px-4 pt-6 pb-2 flex justify-center">
+      <div
+        class="w-full max-w-4xl bg-[var(--yellow-banner)] border-2 border-black shadow-[4px_4px_0px_0px_#000] p-3 text-center"
+      >
+        <span class="font-bold uppercase tracking-tight text-sm md:text-base"
+          >PRESS REVIEW AI DASHBOARD: AUTOMATE YOUR MEDIA MONITORING.</span
+        >
+      </div>
+    </div>
+
+    <!-- Nav Bar -->
+    <div class="w-full px-4 pb-2 flex justify-center">
+      <nav
+        class="w-full max-w-4xl bg-[var(--bg-color)] border-2 border-black shadow-[4px_4px_0px_0px_#000] p-4 flex justify-between items-center"
+      >
+        <div class="flex items-center gap-2 md:gap-4 text-base md:text-lg font-bold">
+          <a
+            href="/dashboard"
+            class:list={[
+              "uppercase px-2 py-1",
+              currentPath === "/dashboard"
+                ? "bg-[var(--yellow-banner)] text-black"
+                : "hover:underline decoration-2 underline-offset-4",
+            ]}>DASHBOARD</a
+          >
+          <span>|</span>
+          <a
+            href="/dashboard/archive"
+            class:list={[
+              "uppercase px-2 py-1",
+              currentPath === "/dashboard/archive"
+                ? "bg-[var(--yellow-banner)] text-black"
+                : "hover:underline decoration-2 underline-offset-4",
+            ]}>ARCHIVE</a
+          >
+        </div>
+        <div>
+          {user && <BrutalistUserNav userEmail={user.email || ""} client:load />}
+        </div>
+      </nav>
+    </div>
+
+    <main class="flex-1 w-full px-4 flex justify-center">
+      <div class="w-full max-w-4xl bg-[var(--bg-color)] border-2 border-black shadow-[4px_4px_0px_0px_#000] px-6">
+        <slot />
+      </div>
+    </main>
+
+    <Toaster client:load />
+  </body>
+</html>

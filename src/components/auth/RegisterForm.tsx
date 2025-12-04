@@ -52,20 +52,20 @@ export function RegisterForm() {
 
   if (success) {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
-        <div className="text-center space-y-4">
-          <div className="mx-auto w-fit p-4 rounded-full bg-primary/10">
-            <Mail className="h-12 w-12 text-primary" strokeWidth={1.5} />
+      <div className="brutalist-box bg-white p-6 sm:p-8">
+        <div className="text-center space-y-6">
+          <div className="mx-auto w-16 h-16 flex items-center justify-center border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-[var(--yellow-banner)]">
+            <Mail className="h-8 w-8 text-black" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold">Check your email</h3>
-            <p className="text-sm text-muted-foreground mt-2">
+            <h3 className="text-xl font-bold font-mono uppercase tracking-tight">CHECK YOUR EMAIL</h3>
+            <p className="text-sm font-mono mt-2">
               We&apos;ve sent you a verification link. Please check your email and click the link to verify your
               account.
             </p>
           </div>
-          <Button asChild className="w-full">
-            <a href="/login">Go to sign in</a>
+          <Button variant="brutalist" asChild className="w-full">
+            <a href="/login">GO TO SIGN IN</a>
           </Button>
         </div>
       </div>
@@ -73,14 +73,14 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
+    <div className="brutalist-box bg-white p-6 sm:p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Create an account</h2>
-        <p className="text-sm text-muted-foreground mt-1">Enter your information to get started</p>
+        <h2 className="text-2xl font-bold font-mono uppercase tracking-tight">CREATE AN ACCOUNT</h2>
+        <p className="text-sm font-mono mt-1">Enter your information to get started</p>
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="mb-6 brutalist-box bg-red-100 p-3 text-sm font-mono" role="alert" aria-live="polite">
           {error}
         </div>
       )}
@@ -92,11 +92,19 @@ export function RegisterForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
@@ -106,11 +114,19 @@ export function RegisterForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
@@ -120,24 +136,32 @@ export function RegisterForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm password</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Confirm password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Creating account..." : "Create account"}
+          <Button type="submit" disabled={isSubmitting} variant="brutalist" className="w-full">
+            {isSubmitting ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
           </Button>
         </form>
       </Form>
 
-      <div className="mt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-6 text-center text-sm font-mono">
         Already have an account?{" "}
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">
           Sign in
         </a>
       </div>

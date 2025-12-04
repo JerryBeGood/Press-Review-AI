@@ -15,20 +15,26 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
 
     if (["pending", "generating_queries", "researching_sources", "synthesizing_content"].includes(review.status)) {
       return (
-        <div className="py-8 text-center text-muted-foreground">
-          <Loader2 className="mx-auto h-12 w-12 mb-4 animate-spin" />
-          <p className="font-medium">Generation in progress</p>
-          <p className="text-sm mt-2">This press review is currently being generated. Please check back later.</p>
+        <div className="py-8 text-center">
+          <div className="inline-block p-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-[var(--yellow-banner)] mb-4">
+            <Loader2 className="h-10 w-10 animate-spin text-black" />
+          </div>
+          <p className="font-bold font-mono uppercase">Generation in progress</p>
+          <p className="text-sm font-mono mt-2">
+            This press review is currently being generated. Please check back later.
+          </p>
         </div>
       );
     }
 
     if (review.status === "failed") {
       return (
-        <div className="py-8 text-center text-destructive">
-          <AlertTriangle className="mx-auto h-12 w-12 mb-4" />
-          <p className="font-medium">Generation failed</p>
-          <p className="text-sm mt-2 text-muted-foreground">An error occurred while generating this press review.</p>
+        <div className="py-8 text-center">
+          <div className="inline-block p-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-red-500 mb-4">
+            <AlertTriangle className="h-10 w-10 text-black" />
+          </div>
+          <p className="font-bold font-mono uppercase text-red-600">Generation failed</p>
+          <p className="text-sm font-mono mt-2">An error occurred while generating this press review.</p>
         </div>
       );
     }
@@ -42,12 +48,14 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
         }
 
         return (
-          <article className="prose prose-sm md:prose-base max-w-none">
+          <article className="font-mono">
             {/* Headline */}
-            <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">{content.headline}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-tight uppercase tracking-tight">
+              {content.headline}
+            </h1>
 
             {/* Intro */}
-            <p className="text-base md:text-lg italic text-muted-foreground leading-relaxed mb-8 border-l-4 border-primary/20 pl-4">
+            <p className="text-base md:text-lg leading-relaxed mb-8 border-l-4 border-black pl-4 bg-gray-100 py-2">
               {content.intro}
             </p>
 
@@ -57,27 +65,27 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
                 {content.sections.map((section, index) => (
                   <section key={index} className="space-y-4">
                     {/* Section Title */}
-                    <h2 className="text-xl md:text-2xl font-semibold mt-6 mb-3">{section.title}</h2>
+                    <h2 className="text-xl md:text-2xl font-bold mt-6 mb-3 uppercase tracking-tight">
+                      {section.title}
+                    </h2>
 
                     {/* Section Narrative Text */}
-                    <div className="text-sm md:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                      {section.text}
-                    </div>
+                    <div className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">{section.text}</div>
 
                     {/* Sources */}
                     {section.sources.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-border">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">Sources:</p>
-                        <ul className="space-y-1">
+                      <div className="mt-4 pt-4 border-t-2 border-black">
+                        <p className="text-xs font-bold uppercase mb-2">Sources:</p>
+                        <ul className="border-2 border-black shadow-[4px_4px_0px_0px_#000] p-2 space-y-1">
                           {section.sources.map((source, sourceIndex) => (
                             <li key={sourceIndex} className="text-xs md:text-sm">
                               <a
                                 href={source.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                                className="inline-flex items-center gap-1 text-[var(--text-color)] hover:underline decoration-2 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                               >
-                                {source.id && <span className="font-medium">[{source.id}]</span>}
+                                {source.id && <span className="font-bold">[{source.id}]</span>}
                                 <span>{source.title}</span>
                                 <ExternalLink className="h-3 w-3 flex-shrink-0" />
                               </a>
@@ -96,18 +104,18 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
         // eslint-disable-next-line no-console
         console.error("Error parsing content:", error);
         return (
-          <div className="py-8 text-center text-destructive">
-            <p className="font-medium">Could not display content</p>
-            <p className="text-sm mt-2 text-muted-foreground">The content format is invalid or corrupted.</p>
+          <div className="py-8 text-center">
+            <p className="font-bold font-mono uppercase text-red-600">Could not display content</p>
+            <p className="text-sm font-mono mt-2">The content format is invalid or corrupted.</p>
           </div>
         );
       }
     }
 
     return (
-      <div className="py-8 text-center text-muted-foreground">
-        <p className="font-medium">No content available</p>
-        <p className="text-sm mt-2">This press review does not have any content.</p>
+      <div className="py-8 text-center">
+        <p className="font-bold font-mono uppercase">No content available</p>
+        <p className="text-sm font-mono mt-2">This press review does not have any content.</p>
       </div>
     );
   };

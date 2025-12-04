@@ -51,17 +51,17 @@ export function ResetPasswordForm() {
 
   if (!isReady && error) {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
-        <div className="text-center space-y-4">
-          <div className="mx-auto w-fit p-4 rounded-full bg-destructive/10">
-            <AlertTriangle className="h-12 w-12 text-destructive" strokeWidth={1.5} />
+      <div className="brutalist-box bg-white p-6 sm:p-8">
+        <div className="text-center space-y-6">
+          <div className="mx-auto w-16 h-16 flex items-center justify-center border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-red-500">
+            <AlertTriangle className="h-8 w-8 text-white" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold">Invalid reset link</h3>
-            <p className="text-sm text-muted-foreground mt-2">{error}</p>
+            <h3 className="text-xl font-bold font-mono uppercase tracking-tight">INVALID RESET LINK</h3>
+            <p className="text-sm font-mono mt-2">{error}</p>
           </div>
-          <Button asChild className="w-full">
-            <a href="/forgot-password">Request new link</a>
+          <Button variant="brutalist" asChild className="w-full">
+            <a href="/forgot-password">REQUEST NEW LINK</a>
           </Button>
         </div>
       </div>
@@ -69,14 +69,14 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
+    <div className="brutalist-box bg-white p-6 sm:p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Set new password</h2>
-        <p className="text-sm text-muted-foreground mt-1">Enter your new password below</p>
+        <h2 className="text-2xl font-bold font-mono uppercase tracking-tight">SET NEW PASSWORD</h2>
+        <p className="text-sm font-mono mt-1">Enter your new password below</p>
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="mb-6 brutalist-box bg-red-100 p-3 text-sm font-mono" role="alert" aria-live="polite">
           {error}
         </div>
       )}
@@ -88,11 +88,19 @@ export function ResetPasswordForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>New password</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">New password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
@@ -102,24 +110,32 @@ export function ResetPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm new password</FormLabel>
+                <FormLabel className="font-mono font-bold uppercase text-sm">Confirm new password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                  <div className="brutalist-input-wrapper">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className="brutalist-input"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-mono text-sm" />
               </FormItem>
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting || !isReady} className="w-full">
-            {isSubmitting ? "Updating password..." : "Update password"}
+          <Button type="submit" disabled={isSubmitting || !isReady} variant="brutalist" className="w-full">
+            {isSubmitting ? "UPDATING PASSWORD..." : "UPDATE PASSWORD"}
           </Button>
         </form>
       </Form>
 
-      <div className="mt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-6 text-center text-sm font-mono">
         Remember your password?{" "}
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">
           Sign in
         </a>
       </div>

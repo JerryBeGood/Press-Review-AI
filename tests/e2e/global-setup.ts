@@ -35,11 +35,11 @@ async function globalSetup(config: FullConfig) {
 
     // Fill in credentials using click + fill pattern for better reliability
     await emailInput.click();
-    // @ts-expect-error It is expected
+    // @ts-expect-error it is acceptable for e2e tests
     await emailInput.fill(username);
 
     await passwordInput.click();
-    // @ts-expect-error It is expected
+    // @ts-expect-error it is acceptable for e2e tests
     await passwordInput.fill(password);
 
     await page.screenshot({

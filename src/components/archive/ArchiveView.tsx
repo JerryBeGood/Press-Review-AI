@@ -2,12 +2,24 @@ import { Archive } from "lucide-react";
 import { useArchive } from "@/lib/hooks/useArchive";
 import { GeneratedPressReviewList } from "./GeneratedPressReviewList";
 import { GeneratedPressReviewContentDialog } from "./GeneratedPressReviewContentDialog";
+import { TopicFilter } from "./TopicFilter";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingList } from "@/components/shared/LoadingList";
 
 export default function ArchiveView() {
-  const { reviews, status, selectedReview, retry, selectReview, clearSelection } = useArchive();
+  const {
+    reviews,
+    filteredReviews,
+    topicsWithCount,
+    selectedTopics,
+    status,
+    selectedReview,
+    retry,
+    selectReview,
+    clearSelection,
+    toggleTopic,
+  } = useArchive();
 
   // Loading state
   if (status === "loading") {
@@ -30,9 +42,6 @@ export default function ArchiveView() {
   // Success state with data
   return (
     <div className="py-1">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold font-mono uppercase tracking-tight">GENERATED PRESS REVIEWS</h2>
-      </div>
       {reviews.length === 0 ? (
         <div className="py-6">
           <EmptyState
@@ -43,7 +52,11 @@ export default function ArchiveView() {
         </div>
       ) : (
         <>
-          <GeneratedPressReviewList reviews={reviews} onSelectReview={selectReview} />
+          <TopicFilter topics={topicsWithCount} selectedTopics={selectedTopics} onToggle={toggleTopic} />
+          <div className="mb-6">
+            <h2 className="text-xl font-bold font-mono uppercase tracking-tight">GENERATED PRESS REVIEWS</h2>
+          </div>
+          <GeneratedPressReviewList reviews={filteredReviews} onSelectReview={selectReview} />
           <GeneratedPressReviewContentDialog
             review={selectedReview}
             onOpenChange={(isOpen: boolean) => {

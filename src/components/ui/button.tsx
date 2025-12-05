@@ -24,7 +24,7 @@ const buttonVariants = cva(
         "brutalist-outline":
           "rounded-none border-2 border-black bg-white text-black font-bold uppercase font-mono shadow-[4px_4px_0px_0px_#000] hover:bg-gray-100 hover:shadow-[6px_6px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
         "brutalist-ghost":
-          "rounded-none border border-black bg-gray-200 text-black font-bold uppercase font-mono shadow-[2px_2px_0px_0px_#000] hover:bg-gray-300 hover:shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]",
+          "rounded-none border-2 border-black bg-gray-200 text-black font-bold uppercase font-mono shadow-[2px_2px_0px_0px_#000] hover:bg-gray-300 hover:shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-2px] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]",
       },
       size: {
         default: "h-9 px-4 py-2",

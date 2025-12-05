@@ -16,7 +16,7 @@ export function GeneratedPressReviewContentDialog({ review, onOpenChange }: Gene
     if (["pending", "generating_queries", "researching_sources", "synthesizing_content"].includes(review.status)) {
       return (
         <div className="py-8 text-center">
-          <div className="inline-block p-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-[var(--yellow-banner)] mb-4">
+          <div className="inline-block p-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] bg-[var(--button-blue)] mb-4">
             <Loader2 className="h-10 w-10 animate-spin text-black" />
           </div>
           <p className="font-bold font-mono uppercase">Generation in progress</p>

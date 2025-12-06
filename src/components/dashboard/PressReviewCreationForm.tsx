@@ -129,13 +129,6 @@ export function PressReviewCreationForm({ onSubmit, isSubmitting, hasReachedLimi
           <FormField
             control={form.control}
             name="topic"
-            rules={{
-              required: "Topic is required",
-              minLength: {
-                value: 3,
-                message: "Topic must have at least 3 characters",
-              },
-            }}
             render={({ field }) => (
               <FormItem>
                 <div className="brutalist-input-wrapper">

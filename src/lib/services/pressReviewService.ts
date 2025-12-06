@@ -263,21 +263,103 @@ export class PressReviewService {
 
   /**
    * Validates a press review topic
-   *
-   * In development phase, this always returns a static success response.
-   * In production, this would use AI agent to validate the topic.
-   *
    * @param topic - The topic to validate
    * @param userId - UUID of the authenticated user (for future AI agent context)
    * @returns Validation result with is_valid flag and suggestions array
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async validateTopic(_topic: string, _userId: string): Promise<ValidateTopicResultDTO> {
-    // Currently returns a static response in development phase
-    // AI validation to be implemented in production
+  async validateTopic(topic: string): Promise<ValidateTopicResultDTO> {
+    const trimmed = topic.trim();
+    const suggestions: string[] = [];
+
+    // 1. Length constraints
+    if (trimmed.length < 3) {
+      return { is_valid: false, suggestions: ["Topic must be at least 3 characters"] };
+    }
+
+    if (trimmed.length > 50) {
+      suggestions.push("Topic is too long - keep it short and focused");
+    }
+
+    // 2. Word count (3-4 words max)
+    const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
+    if (words.length > 4) {
+      suggestions.push("Topic should be maximum 4 words (e.g., 'Artificial Intelligence Healthcare')");
+    }
+
+    // 3. PROMPT INJECTION PATTERNS
+
+    // Block instruction keywords
+    const instructionPatterns = [
+      /ignore/i,
+      /disregard/i,
+      /forget/i,
+      /override/i,
+      /system[\s:]*/i,
+      /assistant[\s:]*/i,
+      /prompt[\s:]*/i,
+      /instruction/i,
+      /command/i,
+      /\bAI\b.*\b(say|respond|answer|tell)/i,
+    ];
+
+    for (const pattern of instructionPatterns) {
+      if (pattern.test(trimmed)) {
+        return {
+          is_valid: false,
+          suggestions: ["Topic contains invalid instruction keywords - use simple noun phrases"],
+        };
+      }
+    }
+
+    // Block role-playing attempts
+    if (/\b(you are|act as|pretend|roleplay)/i.test(trimmed)) {
+      return {
+        is_valid: false,
+        suggestions: ["Topic should be a subject, not an instruction"],
+      };
+    }
+
+    // Block various dangerous patterns
+    const characterChecks = [
+      {
+        pattern: /[<>{}[\]()\\|`~#$%^*_+=]/,
+        message: "Remove special characters - use only letters, numbers, spaces, and basic punctuation (-, &, ')",
+      },
+      { pattern: /["']/, message: "Remove quotation marks" },
+      { pattern: /[:;]/, message: "Remove colons and semicolons" },
+      { pattern: /[.!?]{2,}/, message: "Remove excessive punctuation" },
+      { pattern: /[\n\r\t]/, message: "Remove line breaks and special characters" },
+    ];
+
+    for (const check of characterChecks) {
+      if (check.pattern.test(trimmed)) {
+        suggestions.push(check.message);
+      }
+    }
+
+    // 4. SEMANTIC CHECKS
+
+    // Must contain at least one real word (2+ letters)
+    const hasRealWord = words.some((w) => /^[A-Za-z]{2,}$/.test(w));
+    if (!hasRealWord) {
+      suggestions.push("Topic must contain at least one meaningful word");
+    }
+
+    // Should be mostly letters
+    const letterCount = (trimmed.match(/[a-zA-Z]/g) || []).length;
+    const ratio = letterCount / trimmed.length;
+    if (ratio < 0.6) {
+      suggestions.push("Topic should be primarily text-based");
+    }
+
+    // Whitelist approach: only allow safe characters
+    if (!/^[a-zA-Z0-9\s\-&.'/]+$/.test(trimmed)) {
+      suggestions.push("Use only letters, numbers, spaces, hyphens, ampersands, periods, and apostrophes");
+    }
+
     return {
-      is_valid: true,
-      suggestions: [],
+      is_valid: suggestions.length === 0,
+      suggestions,
     };
   }
 }

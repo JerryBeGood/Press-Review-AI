@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Step 3: Call service to validate topic
     const pressReviewService = new PressReviewService(locals.supabase);
-    const validationResult = await pressReviewService.validateTopic(body.topic, locals.user.id);
+    const validationResult = await pressReviewService.validateTopic(body.topic);
 
     // Return validation result
     return new Response(JSON.stringify(validationResult), {

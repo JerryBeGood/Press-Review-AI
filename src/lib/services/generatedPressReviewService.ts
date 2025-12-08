@@ -84,12 +84,20 @@ export class GeneratedPressReviewService {
   }
 
   /**
+   * Helper to check if error is due to generation limit trigger
+   */
+  private isGenerationLimitError(error: { message?: string }): boolean {
+    return error?.message === "GENERATION_LIMIT_EXCEEDED";
+  }
+
+  /**
    * Creates a generation job for a press review
    *
    * Business logic checks:
    * 1. Verifies that the parent press_review exists
    * 2. Confirms that the authenticated user is the owner of the press_review
    * 3. Checks for any other pending generations for the same press_review_id to prevent duplicates
+   * 4. Enforces generation limit (checked by database trigger)
    *
    * @param pressReviewId - UUID of the press review to generate content for
    * @param userId - UUID of the authenticated user
@@ -146,6 +154,11 @@ export class GeneratedPressReviewService {
       .single();
 
     if (insertError || !newGeneration) {
+      // Check if error is due to generation limit trigger
+      if (this.isGenerationLimitError(insertError)) {
+        throw new ServiceError("GENERATION_LIMIT_EXCEEDED", "Cannot generate more than 5 press reviews", insertError);
+      }
+
       // eslint-disable-next-line no-console
       console.error("Error creating generation record:", insertError);
       throw new ServiceError("DATABASE_ERROR", "Failed to create generation job", insertError);

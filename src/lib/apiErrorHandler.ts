@@ -6,6 +6,7 @@ import { ServiceError, type ServiceErrorCode } from "./errors";
 function getStatusCode(code: ServiceErrorCode): number {
   const statusMap: Record<ServiceErrorCode, number> = {
     LIMIT_EXCEEDED: 429, // Too Many Requests
+    GENERATION_LIMIT_EXCEEDED: 429, // Too Many Requests
     DUPLICATE_TOPIC: 409, // Conflict
     NOT_FOUND: 404, // Not Found
     CONFLICT: 409, // Conflict
@@ -22,7 +23,8 @@ function getStatusCode(code: ServiceErrorCode): number {
  */
 function getUserMessage(code: ServiceErrorCode, serviceMessage?: string): string {
   const messageMap: Record<ServiceErrorCode, string> = {
-    LIMIT_EXCEEDED: "User cannot have more than 5 press reviews",
+    LIMIT_EXCEEDED: "Cannot schedule more than 5 press reviews",
+    GENERATION_LIMIT_EXCEEDED: "Generation limit reached (5/5)",
     DUPLICATE_TOPIC: "Press review with the same topic already exists",
     NOT_FOUND: "Resource not found",
     CONFLICT: "A conflicting operation is already in progress",

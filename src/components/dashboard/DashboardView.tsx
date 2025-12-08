@@ -2,18 +2,21 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Newspaper } from "lucide-react";
 import { usePressReviews } from "@/lib/hooks/usePressReviews";
+import { useGenerationQuota } from "@/lib/hooks/useGenerationQuota";
 import { useDialog } from "@/lib/hooks/useDialog";
 import { PressReviewList } from "./PressReviewList";
 import { PressReviewFormDialog } from "./PressReviewFormDialog";
 import { PressReviewCreationForm } from "./PressReviewCreationForm";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
-import { LimitWarning } from "./LimitWarning";
+import { QuotaBanner } from "./QuotaBanner";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingList } from "@/components/shared/LoadingList";
 import type { PressReviewViewModel, CreatePressReviewCmd, UpdatePressReviewCmd } from "@/types";
 
 export function DashboardView() {
+  const [isCreating, setIsCreating] = useState(false);
+
   const {
     pressReviews,
     isLoading,
@@ -24,6 +27,8 @@ export function DashboardView() {
     generatePressReview,
     retry,
   } = usePressReviews();
+
+  const quotaInfo = useGenerationQuota();
 
   const {
     isOpen: isFormOpen,
@@ -39,9 +44,7 @@ export function DashboardView() {
     close: closeDeleteDialog,
   } = useDialog<string>();
 
-  const [isCreating, setIsCreating] = useState(false);
-
-  const hasReachedLimit = pressReviews.length >= 5;
+  const hasReachedLimit = quotaInfo.scheduledCount >= 5;
 
   const handleOpenEditDialog = useCallback(
     (pressReview: PressReviewViewModel) => {
@@ -56,6 +59,7 @@ export function DashboardView() {
       try {
         await addPressReview(data);
         toast.success("Press review created");
+        await quotaInfo.refetch();
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         toast.error(errorMessage);
@@ -64,7 +68,7 @@ export function DashboardView() {
         setIsCreating(false);
       }
     },
-    [addPressReview]
+    [addPressReview, quotaInfo]
   );
 
   const handleEditSubmit = useCallback(
@@ -90,6 +94,7 @@ export function DashboardView() {
     try {
       await deletePressReview(deletingPressReviewId);
       toast.success("Press review deleted");
+      await quotaInfo.refetch();
     } catch {
       toast.error("Failed to delete press review. Please try again.");
     } finally {
@@ -102,6 +107,7 @@ export function DashboardView() {
       try {
         await generatePressReview(id);
         toast.success("Press review generation started");
+        await quotaInfo.refetch();
       } catch (error) {
         if ((error as { status?: number }).status === 409) {
           toast.error("Generation of this press review is already in progress.");
@@ -110,7 +116,7 @@ export function DashboardView() {
         }
       }
     },
-    [generatePressReview]
+    [generatePressReview, quotaInfo]
   );
 
   const deletingPressReview = pressReviews.find((pr) => pr.id === deletingPressReviewId);
@@ -129,6 +135,18 @@ export function DashboardView() {
 
   return (
     <div className="container mx-auto py-1" data-testid="dashboard-view">
+      {/* Unified Quota Banner */}
+      {!quotaInfo.isLoading && !quotaInfo.error ? (
+        <QuotaBanner
+          scheduledCount={quotaInfo.scheduledCount}
+          scheduledLimit={quotaInfo.scheduledLimit}
+          generatedCount={quotaInfo.generatedCount}
+          generatedLimit={quotaInfo.generatedLimit}
+        />
+      ) : (
+        <LoadingList count={1} />
+      )}
+
       {/* Top Section: Add New Press Review */}
       <div className="mb-12">
         <PressReviewCreationForm
@@ -142,8 +160,6 @@ export function DashboardView() {
       <div className="mb-6">
         <h2 className="text-xl font-bold uppercase tracking-tight">SCHEDULED PRESS REVIEWS</h2>
       </div>
-
-      {hasReachedLimit && pressReviews.length > 0 && <LimitWarning />}
 
       {isLoading ? (
         <LoadingList count={5} />

@@ -96,3 +96,28 @@ export interface GeneratedPressReviewsListWithTopicDTO {
   data: GeneratedPressReviewWithTopicDTO[];
   count: number;
 }
+
+/* ------------------------------------------------------------------ *
+ *  User Profiles & Quotas
+ * ------------------------------------------------------------------ */
+
+/**
+ * User profile with quota counters
+ */
+export interface ProfileDTO {
+  id: string;
+  scheduled_reviews_count: number;
+  generated_reviews_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Quota information for display
+ */
+export interface QuotaInfoDTO {
+  scheduled_count: number;
+  scheduled_limit: number;
+  generated_count: number;
+  generated_limit: number;
+}

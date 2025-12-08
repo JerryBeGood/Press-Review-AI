@@ -8,7 +8,7 @@ test.describe("Press Review Management (CRUD)", () => {
   let dashboardPage: DashboardPage;
 
   // Generate unique topic for each test run to avoid conflicts
-  const generateUniqueTopic = (prefix: string) => `${prefix} - ${Date.now()}`;
+  const generateUniqueTopic = (prefix: string) => `${prefix}`;
 
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const supabase = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);

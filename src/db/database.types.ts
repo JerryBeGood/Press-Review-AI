@@ -1,10 +1,22 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5";
+  graphql_public: {
+    Tables: Record<never, never>;
+    Views: Record<never, never>;
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: Record<never, never>;
+    CompositeTypes: Record<never, never>;
   };
   public: {
     Tables: {
@@ -15,6 +27,7 @@ export interface Database {
           error: string | null;
           generated_at: string | null;
           generated_queries: Json | null;
+          generation_context: Json | null;
           id: string;
           press_review_id: string;
           research_results: Json | null;
@@ -27,6 +40,7 @@ export interface Database {
           error?: string | null;
           generated_at?: string | null;
           generated_queries?: Json | null;
+          generation_context?: Json | null;
           id?: string;
           press_review_id: string;
           research_results?: Json | null;
@@ -39,6 +53,7 @@ export interface Database {
           error?: string | null;
           generated_at?: string | null;
           generated_queries?: Json | null;
+          generation_context?: Json | null;
           id?: string;
           press_review_id?: string;
           research_results?: Json | null;
@@ -79,6 +94,30 @@ export interface Database {
           topic?: string;
           updated_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          created_at: string;
+          generated_reviews_count: number;
+          id: string;
+          scheduled_reviews_count: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          generated_reviews_count?: number;
+          id: string;
+          scheduled_reviews_count?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          generated_reviews_count?: number;
+          id?: string;
+          scheduled_reviews_count?: number;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -221,6 +260,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       generation_status: [

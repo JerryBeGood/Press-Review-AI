@@ -4,6 +4,7 @@
  */
 export type ServiceErrorCode =
   | "LIMIT_EXCEEDED" // User has reached the limit of resources (e.g., 5 press reviews)
+  | "GENERATION_LIMIT_EXCEEDED" // User has reached the limit of generated press reviews (5 max)
   | "DUPLICATE_TOPIC" // Topic already exists for this user
   | "NOT_FOUND" // Resource not found or user doesn't have access
   | "CONFLICT" // Resource conflict (e.g., pending generation already exists)
@@ -21,6 +22,7 @@ export type ServiceErrorCode =
  *
  * The error code can be used in API endpoints to return appropriate HTTP status codes:
  * - LIMIT_EXCEEDED → 429 Too Many Requests
+ * - GENERATION_LIMIT_EXCEEDED → 429 Too Many Requests
  * - DUPLICATE_TOPIC → 409 Conflict
  * - NOT_FOUND → 404 Not Found
  * - CONFLICT → 409 Conflict

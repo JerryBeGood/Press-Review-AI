@@ -6,7 +6,7 @@ interface LoadingListProps {
 
 export function LoadingList({ count = 5 }: LoadingListProps) {
   return (
-    <div className="space-y-4" data-testid="loading-list">
+    <div className="space-y-4 mb-4" data-testid="loading-list">
       {[...Array(count)].map((_, i) => (
         <div key={i} className="brutalist-box bg-white p-6 space-y-3">
           <Skeleton className="h-6 w-3/4 rounded-none bg-gray-200" />

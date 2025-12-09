@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 
 interface BrutalistUserNavProps {
   userEmail: string;
@@ -15,7 +16,7 @@ export function BrutalistUserNav({ userEmail }: BrutalistUserNavProps) {
         window.location.href = "/login";
       }
     } catch {
-      // TODO:Handle logout error
+      toast.warning("We were not able to log you out. Try again later");
     }
   };
 

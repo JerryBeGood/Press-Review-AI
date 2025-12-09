@@ -3,7 +3,6 @@ import { z } from "zod";
 /**
  * Validation schema for login form
  */
-// TODO: Add password validation
 export const loginSchema = z.object({
   email: z.string().email({ message: "Must be a valid email address" }),
   password: z.string().min(1, { message: "Password is required" }),
@@ -11,13 +10,20 @@ export const loginSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
+const passwordSchema = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" })
+  .regex(/[A-Z]/, { message: "Password must contain at least one capital letter" })
+  .regex(/[0-9]/, { message: "Password must contain at least one number" })
+  .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" });
+
 /**
  * Validation schema for registration form
  */
 export const registerSchema = z
   .object({
     email: z.string().email({ message: "Must be a valid email address" }),
-    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, { message: "Please confirm your password" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -32,7 +38,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
  */
 export const registerApiSchema = z.object({
   email: z.string().email({ message: "Must be a valid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  password: passwordSchema,
 });
 
 export type RegisterApiInput = z.infer<typeof registerApiSchema>;
@@ -51,7 +57,7 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
  */
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, { message: "Please confirm your password" }),
   })
   .refine((data) => data.password === data.confirmPassword, {

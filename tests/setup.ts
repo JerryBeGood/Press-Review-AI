@@ -1,7 +1,8 @@
+import { setupServer } from "msw/node";
 import "@testing-library/jest-dom";
 import { beforeAll, afterEach, afterAll } from "vitest";
 
-import { server } from "../src/mocks/server";
+export const server = setupServer(...[]);
 
 beforeAll(() => server.listen());
 

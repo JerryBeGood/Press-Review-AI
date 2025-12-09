@@ -45,7 +45,7 @@ export function GeneratedPressReviewListItem({ review, onSelectReview }: Generat
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0 space-y-2">
           <h3 className="font-bold text-l font-mono uppercase tracking-tight truncate">
-            {review.content?.headline || "Unknown topic"}
+            {review.content?.headline || `Pending press review on ${review.press_reviews?.topic}...`}
           </h3>
           <p className="text-sm font-mono">{formattedDate}</p>
         </div>

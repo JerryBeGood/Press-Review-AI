@@ -35,8 +35,6 @@ export class ProfileService {
       throw new ServiceError("NOT_FOUND", "User profile not found");
     }
 
-    console.log(data);
-
     return data;
   }
 

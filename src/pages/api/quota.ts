@@ -15,8 +15,6 @@ export const GET: APIRoute = async ({ locals }) => {
     const profileService = new ProfileService(locals.supabase);
     const quotaInfo = await profileService.getQuotaInfo(locals.user.id);
 
-    console.log(quotaInfo);
-
     return new Response(JSON.stringify(quotaInfo), {
       status: 200,
       headers: { "Content-Type": "application/json" },

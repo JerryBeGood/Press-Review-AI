@@ -20,7 +20,7 @@ AI – Communication with models via AI SDK from Vercel
 CI/CD and Hosting:
 
 - Github Actions for creating CI/CD pipelines
-- DigitalOcean for hosting applications via a Docker image
+- Vercel for hosting of the Astro application
 
 Testing:
 

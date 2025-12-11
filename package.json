@@ -32,6 +32,7 @@
     "@ai-sdk/anthropic": "^2.0.17",
     "@ai-sdk/openai": "^2.0.9",
     "@astrojs/node": "^9.4.4",
+    "@astrojs/vercel": "^9.0.2",
     "@fontsource/space-mono": "^5.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",

@@ -20,6 +20,7 @@ export const contextGeneration = (topic: string) => `
   - Maintain an informed but accessible tone
   - The audience should consist of professionals and informed individuals seeking current information
   - News Angles must be specific and actionable, not broad topics
+  - Skip topics and news angles that related to the ethics, regulations and policies considerations. Users are not interested in that.
   - For each News Angle, provide a list of "keywords" that serve as TRIGGER WORDS for finding relevant news.
   - Generate at least ${MIN_NEWS_ANGLES} and at most ${MAX_NEWS_ANGLES} News Angles.
 
@@ -36,11 +37,6 @@ export const contextGeneration = (topic: string) => `
         "name": "Technological Breakthroughs",
         "description": "New efficiency records and material science discoveries",
         "keywords": ["efficiency record", "perovskite", "breakthrough", "lab results", "commercialization"]
-      },
-      {
-        "name": "Policy & Regulation",
-        "description": "Government incentives, bans, and international agreements",
-        "keywords": ["subsidy", "tax credit", "ban", "mandate", "COP summit", "legislation"]
       },
       {
         "name": "Market Movements",
@@ -191,12 +187,12 @@ export const queryGeneration = (
         }
       `;
 
-export const sourceEvaluation = (
+export const evaluateAndExtractSource = (
   topic: string,
   source: string,
   context: { persona: string; goal: string; audience: string }
 ) => `
-        You are an intelligent analyst conducting research for a press review. Your task is to score a news source on a scale of 1-10 based on its relevance and quality for the specified audience and goals.
+        You are an intelligent analyst conducting research for a press review. Your task is to evaluate a source AND extract valuable data from it in a single pass.
 
         <context>
         <persona>${context.persona}</persona>
@@ -204,27 +200,27 @@ export const sourceEvaluation = (
         <audience>${context.audience}</audience>
         </context>
 
-        Here is the topic:
         <topic>
         ${topic}
         </topic>
 
-        Here is the source to evaluate:
         <source>
-        ${source}
+        ${JSON.stringify(source)}
         </source>
 
-        Your job is to assign a score from 1 (completely irrelevant/low quality) to 10 (perfectly aligned, high value) based on THREE criteria:
+        **PART 1: EVALUATION**
+
+        Score this source from 1-10 based on THREE criteria:
 
         1. **PERSONA ALIGNMENT (Dominant Factor):**
-           - Does this source match the specific audience, persona, and goals defined in the context above?
+           - Does this source match the specific audience, persona, and goals defined in the context?
            - Is this content useful for the target audience?
            - Does it align with the analyst's perspective and objectives?
-           
+
         2. **INFORMATION DENSITY (Supporting Factor):**
            - Does the source contain concrete facts, dates, numbers, or specific details?
            - Or is it mostly fluff, speculation, or generic statements?
-           
+
         3. **NOVELTY (Supporting Factor):**
            - Is this actual news or new information?
            - Is the publication date recent enough to be considered current?
@@ -233,43 +229,13 @@ export const sourceEvaluation = (
         **CRITICAL RULES:**
         - Persona alignment alone is NOT sufficient. A source that matches the persona but lacks information density or novelty should receive a LOW score (below ${EVALUATION_THRESHOLD}).
         - Every source that resembles a ranking or a top list should receive a score of 1.
-
-        **STRICT THRESHOLD:** Only sources scoring ${EVALUATION_THRESHOLD} or above will be included in the final press review. Be rigorous in your evaluation.
+        - Only sources scoring ${EVALUATION_THRESHOLD} or above will be included in the final press review. Be rigorous.
 
         Important context: Today's date is ${new Date().toISOString()}. Use this to assess recency.
 
-        Your response must be in the following JSON format:
+        **PART 2: EXTRACTION**
 
-        {
-          "reasoning": "[Your detailed explanation covering all three criteria and how they contribute to the final score]",
-          "score": [integer from 1 to 10]
-        }
-
-        Your output should consist of only the JSON response with no additional text or formatting.
-      `;
-
-export const contentExtraction = (
-  topic: string,
-  source: string,
-  context: { persona: string; goal: string; audience: string }
-) => `
-        You are an intelligent analyst extracting specific, high-value data points for a press review.
-
-        <context>
-        <persona>${context.persona}</persona>
-        <goal>${context.goal}</goal>
-        <audience>${context.audience}</audience>
-        </context>
-
-        <topic>
-        ${topic}
-        </topic>
-
-        <source>${JSON.stringify(source)}</source>
-
-        Your task is to extract specific data points that will be valuable for the target audience defined above. Focus on CONCRETE, SPECIFIC information rather than generic summaries.
-
-        Extract the following fields:
+        Extract the following fields (always complete this section, regardless of score):
 
         1. **main_event** (REQUIRED): What specifically happened? Describe the core event, announcement, or development. Be concrete and specific.
 
@@ -288,9 +254,13 @@ export const contentExtraction = (
         - DO NOT invent or hallucinate data that isn't in the source
         - If a field has no relevant data, use empty array [] or explain briefly why the article still has value
 
-        Structure your response as a single, valid JSON object:
+        **OUTPUT FORMAT:**
+
+        Your response must be a single, valid JSON object with the following structure:
 
         {
+          "score": [integer from 1 to 10],
+          "reasoning": "[Your detailed explanation covering all three evaluation criteria and how they contribute to the final score]",
           "main_event": "specific description of what happened",
           "quantitative_data": ["concrete number/date/metric 1", "concrete number/date/metric 2"],
           "quotes": ["'Quote text' - Person Name, Role", "'Another quote' - Person Name, Role"],
@@ -362,7 +332,7 @@ export const contentSynthesis = (
         - Weave quantitative data and quotes naturally into the narrative
         - Sources are references/footnotes, not the main content
         - Write in a professional, journalistic style matching the persona
-        - Aim for 3-5 well-developed sections
+        - Aim for 3-6 well-developed sections
 
         Your final response should contain only the JSON output with no additional text or explanation.
       `;

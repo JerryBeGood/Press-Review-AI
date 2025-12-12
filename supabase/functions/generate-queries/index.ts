@@ -9,6 +9,7 @@ import {
   errorResponse,
   successResponse,
   verifyAuth,
+  createLogger,
 } from "../_shared/utils.ts";
 import { contextGeneration, queryGeneration } from "../_shared/prompts.ts";
 import { MIN_NEWS_ANGLES, MAX_NEWS_ANGLES, QUERIES_PER_ANGLE } from "../_shared/config.ts";
@@ -54,6 +55,8 @@ serve(async (req: Request) => {
   if (!generated_press_review_id) {
     return errorResponse("Missing generated_press_review_id", 400);
   }
+
+  const logger = createLogger(generated_press_review_id);
 
   try {
     await updateGenerationStatus(supabase, generated_press_review_id, "generating_queries");
@@ -116,8 +119,7 @@ serve(async (req: Request) => {
 
     return successResponse("Queries generated successfully");
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error in generate-queries:", error);
+    logger.error("Error in generate-queries:", error);
 
     if (generated_press_review_id) {
       await updateGenerationStatus(

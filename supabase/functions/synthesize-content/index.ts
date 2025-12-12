@@ -3,7 +3,7 @@ import { generateObject } from "npm:ai@5.0.9";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createSupabaseClient } from "../_shared/supabase-client.ts";
 import { createOpenAIClient } from "../_shared/ai-clients.ts";
-import { updateGenerationStatus, errorResponse, successResponse, verifyAuth } from "../_shared/utils.ts";
+import { updateGenerationStatus, errorResponse, successResponse, verifyAuth, createLogger } from "../_shared/utils.ts";
 import type { EdgeFunctionRequest, ResearchResults } from "../_shared/types.ts";
 import { contentSynthesis } from "../_shared/prompts.ts";
 
@@ -45,6 +45,8 @@ serve(async (req) => {
     return errorResponse("Missing generated_press_review_id", 400);
   }
 
+  const logger = createLogger(generated_press_review_id);
+
   try {
     await updateGenerationStatus(supabase, generated_press_review_id, "synthesizing_content");
 
@@ -74,8 +76,7 @@ serve(async (req) => {
 
     const openai = createOpenAIClient();
 
-    // eslint-disable-next-line no-console
-    console.log(`Synthesizing content for ${researchResults.length} research articles`);
+    logger.log(`Synthesizing content for ${researchResults.length} research articles`);
 
     const synthesis = await generateObject({
       model: openai.model("gpt-4o"),
@@ -87,8 +88,7 @@ serve(async (req) => {
       }),
     });
 
-    // eslint-disable-next-line no-console
-    console.log("Content synthesis complete");
+    logger.log("Content synthesis complete");
 
     const { error: updateError } = await supabase
       .from("generated_press_reviews")
@@ -106,8 +106,7 @@ serve(async (req) => {
 
     return successResponse("Content synthesized successfully");
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error in synthesize-content:", error);
+    logger.error("Error in synthesize-content:", error);
 
     await updateGenerationStatus(
       supabase,

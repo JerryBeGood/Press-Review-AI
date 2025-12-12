@@ -8,6 +8,7 @@ import {
   invokeEdgeFunction,
   processConcurrently,
   verifyAuth,
+  createLogger,
 } from "../_shared/utils.ts";
 import { evaluateAndExtractSource } from "../_shared/prompts.ts";
 import type { EdgeFunctionRequest, ResearchArticle, GenerationContext } from "../_shared/types.ts";
@@ -29,6 +30,8 @@ serve(async (req: Request) => {
   if (!generated_press_review_id) {
     return errorResponse("Missing generated_press_review_id", 400);
   }
+
+  const logger = createLogger(generated_press_review_id);
 
   try {
     await updateGenerationStatus(supabase, generated_press_review_id, "researching_sources");
@@ -64,14 +67,12 @@ serve(async (req: Request) => {
       throw new Error("No generated queries found");
     }
 
-    // eslint-disable-next-line no-console
-    console.log(`Processing ${queries.length} queries for topic: "${topic}" with schedule: ${schedule}`);
+    logger.log(`Processing ${queries.length} queries for topic: "${topic}" with schedule: ${schedule}`);
 
     const startPublishedDate = calculateStartPublishedDate(schedule);
     const endPublishedDate = new Date().toISOString();
 
-    // eslint-disable-next-line no-console
-    console.log(`Searching for sources published after: ${startPublishedDate}`);
+    logger.log(`Searching for sources published after: ${startPublishedDate}`);
 
     const exa = createExaClient();
     const allSearchResults: {
@@ -88,8 +89,7 @@ serve(async (req: Request) => {
     await processConcurrently(
       queries,
       async (query) => {
-        // eslint-disable-next-line no-console
-        console.log(`Searching for: "${query}"`);
+        logger.log(`Searching for: "${query}"`);
 
         try {
           const searchResponse = await exa.searchAndContents(query, {
@@ -112,12 +112,10 @@ serve(async (req: Request) => {
             })),
           };
 
-          // eslint-disable-next-line no-console
-          console.log(`Found ${searchResponse.results.length} results for query: "${query}"`);
+          logger.log(`Found ${searchResponse.results.length} results for query: "${query}"`);
           return result;
         } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(`Error searching for query "${query}":`, error);
+          logger.error(`Error searching for query "${query}":`, error);
           return { query, results: [] };
         }
       },
@@ -126,8 +124,7 @@ serve(async (req: Request) => {
       allSearchResults.push(...results);
     });
 
-    // eslint-disable-next-line no-console
-    console.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
+    logger.log(`Total search results collected: ${allSearchResults.reduce((sum, r) => sum + r.results.length, 0)}`);
 
     const openai = createOpenAIClient();
     const researchResults: ResearchArticle[] = [];
@@ -156,16 +153,14 @@ serve(async (req: Request) => {
       .flatMap((searchResult) => searchResult.results)
       .filter((source, index, self) => index === self.findIndex((s) => s.url === source.url));
 
-    // eslint-disable-next-line no-console
-    console.log(`Processing ${allSourcesToProcess.length} unique sources (deduplicated by URL)`);
+    logger.log(`Processing ${allSourcesToProcess.length} unique sources (deduplicated by URL)`);
 
     // Process all sources with unified evaluation + extraction
     const processedArticles = await processConcurrently(
       allSourcesToProcess,
       async (source) => {
         try {
-          // eslint-disable-next-line no-console
-          console.log(`Processing: ${source.title}`);
+          logger.log(`Processing: ${source.title}`);
 
           const result = await generateObject({
             model: openai.model("gpt-4o-mini"),
@@ -181,13 +176,11 @@ serve(async (req: Request) => {
 
           // Filter by threshold
           if (score < EVALUATION_THRESHOLD) {
-            // eslint-disable-next-line no-console
-            console.log(`✗ Rejected (${score}/10): ${source.title} - ${reasoning}`);
+            logger.log(`✗ Rejected (${score}/10): ${source.title} - ${reasoning}`);
             return null;
           }
 
-          // eslint-disable-next-line no-console
-          console.log(`✓ Accepted (${score}/10): ${source.title}`);
+          logger.log(`✓ Accepted (${score}/10): ${source.title}`);
 
           const article: ResearchArticle = {
             title: source.title,
@@ -204,15 +197,13 @@ serve(async (req: Request) => {
 
           return article;
         } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(`Error processing ${source.url}:`, error);
+          logger.error(`Error processing ${source.url}:`, error);
           return null;
         }
       },
       5 // Increased concurrency since we're doing fewer total calls
     ).catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error("Error during source processing:", error);
+      logger.error("Error during source processing:", error);
       return [];
     });
 
@@ -221,8 +212,7 @@ serve(async (req: Request) => {
     const passedSources = researchResults.length;
     const rejectedSources = allSourcesToProcess.length - passedSources;
 
-    // eslint-disable-next-line no-console
-    console.log(`Processing complete: ${passedSources} accepted, ${rejectedSources} rejected`);
+    logger.log(`Processing complete: ${passedSources} accepted, ${rejectedSources} rejected`);
 
     // Step 3d: Save the research_results to database
     const { error: saveError } = await supabase
@@ -236,8 +226,7 @@ serve(async (req: Request) => {
       throw new Error(`Failed to save research results: ${saveError.message}`);
     }
 
-    // eslint-disable-next-line no-console
-    console.log(`Research results saved successfully to database`);
+    logger.log(`Research results saved successfully to database`);
 
     // Invoke the next function in the chain: synthesize-content
     await invokeEdgeFunction("synthesize-content", {
@@ -246,8 +235,7 @@ serve(async (req: Request) => {
 
     return successResponse("Research completed successfully");
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error in execute-research:", error);
+    logger.error("Error in execute-research:", error);
 
     if (generated_press_review_id) {
       await updateGenerationStatus(

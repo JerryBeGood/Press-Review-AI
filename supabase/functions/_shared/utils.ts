@@ -142,3 +142,17 @@ export async function processConcurrently<T, R>(items: T[], fn: (item: T) => Pro
 
   return results;
 }
+
+/**
+ * Creates a logger instance with prefixed messages for better traceability
+ * @param reviewId - The generated_press_review_id to use as prefix
+ * @returns Logger object with log and error methods
+ */
+export function createLogger(reviewId: string) {
+  const prefix = `[${reviewId}]`;
+
+  return {
+    log: (...args: unknown[]) => console.log(prefix, ...args),
+    error: (...args: unknown[]) => console.error(prefix, ...args),
+  };
+}

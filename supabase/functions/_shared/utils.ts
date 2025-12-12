@@ -131,8 +131,13 @@ export async function processConcurrently<T, R>(items: T[], fn: (item: T) => Pro
 
   for (let start = 0; start < items.length; start += limit) {
     const chunk = items.slice(start, start + limit);
-    const chunkResults = await Promise.all(chunk.map(fn));
-    results.push(...chunkResults);
+    const chunkResults = await Promise.allSettled(chunk.map((item) => fn(item)));
+
+    for (const result of chunkResults) {
+      if (result.status === "fulfilled") {
+        results.push(result.value);
+      }
+    }
   }
 
   return results;

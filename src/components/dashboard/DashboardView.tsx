@@ -109,8 +109,11 @@ export function DashboardView() {
         toast.success("Press review generation started");
         await quotaInfo.refetch();
       } catch (error) {
-        if ((error as { status?: number }).status === 409) {
+        const errorStatus = (error as { status?: number }).status;
+        if (errorStatus === 409) {
           toast.error("Generation of this press review is already in progress.");
+        } else if (errorStatus === 429) {
+          toast.error("You have reached the generation quota.");
         } else {
           toast.error("Failed to start generation. Please try again.");
         }

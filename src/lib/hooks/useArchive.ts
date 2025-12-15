@@ -1,5 +1,10 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import type { ArchiveViewModel, GeneratedPressReviewsListWithTopicDTO } from "../../types";
+import { toast } from "sonner";
+import type {
+  ArchiveViewModel,
+  GeneratedPressReviewsListWithTopicDTO,
+  RetryGeneratedPressReviewResponse,
+} from "../../types";
 
 type FetchStatus = "loading" | "success" | "error";
 
@@ -15,11 +20,14 @@ interface UseArchiveReturn {
   selectedTopics: Set<string>;
   status: FetchStatus;
   selectedReview: ArchiveViewModel | null;
+  isActionLoading: boolean;
   retry: () => void;
   selectReview: (review: ArchiveViewModel) => void;
   clearSelection: () => void;
   toggleTopic: (topic: string) => void;
   clearTopicFilter: () => void;
+  deleteReview: (id: string) => Promise<void>;
+  retryReview: (id: string) => Promise<void>;
 }
 
 const POLLING_INTERVAL = 5000; // 5 seconds
@@ -36,6 +44,7 @@ export function useArchive(): UseArchiveReturn {
   const [selectedReview, setSelectedReview] = useState<ArchiveViewModel | null>(null);
   const [pollingEnabled, setPollingEnabled] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   /**
    * Fetches generated press reviews with topic from the API
@@ -109,6 +118,90 @@ export function useArchive(): UseArchiveReturn {
   }, []);
 
   /**
+   * Deletes a generated press review with optimistic update
+   */
+  const deleteReview = useCallback(
+    async (id: string) => {
+      setIsActionLoading(true);
+
+      // 1. Optimistic: remove from list
+      const previousReviews = reviews;
+      setReviews((prev) => prev.filter((r) => r.id !== id));
+
+      try {
+        // 2. API call
+        const response = await fetch(`/api/generated-press-reviews/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete");
+        }
+
+        // 3. Success toast
+        toast.success("Press review deleted");
+      } catch (error) {
+        // 4. Rollback + error toast
+        setReviews(previousReviews);
+        toast.error("Failed to delete. Please try again.");
+        // eslint-disable-next-line no-console
+        console.error("Error deleting review:", error);
+      } finally {
+        setIsActionLoading(false);
+      }
+    },
+    [reviews]
+  );
+
+  /**
+   * Retries a failed generation with optimistic update
+   */
+  const retryReview = useCallback(
+    async (id: string) => {
+      setIsActionLoading(true);
+
+      // 1. Optimistic: change status to pending
+      const previousReviews = reviews;
+      setReviews((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "pending" as const, content: null, error: null } : r))
+      );
+
+      try {
+        // 2. API call
+        const response = await fetch(`/api/generated-press-reviews/${id}`, {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to retry");
+        }
+
+        const data: RetryGeneratedPressReviewResponse = await response.json();
+
+        // 3. Replace old with new review (preserve press_reviews relation)
+        setReviews((prev) =>
+          prev.map((r) => (r.id === id ? { ...data.newReview, press_reviews: r.press_reviews } : r))
+        );
+
+        // 4. Enable polling to track the new generation
+        setPollingEnabled(true);
+
+        // 5. Success toast
+        toast.success("Retry initiated - generating new review");
+      } catch (error) {
+        // 6. Rollback + error toast
+        setReviews(previousReviews);
+        toast.error("Failed to retry. Please try again.");
+        // eslint-disable-next-line no-console
+        console.error("Error retrying review:", error);
+      } finally {
+        setIsActionLoading(false);
+      }
+    },
+    [reviews]
+  );
+
+  /**
    * Compute unique topics with their review counts
    */
   const topicsWithCount = useMemo<TopicWithCount[]>(() => {
@@ -180,10 +273,13 @@ export function useArchive(): UseArchiveReturn {
     selectedTopics,
     status,
     selectedReview,
+    isActionLoading,
     retry,
     selectReview,
     clearSelection,
     toggleTopic,
     clearTopicFilter,
+    deleteReview,
+    retryReview,
   };
 }

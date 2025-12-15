@@ -6,6 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
+import { supabaseBrowser } from "@/db/supabase.browser";
 
 export function ResetPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,11 +22,9 @@ export function ResetPasswordForm() {
   });
 
   useEffect(() => {
-    // Check for password recovery hash in URL
-    // This will be implemented when Supabase client is set up
-    // For now, we just enable the form
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get("type");
+    // Check for password recovery in URL query params (PKCE flow)
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("type");
 
     if (type === "recovery") {
       setIsReady(true);
@@ -34,15 +33,21 @@ export function ResetPasswordForm() {
     }
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: ResetPasswordInput) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // This will be implemented with Supabase client in the backend implementation phase
-      // For now, we'll just show a placeholder error
-      throw new Error("Password reset functionality will be implemented in the backend phase");
+      const { error: updateError } = await supabaseBrowser.auth.updateUser({
+        password: values.password,
+      });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Redirect to login with success message
+      window.location.href = "/login?reset=success";
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
       setIsSubmitting(false);

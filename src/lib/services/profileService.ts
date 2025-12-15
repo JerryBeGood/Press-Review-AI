@@ -51,7 +51,7 @@ export class ProfileService {
       scheduled_count: profile.scheduled_reviews_count,
       scheduled_limit: 5,
       generated_count: profile.generated_reviews_count,
-      generated_limit: 5,
+      generated_limit: 10,
     };
   }
 }

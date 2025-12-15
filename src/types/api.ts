@@ -121,3 +121,24 @@ export interface QuotaInfoDTO {
   generated_count: number;
   generated_limit: number;
 }
+
+/* ------------------------------------------------------------------ *
+ *  Generated Press Reviews - Actions
+ * ------------------------------------------------------------------ */
+
+/**
+ * Response for DELETE /api/generated-press-reviews/:id
+ */
+export interface DeleteGeneratedPressReviewResponse {
+  success: boolean;
+  deletedId: string;
+}
+
+/**
+ * Response for POST /api/generated-press-reviews/:id/retry
+ */
+export interface RetryGeneratedPressReviewResponse {
+  success: boolean;
+  oldReviewId: string;
+  newReview: GeneratedPressReviewDetailDTO;
+}

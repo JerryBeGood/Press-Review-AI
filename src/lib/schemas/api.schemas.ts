@@ -95,3 +95,23 @@ export const getGeneratedPressReviewsQuerySchema = z.object({
 });
 
 export type GetGeneratedPressReviewsQuery = z.infer<typeof getGeneratedPressReviewsQuerySchema>;
+
+/**
+ * Validation schema for DELETE /api/generated-press-reviews/:id
+ * Validates that the id parameter is a valid UUID
+ */
+export const deleteGeneratedPressReviewParamsSchema = z.object({
+  id: uuidSchema,
+});
+
+export type DeleteGeneratedPressReviewParams = z.infer<typeof deleteGeneratedPressReviewParamsSchema>;
+
+/**
+ * Validation schema for POST /api/generated-press-reviews/:id/retry
+ * Validates that the id parameter is a valid UUID
+ */
+export const retryGeneratedPressReviewParamsSchema = z.object({
+  id: uuidSchema,
+});
+
+export type RetryGeneratedPressReviewParams = z.infer<typeof retryGeneratedPressReviewParamsSchema>;

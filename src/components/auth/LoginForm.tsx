@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth.schemas";
@@ -8,11 +8,21 @@ import { Button } from "@/components/ui/button";
 
 interface LoginFormProps {
   showVerificationSuccess?: boolean;
+  showResetSuccess?: boolean;
 }
 
-export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
+export function LoginForm({ showVerificationSuccess, showResetSuccess }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (showResetSuccess) {
+      setSuccessMessage("Password updated successfully. You can now sign in with your new password.");
+    } else if (showVerificationSuccess) {
+      setSuccessMessage("Your email has been verified. You can now sign in.");
+    }
+  }, [showResetSuccess, showVerificationSuccess]);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -55,13 +65,13 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
         <p className="text-sm font-mono mt-1">Enter your credentials to access your account</p>
       </div>
 
-      {showVerificationSuccess && (
+      {successMessage && (
         <div
           className="mb-6 brutalist-box bg-[var(--yellow-banner)] p-3 text-sm font-mono font-bold"
           role="status"
           aria-live="polite"
         >
-          Your email has been verified. You can now sign in.
+          {successMessage}
         </div>
       )}
 
@@ -125,11 +135,21 @@ export function LoginForm({ showVerificationSuccess }: LoginFormProps) {
         </form>
       </Form>
 
-      <div className="mt-6 text-center text-sm font-mono">
-        Don&apos;t have an account?{" "}
-        <a href="/register" className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">
-          Sign up
-        </a>
+      <div className="mt-6 space-y-3">
+        <div className="text-center text-sm font-mono">
+          <a
+            href="/forgot-password"
+            className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity"
+          >
+            Forgot password?
+          </a>
+        </div>
+        <div className="text-center text-sm font-mono">
+          Don&apos;t have an account?{" "}
+          <a href="/register" className="font-bold underline underline-offset-4 hover:opacity-70 transition-opacity">
+            Sign up
+          </a>
+        </div>
       </div>
     </div>
   );

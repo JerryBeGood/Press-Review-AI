@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, type ResetPasswordInput } from "@/lib/schemas/auth.schemas";
@@ -10,7 +11,6 @@ import { AlertTriangle } from "lucide-react";
 export function ResetPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
 
   const form = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
@@ -20,36 +20,33 @@ export function ResetPasswordForm() {
     },
   });
 
-  useEffect(() => {
-    // Check for password recovery hash in URL
-    // This will be implemented when Supabase client is set up
-    // For now, we just enable the form
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get("type");
-
-    if (type === "recovery") {
-      setIsReady(true);
-    } else {
-      setError("Invalid or expired reset link. Please request a new one.");
-    }
-  }, []);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: ResetPasswordInput) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // This will be implemented with Supabase client in the backend implementation phase
-      // For now, we'll just show a placeholder error
-      throw new Error("Password reset functionality will be implemented in the backend phase");
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to send reset email");
+      }
+
+      // Redirect to login with success message
+      window.location.href = "/login?reset=success";
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
       setIsSubmitting(false);
     }
   };
 
-  if (!isReady && error) {
+  if (error) {
     return (
       <div className="brutalist-box bg-white p-6 sm:p-8">
         <div className="text-center space-y-6">
@@ -127,7 +124,7 @@ export function ResetPasswordForm() {
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting || !isReady} variant="brutalist" className="w-full">
+          <Button type="submit" disabled={isSubmitting} variant="brutalist" className="w-full">
             {isSubmitting ? "UPDATING PASSWORD..." : "UPDATE PASSWORD"}
           </Button>
         </form>

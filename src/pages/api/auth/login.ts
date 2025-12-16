@@ -46,6 +46,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     if (error) {
+      if (error.code === "email_not_confirmed") {
+        return new Response(
+          JSON.stringify({
+            error: "Email not confirmed. Please check your email for a verification link.",
+          }),
+          {
+            status: 401,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
       // Return generic error for security (don't reveal if user exists)
       return new Response(
         JSON.stringify({

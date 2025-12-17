@@ -53,6 +53,16 @@ const currentPath = Astro.url.pathname;
                 : "hover:underline decoration-2 underline-offset-4",
             ]}>ARCHIVE</a
           >
+          <span>|</span>
+          <a
+            href="/settings"
+            class:list={[
+              "uppercase px-2 py-1",
+              currentPath === "/settings"
+                ? "bg-[var(--button-blue)] text-black"
+                : "hover:underline decoration-2 underline-offset-4",
+            ]}>SETTINGS</a
+          >
         </div>
         <div>
           {user && <BrutalistUserNav userEmail={user.email || ""} client:load />}

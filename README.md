@@ -1,147 +1,115 @@
 # Press Review AI
 
-[![Project Status: In Development](https://img.shields.io/badge/status-in%20development-yellowgreen.svg)](https://github.com/JerryBeGood/Press-Review-AI)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+Press Review AI is an agentic web application designed to automate the process of creating regular press reviews on topics selected by the user.
 
-Press Review AI is a web application designed to automate the process of creating regular press reviews on topics selected by the user. The main purpose of the product is to provide users with condensed, accurate and high-quality information from various sources, allowing them to save time and stay up to date with the latest trends in their areas of interest. The application uses an AI agent to autonomously search, analyse and synthesise content.
+In a world of information overload, staying up-to-date requires filtering through massive amounts of data. This application solves that problem by using an AI agent to autonomously search, analyze, and synthesize content into condensed, high-quality summaries.
 
-This project is educational in nature and forms part of a portfolio.
-
-## Table of Contents
-
-- [Press Review AI](#press-review-ai)
-  - [Table of Contents](#table-of-contents)
-  - [Tech Stack](#tech-stack)
-  - [Getting Started Locally](#getting-started-locally)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-  - [Available Scripts](#available-scripts)
-  - [Project Scope](#project-scope)
-    - [Included in the MVP](#included-in-the-mvp)
-    - [Not Included in the MVP](#not-included-in-the-mvp)
-  - [Project Status](#project-status)
-  - [License](#license)
+> **Note**: This project is educational in nature and was created for the sake of certification in the 10xDevs 2.0 course.
 
 ## Tech Stack
 
-![Astro](https://img.shields.io/badge/Astro-5-FF5D01?logo=astro)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwind-css)
-![Supabase](https://img.shields.io/badge/Supabase-000000?logo=supabase)
-![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest)
-![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright)
-![Testing Library](https://img.shields.io/badge/Testing_Library-E33332?logo=testing-library)
-![MSW](https://img.shields.io/badge/MSW-FF6A33?logo=msw)
+This project leverages a modern, performance-oriented stack:
 
-- **Frontend:**
-  - **Astro 5:** Core framework for building fast, content-focused websites.
-  - **React 19:** For creating interactive and dynamic UI components.
-  - **TypeScript 5:** For strong typing and improved code quality.
-  - **Tailwind 4:** A utility-first CSS framework for rapid UI development.
-  - **Shadcn/ui:** A collection of accessible and reusable UI components.
-- **Backend:**
-  - **Supabase:** Provides a comprehensive backend solution, including:
-    - PostgreSQL Database
-    - Authentication
-    - Backend-as-a-Service (BaaS) via SDKs
-- **AI:**
-  - **Vercel AI SDK:** A unified interface for communicating with various AI models (e.g., OpenAI, Anthropic).
-- **DevOps:**
-  - **GitHub Actions:** For CI/CD automation.
-  - **DigitalOcean:** For hosting the application via Docker.
-- **Testing:**
-  - **Vitest:** A fast and modern test runner for unit and integration testing.
-  - **Playwright:** For reliable end-to-end testing across different browsers.
-  - **React Testing Library:** For testing React components.
-  - **MSW (Mock Service Worker):** For mocking API requests during testing.
+### Frontend
+
+- **Framework**: [Astro 5](https://astro.build/) (Server-first, content-focused)
+- **Interactivity**: [React 19](https://react.dev/)
+- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **UI Components**: [Shadcn/ui](https://ui.shadcn.com/)
+
+### Backend & Infrastructure
+
+- **BaaS**: [Supabase](https://supabase.com/) (PostgreSQL, Authentication, Edge Functions)
+- **Hosting**: Vercel
+
+### Artificial Intelligence
+
+- **Orchestration**: [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- **Search**: [Exa.js](https://exa.ai/)
+- **Models**: OpenAI / Anthropic integration
+
+### Testing
+
+- **Unit Testing**: [Vitest](https://vitest.dev/)
+- **E2E Testing**: [Playwright](https://playwright.dev/)
+- **Mocking**: MSW (Mock Service Worker)
 
 ## Getting Started Locally
 
-Follow these instructions to set up the project on your local machine for development and testing.
+Follow these steps to set up the project locally.
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm (or your preferred package manager like pnpm or yarn)
-- [Supabase Account](https://supabase.com/) or local Supabase setup.
+- **Node.js**: Version `v24.4.1` (as specified in `.nvmrc`)
+- **Package Manager**: npm, pnpm, or yarn
+- **Supabase Account**: You will need a Supabase project for the database and authentication.
 
 ### Installation
 
-1.  **Clone the repository:**
+1. **Clone the repository**
 
-    ```sh
-    git clone https://github.com/JerryBeGood/Press-Review-AI.git
-    cd Press-Review-AI
-    ```
+   ```bash
+   git clone https://github.com/JerryBeGood/Press-Review-AI.git
+   cd Press-Review-AI
+   ```
 
-2.  **Install dependencies:**
+2. **Install dependencies**
 
-    ```sh
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
-3.  **Set up environment variables:**
-    Create a `.env` file in the root of the project by copying the example file:
+3. **Environment Setup**
+   Create a `.env` file in the root directory. You will need to populate it with credentials for Supabase and your AI providers (e.g., OpenAI, Anthropic, Exa).
 
-    ```sh
-    cp .env.example .env
-    ```
+   _Example structure:_
 
-    You will need to add your Supabase Project URL and Anon Key to this file. You can find these in your Supabase project dashboard under `Project Settings` > `API`.
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   OPENAI_API_KEY=your_openai_key
+   EXA_API_KEY=your_exa_key
+   ```
 
-    ```env
-    PUBLIC_SUPABASE_URL="your-supabase-url"
-    PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
-    ```
-
-4.  **Set up the database:**
-    If you are using the Supabase platform, you can run the migrations located in the `supabase/migrations` directory against your database. If you are running Supabase locally, you can use the Supabase CLI.
-
-5.  **Run the development server:**
-    ```sh
-    npm run dev
-    ```
-    The application will be available at `http://localhost:4321`.
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:4321`.
 
 ## Available Scripts
 
-In the project directory, you can run the following commands:
-
-- `npm run dev`: Runs the app in the development mode.
-- `npm run build`: Builds the app for production to the `dist/` folder.
-- `npm run preview`: Serves the production build locally for preview.
-- `npm run type-check`: Runs the TypeScript compiler to check for type errors.
-- `npm run lint`: Lints the codebase using ESLint.
-- `npm run lint:fix`: Lints the codebase and automatically fixes issues.
-- `npm run format`: Formats the code using Prettier.
+| Script              | Description                                     |
+| :------------------ | :---------------------------------------------- |
+| `npm run dev`       | Starts the local development server with Astro. |
+| `npm run build`     | Builds the project for production.              |
+| `npm run preview`   | Previews the production build locally.          |
+| `npm run test:unit` | Runs unit tests using Vitest.                   |
+| `npm run test:e2e`  | Runs end-to-end tests using Playwright.         |
+| `npm run lint`      | Runs ESLint to check for code quality issues.   |
+| `npm run format`    | Formats code using Prettier.                    |
 
 ## Project Scope
 
-This section outlines the features included in the current Minimum Viable Product (MVP).
+The current MVP (Minimum Viable Product) includes the following core functionalities:
 
-### Included in the MVP
-
-- **User Account Management:** Registration, email verification, login, password/email changes, and account deletion.
-- **Press Release Management:** Create, edit, and delete scheduled press releases.
-- **Scheduling:** Set generation schedule (daily, weekly, monthly).
-- **Content Generation:** Automatic and manual generation of press releases.
-- **Limitations:** A limit of 5 scheduled press releases per user and unique titles for each.
-- **Archive:** Access to a chronological list of all generated press releases.
-
-### Not Included in the MVP
-
-- Advanced press release customization (e.g., source filtering).
-- Notification system.
-- Login via social media accounts.
-- AI agent customization for specific users.
-- Monetization and subscription plans.
-- Mechanism for evaluating the quality of generated content.
+- **User Account Management**: Registration, email verification, login, password reset, and account deletion.
+- **Press Release Scheduling**:
+  - Create recurring press reviews by defining a topic.
+  - Real-time topic validation by an AI agent.
+  - Schedules: Daily, Weekly, or Monthly.
+  - Limit: Up to 5 active schedules per user.
+- **Content Generation**:
+  - Autonomous gathering and synthesis of news by an AI agent.
+  - Output format: General summary + 7-10 distinct segments with sources.
+  - **Manual Generation**: Option to generate a review on-demand regardless of schedule.
+- **Archives**: View chronological history of all generated press reviews.
 
 ## Project Status
 
-This project is currently **in development**. It is being built as an educational project to be included in a developer portfolio.
+This project is currently in the **MVP** phase. It includes all key features related to creating, editing, and viewing press releases. Future planned enhancements (not currently implemented) include advanced customization, notifications, and social media login.
 
 ## License
 
-This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [ISC License](https://opensource.org/licenses/ISC).

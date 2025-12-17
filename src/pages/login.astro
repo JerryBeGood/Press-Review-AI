@@ -6,12 +6,22 @@ export const prerender = false;
 
 const showVerificationSuccess = Astro.cookies.has("show-verification-success");
 const showResetSuccess = Astro.url.searchParams.get("reset") === "success";
+const showEmailChangeSuccess = Astro.cookies.has("show-email-change-success");
 
 if (showVerificationSuccess) {
   Astro.cookies.delete("show-verification-success", { path: "/" });
 }
+
+if (showEmailChangeSuccess) {
+  Astro.cookies.delete("show-email-change-success", { path: "/" });
+}
 ---
 
 <BrutalistAuthLayout>
-  <LoginForm client:load showVerificationSuccess={showVerificationSuccess} showResetSuccess={showResetSuccess} />
+  <LoginForm
+    client:load
+    showVerificationSuccess={showVerificationSuccess}
+    showResetSuccess={showResetSuccess}
+    showEmailChangeSuccess={showEmailChangeSuccess}
+  />
 </BrutalistAuthLayout>

@@ -120,7 +120,7 @@ export function PressReviewCreationForm({ onSubmit, isSubmitting, hasReachedLimi
     !hasReachedLimit;
 
   return (
-    <div ref={formContainerRef} className="brutalist-box-interactive p-4 sm:p-6 bg-[var(--bg-color)]">
+    <div ref={formContainerRef} className="brutalist-box-interactive p-4 sm:p-6 bg-[var(--background)]">
       <h2 className="text-xl font-bold uppercase mb-4 tracking-tight">ADD NEW PRESS REVIEW</h2>
 
       <Form {...form}>

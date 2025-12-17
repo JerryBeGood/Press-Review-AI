@@ -31,9 +31,9 @@ const currentPath = Astro.url.pathname;
     <!-- Nav Bar -->
     <div class="w-full px-4 pb-2 flex justify-center">
       <nav
-        class="w-full max-w-4xl bg-[var(--bg-color)] border-2 border-black shadow-[4px_4px_0px_0px_#000] p-4 flex justify-between items-center"
+        class="w-full max-w-4xl bg-[var(--bg-color)] border-2 border-black shadow-[4px_4px_0px_0px_#000] p-4 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0"
       >
-        <div class="flex items-center gap-2 md:gap-4 text-base md:text-lg font-bold">
+        <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4 text-sm md:text-lg font-bold">
           <a
             href="/dashboard"
             class:list={[
@@ -64,7 +64,7 @@ const currentPath = Astro.url.pathname;
             ]}>SETTINGS</a
           >
         </div>
-        <div>
+        <div class="w-full md:w-auto flex justify-center">
           {user && <BrutalistUserNav userEmail={user.email || ""} client:load />}
         </div>
       </nav>

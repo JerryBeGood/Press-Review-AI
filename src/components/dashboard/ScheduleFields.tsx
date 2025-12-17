@@ -9,8 +9,8 @@ interface ScheduleFieldsProps<T extends FieldValues> {
 
 export function ScheduleFields<T extends FieldValues>({ control, scheduleValue }: ScheduleFieldsProps<T>) {
   return (
-    <div className="flex w-full items-end gap-4">
-      <div className="flex-1">
+    <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end">
+      <div className="flex-1 w-full">
         <FormField
           control={control}
           name={"schedule" as Path<T>}

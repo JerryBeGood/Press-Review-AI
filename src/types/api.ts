@@ -142,3 +142,37 @@ export interface RetryGeneratedPressReviewResponse {
   oldReviewId: string;
   newReview: GeneratedPressReviewDetailDTO;
 }
+
+/* ------------------------------------------------------------------ *
+ *  Auth - Account Management
+ * ------------------------------------------------------------------ */
+
+/**
+ * Response for POST /api/auth/change-password
+ */
+export interface ChangePasswordResponse {
+  message: string;
+}
+
+/**
+ * Response for POST /api/auth/change-email
+ */
+export interface ChangeEmailResponse {
+  message: string;
+}
+
+/**
+ * Response for POST /api/auth/delete-account
+ */
+export interface DeleteAccountResponse {
+  message: string;
+}
+
+/**
+ * Common error response structure for API endpoints
+ */
+export interface ApiErrorResponse {
+  code: string;
+  message: string;
+  errors?: Record<string, string[]>; // For validation errors
+}

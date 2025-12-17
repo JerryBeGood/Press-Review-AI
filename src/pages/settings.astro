@@ -1,0 +1,17 @@
+---
+import BrutalistLayout from "@/layouts/BrutalistLayout.astro";
+import { SettingsView } from "@/components/settings/SettingsView";
+
+export const prerender = false;
+
+// User is guaranteed to be authenticated by middleware
+const user = Astro.locals.user;
+
+if (!user || !user.email) {
+  return Astro.redirect("/login");
+}
+---
+
+<BrutalistLayout>
+  <SettingsView client:load userEmail={user.email} />
+</BrutalistLayout>

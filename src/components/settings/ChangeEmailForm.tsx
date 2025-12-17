@@ -19,7 +19,6 @@ interface ChangeEmailFormProps {
  */
 export function ChangeEmailForm({ currentEmail }: ChangeEmailFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const form = useForm<ChangeEmailInput>({
@@ -39,7 +38,6 @@ export function ChangeEmailForm({ currentEmail }: ChangeEmailFormProps) {
     }
 
     setIsSubmitting(true);
-    setEmailSent(false);
 
     try {
       const response = await fetch("/api/auth/change-email", {
@@ -73,7 +71,6 @@ export function ChangeEmailForm({ currentEmail }: ChangeEmailFormProps) {
 
       const result: ChangeEmailResponse = await response.json();
       toast.success(result.message);
-      setEmailSent(true);
       form.reset();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "An unexpected error occurred");
@@ -140,17 +137,6 @@ export function ChangeEmailForm({ currentEmail }: ChangeEmailFormProps) {
                   </FormItem>
                 )}
               />
-
-              {emailSent && (
-                <div
-                  className="brutalist-box bg-[var(--yellow-banner)] p-3 text-sm font-mono"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <p className="font-bold">Verification email sent!</p>
-                  <p className="mt-1">Your current email will remain active until you verify the new one.</p>
-                </div>
-              )}
 
               <div className="pt-2">
                 <Button type="submit" disabled={isSubmitting} variant="brutalist" className="w-full h-auto py-3">

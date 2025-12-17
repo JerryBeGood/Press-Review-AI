@@ -18,8 +18,16 @@ export const GET: APIRoute = async ({ url, cookies, redirect, locals }) => {
     }
 
     return redirect("/reset-password");
-  } else if (type === "verification" || type === "email_change") {
-    cookies.set(`show-${type.replace("_", "-")}-success`, "true", {
+  } else if (type === "email_change") {
+    cookies.set("show-email-change-success", "true", {
+      path: "/",
+      maxAge: 60,
+    });
+
+    cookies.delete("sb-evdgtxndvfrphejojkkg-auth-token", { path: "/" });
+    return redirect("/login");
+  } else if (type === "verification") {
+    cookies.set("show-verification-success", "true", {
       path: "/",
       maxAge: 60,
     });

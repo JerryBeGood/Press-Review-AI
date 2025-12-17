@@ -10,7 +10,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
-      className="toaster group font-mono"
+      className="toaster group font-mono bg-[var(--button-blue)"
       position="top-right"
       toastOptions={{
         classNames: {

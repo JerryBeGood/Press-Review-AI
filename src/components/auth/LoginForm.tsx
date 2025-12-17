@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 interface LoginFormProps {
   showVerificationSuccess?: boolean;
   showResetSuccess?: boolean;
+  showEmailChangeSuccess?: boolean;
 }
 
-export function LoginForm({ showVerificationSuccess, showResetSuccess }: LoginFormProps) {
+export function LoginForm({ showVerificationSuccess, showResetSuccess, showEmailChangeSuccess }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -21,8 +22,10 @@ export function LoginForm({ showVerificationSuccess, showResetSuccess }: LoginFo
       setSuccessMessage("Password updated successfully. You can now sign in with your new password.");
     } else if (showVerificationSuccess) {
       setSuccessMessage("Your email has been verified. You can now sign in.");
+    } else if (showEmailChangeSuccess) {
+      setSuccessMessage("Email updated successfully. Please sign in with your new email address.");
     }
-  }, [showResetSuccess, showVerificationSuccess]);
+  }, [showResetSuccess, showVerificationSuccess, showEmailChangeSuccess]);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
